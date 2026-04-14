@@ -1,0 +1,34 @@
+# Ambientes Virtuais
+
+.venv_gm/
+venv/
+env/
+.env
+bin/
+lib/
+share/
+
+# Python caches
+
+pycache/
+*.pyc
+*.pyo
+*.pyd
+
+# Dados e Utilitários de Migração
+
+data/MOCK_DATA.json
+inspect_parquet.py
+
+# Streamlit
+
+.streamlit/
+
+# Configurações de IDE
+
+.vscode/
+
+# Ficheiros de sistema
+
+.DS_Store
+Thumbs.db
