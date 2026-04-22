@@ -1,8 +1,8 @@
-streamlit
-polars
-pyarrow
-plotly
-scikit-learn
 python-dotenv
+scikit-learn
+streamlit
+pyarrow
+polars
+plotly
 pandas
 numpy

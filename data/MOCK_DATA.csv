@@ -1,0 +1,1001 @@
+company_id,company_name,industry_sector,hq_country,hq_location,bid_type,annual_revenue,inquiry_volume
+1,Backus,Food & Beverage,Perú,Lima,Direct Negotiation,3938171246,22
+2,Servientrega,Logistics & Transport,Colombia,Cali,Spot Quote,2894486723,322
+3,Andreani,Logistics & Transport,Argentina,La Plata,Fleet Contract,4769801879,438
+4,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,Spot Quote,1128476729,20
+5,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Online Reverse Auction,1006658873,285
+6,Mirtrans,Logistics & Transport,Uruguay,Salto,Fleet Contract,3444951049,27
+7,Transportes Furlong,Logistics & Transport,Argentina,Mendoza,RFP,4685684151,22
+8,Turbus,B2B Services,Chile,Valparaíso,RFP,3590409771,21
+9,Grupo Nutresa,Food & Beverage,Colombia,Cartagena,Direct Negotiation,4662134799,38
+10,Ute,Energy & Utilities,Uruguay,Ciudad de la Costa,RFP,381816935,38
+11,Ambev,Food & Beverage,Brasil,Fortaleza,Direct Negotiation,4121882230,190
+12,Ambev,Food & Beverage,Brasil,Fortaleza,Direct Negotiation,3533181064,290
+13,Localiza,Car Rental,Brasil,Fortaleza,Quarterly Bid,281235821,963
+14,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Ciudad del Este,Spot Quote,3089039817,36
+15,CMPC,Industrial & Equipment,Chile,Antofagasta,Framework Agreement,4312867437,81
+16,Pagnifique,Food & Beverage,Uruguay,Ciudad de la Costa,RFP,4480195816,42
+17,Tigo Paraguay,Telecommunications,Paraguai,Luque,Direct Negotiation,308399704,13
+18,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Direct Negotiation,2939461007,47
+19,Cervepar,Food & Beverage,Paraguai,San Lorenzo,RFP,1937058857,43
+20,Ancap,Energy & Utilities,Uruguay,Montevidéu,Framework Agreement,2295431344,50
+21,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Quarterly Bid,3034072484,1144
+22,Cervepar,Food & Beverage,Paraguai,Luque,Annual Framework,4544223683,24
+23,Bavaria,Food & Beverage,Colombia,Medellín,Annual Framework,2591153863,290
+24,CMPC,Industrial & Equipment,Chile,Antofagasta,Framework Agreement,3698442783,48
+25,Agrosuper,Food & Beverage,Chile,Valparaíso,Direct Negotiation,371949349,20
+26,Alquería,Food & Beverage,Colombia,Bogotá,Direct Negotiation,3968760797,7
+27,Cimportex,E-commerce & Retail,Paraguai,Ciudad del Este,Direct Negotiation,1532741501,23
+28,Ambev,Food & Beverage,Brasil,Salvador,Annual Framework,2362827615,195
+29,Enel Chile,Energy & Utilities,Chile,Antofagasta,Framework Agreement,4223243125,27
+30,Enel Chile,Energy & Utilities,Chile,La Serena,Public Tender,1602057628,79
+31,Alquería,Food & Beverage,Colombia,Cartagena,Annual Framework,2041857529,10
+32,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Ciudad del Este,Spot Quote,844959034,9
+33,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,Direct Negotiation,840544768,36
+34,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,RFP,614228058,8
+35,Alquería,Food & Beverage,Colombia,Medellín,Annual Framework,3893030095,34
+36,Alicorp,Food & Beverage,Perú,Iquitos,RFP,376642184,5
+37,Movida,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,1422452484,867
+38,Ute,Energy & Utilities,Uruguay,Ciudad de la Costa,Public Tender,1346625420,87
+39,Backus,Food & Beverage,Perú,Arequipa,Annual Framework,847892665,19
+40,Transportes Vigía,Logistics & Transport,Colombia,Bogotá,RFP,927773996,25
+41,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,2336145657,19
+42,Ransa,Logistics & Transport,Perú,Chiclayo,RFP,515253946,238
+43,Bavaria,Food & Beverage,Colombia,Bogotá,Direct Negotiation,1344996506,316
+44,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Spot Quote,2064315985,30
+45,Ransa,Logistics & Transport,Perú,Trujillo,Spot Quote,1922374149,208
+46,Cervepar,Food & Beverage,Paraguai,Assunção,Annual Framework,2048575385,43
+47,Transportes Cruz del Sur,Logistics & Transport,Perú,Iquitos,Fleet Contract,1376478919,8
+48,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Public Tender,4934769460,100
+49,Movida,Car Rental,Brasil,São Paulo,Volume Rebate Agreement,799402223,996
+50,Frigorífico Concepción,Food & Beverage,Paraguai,Capiatá,RFP,408864317,34
+51,Turbus,B2B Services,Chile,Santiago,RFP,3979763365,25
+52,Frigorífico Concepción,Food & Beverage,Paraguai,Assunção,RFP,1779652397,38
+53,Ute,Energy & Utilities,Uruguay,Montevidéu,RFP,1156693909,81
+54,Bavaria,Food & Beverage,Colombia,Cali,RFP,399999370,216
+55,Enel Chile,Energy & Utilities,Chile,La Serena,RFP,4371860673,32
+56,Backus,Food & Beverage,Perú,Chiclayo,RFP,2021333028,42
+57,Alquería,Food & Beverage,Colombia,Barranquilla,Direct Negotiation,3823783237,17
+58,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Luque,Spot Quote,3728520663,6
+59,Agrosuper,Food & Beverage,Chile,Valparaíso,Direct Negotiation,135420827,38
+60,Andreani,Logistics & Transport,Argentina,Córdoba,RFP,1725316656,296
+61,Localiza,Car Rental,Brasil,São Paulo,Direct Negotiation,2652573711,775
+62,Transportes Vigía,Logistics & Transport,Colombia,Barranquilla,Spot Quote,3364835000,19
+63,Falabella,E-commerce & Retail,Chile,Santiago,Spot Quote,1265001713,9
+64,Mirtrans,Logistics & Transport,Uruguay,Salto,Spot Quote,1716888773,38
+65,Ancap,Energy & Utilities,Uruguay,Salto,Framework Agreement,2232340034,25
+66,Andreani,Logistics & Transport,Argentina,La Plata,Spot Quote,1171397120,176
+67,CMPC,Industrial & Equipment,Chile,Concepción,Framework Agreement,2617913475,96
+68,Enel Chile,Energy & Utilities,Chile,La Serena,RFP,979535144,52
+69,Ambev,Food & Beverage,Brasil,Brasília,Annual Framework,3408570710,388
+70,Andreani,Logistics & Transport,Argentina,Buenos Aires,Fleet Contract,1748259063,437
+71,Ferreyros,Industrial & Equipment,Perú,Trujillo,Framework Agreement,1597791105,51
+72,YPF,Energy & Utilities,Argentina,La Plata,Public Tender,1100773478,76
+73,Andreani,Logistics & Transport,Argentina,La Plata,Fleet Contract,1563573447,399
+74,Cervepar,Food & Beverage,Paraguai,Ciudad del Este,Direct Negotiation,1203651145,9
+75,Transportes Vigía,Logistics & Transport,Colombia,Bogotá,Fleet Contract,4586726540,47
+76,Tigo Paraguay,Telecommunications,Paraguai,Assunção,Spot Quote,1725985026,46
+77,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Quarterly Bid,4410968879,884
+78,Servientrega,Logistics & Transport,Colombia,Medellín,RFP,180689846,290
+79,Agrosuper,Food & Beverage,Chile,Santiago,RFP,3493855291,9
+80,Mercado Libre,E-commerce & Retail,Argentina,Rosário,Online Reverse Auction,1385884792,187
+81,Ute,Energy & Utilities,Uruguay,Montevidéu,Public Tender,3437613075,57
+82,Cervepar,Food & Beverage,Paraguai,Ciudad del Este,Annual Framework,2105053462,38
+83,Ancap,Energy & Utilities,Uruguay,Las Piedras,Public Tender,1570990447,76
+84,Enel Chile,Energy & Utilities,Chile,Antofagasta,Framework Agreement,1833726375,82
+85,Ferreyros,Industrial & Equipment,Perú,Trujillo,RFP,2096188560,27
+86,Movida,Car Rental,Brasil,Fortaleza,Quarterly Bid,2370726375,1066
+87,JSL Logística,Logistics & Transport,Brasil,Salvador,Spot Quote,2834313807,1157
+88,Conaprole,Food & Beverage,Uruguay,Ciudad de la Costa,Direct Negotiation,4486956431,40
+89,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,3055309410,34
+90,Agrosuper,Food & Beverage,Chile,La Serena,RFP,4281206313,41
+91,Bavaria,Food & Beverage,Colombia,Cartagena,RFP,4343986895,287
+92,YPF,Energy & Utilities,Argentina,Buenos Aires,Public Tender,2385305996,65
+93,Transportes Vigía,Logistics & Transport,Colombia,Barranquilla,RFP,4781823457,41
+94,Servientrega,Logistics & Transport,Colombia,Barranquilla,RFP,3923140839,159
+95,Ute,Energy & Utilities,Uruguay,Montevidéu,Framework Agreement,1395432117,98
+96,Transportes Cruz del Sur,Logistics & Transport,Perú,Iquitos,RFP,3189999220,36
+97,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,Spot Quote,4218007009,23
+98,Alquería,Food & Beverage,Colombia,Cartagena,Annual Framework,3004308178,49
+99,Transportes Vigía,Logistics & Transport,Colombia,Cali,Fleet Contract,3579257319,16
+100,Ancap,Energy & Utilities,Uruguay,Salto,RFP,2378382067,22
+101,Falabella,E-commerce & Retail,Chile,Concepción,Direct Negotiation,1804715054,14
+102,Companhia de Locação das Américas,Car Rental,Brasil,Fortaleza,Quarterly Bid,1744614098,854
+103,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,Spot Quote,3130614334,28
+104,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,Annual Framework,2591074246,26
+105,Cimportex,E-commerce & Retail,Paraguai,San Lorenzo,Direct Negotiation,1996202245,30
+106,Companhia de Locação das Américas,Car Rental,Brasil,São Paulo,Direct Negotiation,2566919145,674
+107,Ancap,Energy & Utilities,Uruguay,Paysandú,Public Tender,2554636112,26
+108,Ute,Energy & Utilities,Uruguay,Paysandú,RFP,1713036969,57
+109,Cervepar,Food & Beverage,Paraguai,San Lorenzo,RFP,702692011,49
+110,Cervecería Quilmes,Food & Beverage,Argentina,Córdoba,Direct Negotiation,3284565431,43
+111,Grupo Nutresa,Food & Beverage,Colombia,Medellín,RFP,929075630,45
+112,Falabella,E-commerce & Retail,Chile,Valparaíso,Direct Negotiation,1707074445,39
+113,Cervecería Quilmes,Food & Beverage,Argentina,Mendoza,Annual Framework,1633484230,21
+114,Cervepar,Food & Beverage,Paraguai,Ciudad del Este,Direct Negotiation,696719247,21
+115,Ute,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,1361240493,67
+116,Cervecería Quilmes,Food & Beverage,Argentina,La Plata,Direct Negotiation,1492560337,18
+117,Movida,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,1239510489,988
+118,Bavaria,Food & Beverage,Colombia,Cali,Annual Framework,3026062298,179
+119,Localiza,Car Rental,Brasil,São Paulo,Quarterly Bid,4727432274,731
+120,Enel Chile,Energy & Utilities,Chile,Valparaíso,Public Tender,1804055616,39
+121,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Luque,Spot Quote,4430308839,31
+122,Enel Chile,Energy & Utilities,Chile,Concepción,Framework Agreement,999789434,64
+123,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Ciudad del Este,Fleet Contract,2316498249,43
+124,Ferreyros,Industrial & Equipment,Perú,Arequipa,RFP,4028124609,29
+125,CMPC,Industrial & Equipment,Chile,Concepción,Framework Agreement,2722280894,51
+126,Bavaria,Food & Beverage,Colombia,Medellín,Annual Framework,3076102900,337
+127,Companhia de Locação das Américas,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,322390305,1120
+128,Conaprole,Food & Beverage,Uruguay,Ciudad de la Costa,Direct Negotiation,2031586441,36
+129,Transportes Vigía,Logistics & Transport,Colombia,Bogotá,RFP,3688111026,27
+130,Turbus,B2B Services,Chile,Concepción,Standard Bid,3351128176,5
+131,Localiza,Car Rental,Brasil,Salvador,Volume Rebate Agreement,4614899870,810
+132,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,RFP,2062848220,13
+133,CMPC,Industrial & Equipment,Chile,Valparaíso,Public Tender,4476375402,58
+134,Ambev,Food & Beverage,Brasil,Rio de Janeiro,Direct Negotiation,4631539399,243
+135,Enel Chile,Energy & Utilities,Chile,La Serena,Framework Agreement,1483755875,68
+136,Localiza,Car Rental,Brasil,Brasília,Volume Rebate Agreement,523175687,989
+137,Cervecería Quilmes,Food & Beverage,Argentina,La Plata,Annual Framework,871386381,36
+138,Pagnifique,Food & Beverage,Uruguay,Las Piedras,RFP,427984372,11
+139,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,Annual Framework,4141686726,47
+140,Alicorp,Food & Beverage,Perú,Trujillo,RFP,2313359132,48
+141,Alicorp,Food & Beverage,Perú,Iquitos,Direct Negotiation,4765982369,46
+142,CMPC,Industrial & Equipment,Chile,Concepción,Framework Agreement,4347997217,34
+143,Servientrega,Logistics & Transport,Colombia,Cali,RFP,1470093171,238
+144,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Spot Quote,987319275,8
+145,Conaprole,Food & Beverage,Uruguay,Las Piedras,Annual Framework,3860731199,39
+146,Bavaria,Food & Beverage,Colombia,Medellín,Annual Framework,429837975,418
+147,JSL Logística,Logistics & Transport,Brasil,Brasília,Fleet Contract,2415021548,691
+148,Cimportex,E-commerce & Retail,Paraguai,Capiatá,Direct Negotiation,4998615306,35
+149,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Spot Quote,3876322211,6
+150,Ransa,Logistics & Transport,Perú,Iquitos,Spot Quote,1711558914,397
+151,Ute,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,1415120978,59
+152,Movida,Car Rental,Brasil,Rio de Janeiro,Volume Rebate Agreement,1234861690,685
+153,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,RFP,3895310276,28
+154,Localiza,Car Rental,Brasil,Brasília,Quarterly Bid,2117763691,935
+155,Bavaria,Food & Beverage,Colombia,Bogotá,Direct Negotiation,832356125,329
+156,Servientrega,Logistics & Transport,Colombia,Medellín,Spot Quote,2851273048,186
+157,Mirtrans,Logistics & Transport,Uruguay,Las Piedras,Spot Quote,1855103311,39
+158,Mirtrans,Logistics & Transport,Uruguay,Paysandú,RFP,1092022669,17
+159,Mirtrans,Logistics & Transport,Uruguay,Montevidéu,Fleet Contract,3754266418,9
+160,Servientrega,Logistics & Transport,Colombia,Medellín,Spot Quote,1537990789,192
+161,Alicorp,Food & Beverage,Perú,Iquitos,RFP,3715558180,50
+162,Agrosuper,Food & Beverage,Chile,Santiago,RFP,2080466112,12
+163,Alquería,Food & Beverage,Colombia,Barranquilla,Annual Framework,2803796723,12
+164,Andreani,Logistics & Transport,Argentina,Buenos Aires,RFP,1295658638,313
+165,CMPC,Industrial & Equipment,Chile,Antofagasta,Framework Agreement,2759059417,77
+166,Pagnifique,Food & Beverage,Uruguay,Ciudad de la Costa,Annual Framework,2725221953,25
+167,Alicorp,Food & Beverage,Perú,Arequipa,Annual Framework,1570328135,40
+168,Backus,Food & Beverage,Perú,Lima,Annual Framework,1653426510,50
+169,Ferreyros,Industrial & Equipment,Perú,Arequipa,Framework Agreement,638519328,84
+170,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Online Reverse Auction,4450931941,44
+171,Ferreyros,Industrial & Equipment,Perú,Lima,Public Tender,1041026506,57
+172,Conaprole,Food & Beverage,Uruguay,Montevidéu,Annual Framework,2235347740,32
+173,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Capiatá,RFP,3996039900,48
+174,Ambev,Food & Beverage,Brasil,Brasília,Annual Framework,1510606027,272
+175,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Direct Negotiation,2868682188,571
+176,Localiza,Car Rental,Brasil,Salvador,Quarterly Bid,480924960,524
+177,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,Spot Quote,3934836804,27
+178,Agrosuper,Food & Beverage,Chile,Antofagasta,Direct Negotiation,4773707578,19
+179,Companhia de Locação das Américas,Car Rental,Brasil,Rio de Janeiro,Volume Rebate Agreement,930463391,947
+180,Pagnifique,Food & Beverage,Uruguay,Ciudad de la Costa,Direct Negotiation,767112924,29
+181,YPF,Energy & Utilities,Argentina,Córdoba,Framework Agreement,907227818,44
+182,Pagnifique,Food & Beverage,Uruguay,Ciudad de la Costa,Direct Negotiation,3875724085,36
+183,Companhia de Locação das Américas,Car Rental,Brasil,Rio de Janeiro,Volume Rebate Agreement,974607699,907
+184,Ambev,Food & Beverage,Brasil,Fortaleza,RFP,4864915129,165
+185,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,RFP,155765909,95
+186,Transportes Cruz del Sur,Logistics & Transport,Perú,Trujillo,Spot Quote,2573528574,11
+187,Cervepar,Food & Beverage,Paraguai,San Lorenzo,Direct Negotiation,4963607417,12
+188,Conaprole,Food & Beverage,Uruguay,Ciudad de la Costa,Direct Negotiation,4035001200,8
+189,Andreani,Logistics & Transport,Argentina,La Plata,Fleet Contract,196940595,182
+190,Conaprole,Food & Beverage,Uruguay,Montevidéu,Annual Framework,3668580221,23
+191,Ferreyros,Industrial & Equipment,Perú,Trujillo,Public Tender,449960445,29
+192,Andreani,Logistics & Transport,Argentina,La Plata,Spot Quote,1431404227,400
+193,Movida,Car Rental,Brasil,Fortaleza,Volume Rebate Agreement,1919960848,747
+194,CMPC,Industrial & Equipment,Chile,Valparaíso,Framework Agreement,579724330,36
+195,Localiza,Car Rental,Brasil,Rio de Janeiro,Direct Negotiation,4897393538,1162
+196,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Capiatá,Spot Quote,1684219093,41
+197,Cervecería Quilmes,Food & Beverage,Argentina,Córdoba,Annual Framework,668764795,39
+198,Andreani,Logistics & Transport,Argentina,La Plata,RFP,3753589954,383
+199,Movida,Car Rental,Brasil,Fortaleza,Volume Rebate Agreement,4618906756,915
+200,Tigo Paraguay,Telecommunications,Paraguai,Ciudad del Este,Spot Quote,2033818488,41
+201,YPF,Energy & Utilities,Argentina,La Plata,RFP,4451692599,81
+202,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Spot Quote,2772636042,15
+203,Transportes Vigía,Logistics & Transport,Colombia,Bogotá,RFP,2168205683,19
+204,Turbus,B2B Services,Chile,La Serena,RFP,1574809960,47
+205,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,Spot Quote,269100944,24
+206,Agrosuper,Food & Beverage,Chile,Valparaíso,RFP,2552210742,45
+207,Pagnifique,Food & Beverage,Uruguay,Paysandú,Direct Negotiation,933020138,16
+208,Grupo Nutresa,Food & Beverage,Colombia,Medellín,Annual Framework,2572611390,20
+209,Ransa,Logistics & Transport,Perú,Chiclayo,Spot Quote,3526605131,405
+210,Backus,Food & Beverage,Perú,Chiclayo,RFP,4348988509,44
+211,JSL Logística,Logistics & Transport,Brasil,Brasília,Spot Quote,4510899618,763
+212,Movida,Car Rental,Brasil,Brasília,Direct Negotiation,2255451297,943
+213,Frigorífico Concepción,Food & Beverage,Paraguai,Luque,Direct Negotiation,3059540846,22
+214,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,RFP,915989460,48
+215,Servientrega,Logistics & Transport,Colombia,Medellín,Spot Quote,3929853790,356
+216,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,RFP,4955333560,17
+217,Cervecería Quilmes,Food & Beverage,Argentina,Mendoza,Annual Framework,2246880601,50
+218,Transportes Vigía,Logistics & Transport,Colombia,Cali,Spot Quote,2075250454,10
+219,Agrosuper,Food & Beverage,Chile,Valparaíso,Direct Negotiation,1763731051,42
+220,Movida,Car Rental,Brasil,Salvador,Quarterly Bid,1012963130,1043
+221,Ransa,Logistics & Transport,Perú,Trujillo,Fleet Contract,1319469290,185
+222,Conaprole,Food & Beverage,Uruguay,Paysandú,Direct Negotiation,2519097158,36
+223,Enel Chile,Energy & Utilities,Chile,Valparaíso,Public Tender,3477580552,45
+224,Localiza,Car Rental,Brasil,Brasília,Direct Negotiation,3389053336,861
+225,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,RFP,1403027675,75
+226,CMPC,Industrial & Equipment,Chile,La Serena,RFP,973725237,23
+227,Ute,Energy & Utilities,Uruguay,Salto,RFP,4706176690,54
+228,Servientrega,Logistics & Transport,Colombia,Cartagena,Spot Quote,2191625520,161
+229,Conaprole,Food & Beverage,Uruguay,Montevidéu,Direct Negotiation,4021713155,26
+230,Alicorp,Food & Beverage,Perú,Chiclayo,Annual Framework,2866465067,36
+231,Movida,Car Rental,Brasil,Fortaleza,Quarterly Bid,4075073401,572
+232,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Fleet Contract,2732140935,7
+233,Falabella,E-commerce & Retail,Chile,Valparaíso,Direct Negotiation,3507688797,48
+234,Alquería,Food & Beverage,Colombia,Bogotá,Annual Framework,4099827111,43
+235,Servientrega,Logistics & Transport,Colombia,Bogotá,RFP,3180717854,244
+236,Alquería,Food & Beverage,Colombia,Cali,RFP,2265548174,22
+237,Movida,Car Rental,Brasil,Brasília,Volume Rebate Agreement,1675978631,1015
+238,Transportes Furlong,Logistics & Transport,Argentina,Mendoza,Spot Quote,1316585710,5
+239,Turbus,B2B Services,Chile,La Serena,RFP,3439192332,46
+240,Agrosuper,Food & Beverage,Chile,La Serena,Direct Negotiation,3075792765,42
+241,Alicorp,Food & Beverage,Perú,Lima,Direct Negotiation,3907574082,42
+242,Cervepar,Food & Beverage,Paraguai,Ciudad del Este,Annual Framework,844450534,35
+243,Ambev,Food & Beverage,Brasil,Rio de Janeiro,Direct Negotiation,4014531586,349
+244,Servientrega,Logistics & Transport,Colombia,Medellín,Spot Quote,3947314193,286
+245,Pagnifique,Food & Beverage,Uruguay,Paysandú,Direct Negotiation,1535504360,39
+246,Tigo Paraguay,Telecommunications,Paraguai,Ciudad del Este,Spot Quote,1644651134,46
+247,Grupo Nutresa,Food & Beverage,Colombia,Cartagena,Annual Framework,3981340387,39
+248,Servientrega,Logistics & Transport,Colombia,Bogotá,RFP,810423481,234
+249,Tigo Paraguay,Telecommunications,Paraguai,Ciudad del Este,Online Reverse Auction,783875642,29
+250,Localiza,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,1811011089,593
+251,Tigo Paraguay,Telecommunications,Paraguai,Luque,Direct Negotiation,1505932827,23
+252,Backus,Food & Beverage,Perú,Lima,RFP,1546803946,20
+253,Grupo Nutresa,Food & Beverage,Colombia,Barranquilla,Annual Framework,2181511224,39
+254,Localiza,Car Rental,Brasil,Brasília,Direct Negotiation,2138626368,722
+255,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Luque,RFP,2734951368,27
+256,Localiza,Car Rental,Brasil,Fortaleza,Direct Negotiation,2091051257,897
+257,Andreani,Logistics & Transport,Argentina,Mendoza,RFP,3353034549,297
+258,Bavaria,Food & Beverage,Colombia,Cartagena,Annual Framework,3310337988,151
+259,Grupo Nutresa,Food & Beverage,Colombia,Bogotá,Annual Framework,3493618589,32
+260,Andreani,Logistics & Transport,Argentina,Buenos Aires,Fleet Contract,707859541,231
+261,Agrosuper,Food & Beverage,Chile,Santiago,RFP,3983168913,23
+262,Agrosuper,Food & Beverage,Chile,Valparaíso,Direct Negotiation,384973723,49
+263,Grupo Nutresa,Food & Beverage,Colombia,Cali,Annual Framework,882484073,15
+264,Pagnifique,Food & Beverage,Uruguay,Montevidéu,RFP,4492125980,39
+265,Cervepar,Food & Beverage,Paraguai,Assunção,RFP,1299047587,35
+266,Backus,Food & Beverage,Perú,Arequipa,RFP,1716062480,15
+267,Mirtrans,Logistics & Transport,Uruguay,Montevidéu,RFP,3847465560,35
+268,Mirtrans,Logistics & Transport,Uruguay,Montevidéu,Fleet Contract,3614424623,30
+269,Ancap,Energy & Utilities,Uruguay,Las Piedras,Public Tender,3920650642,55
+270,Transportes Furlong,Logistics & Transport,Argentina,Buenos Aires,Spot Quote,3577231660,27
+271,JSL Logística,Logistics & Transport,Brasil,Fortaleza,Fleet Contract,4409602801,860
+272,Frigorífico Concepción,Food & Beverage,Paraguai,Ciudad del Este,Annual Framework,2781539875,11
+273,YPF,Energy & Utilities,Argentina,Rosário,RFP,3637926837,46
+274,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Direct Negotiation,2907386242,161
+275,Companhia de Locação das Américas,Car Rental,Brasil,São Paulo,Direct Negotiation,2252299444,812
+276,Grupo Nutresa,Food & Beverage,Colombia,Cartagena,Direct Negotiation,2952145733,13
+277,Ute,Energy & Utilities,Uruguay,Paysandú,RFP,4429162817,94
+278,Ferreyros,Industrial & Equipment,Perú,Iquitos,Public Tender,3109118816,39
+279,Ferreyros,Industrial & Equipment,Perú,Lima,Framework Agreement,1977988273,66
+280,Ambev,Food & Beverage,Brasil,Brasília,Direct Negotiation,4852654376,235
+281,Transportes Vigía,Logistics & Transport,Colombia,Medellín,RFP,1392999269,49
+282,Frigorífico Concepción,Food & Beverage,Paraguai,Capiatá,RFP,3020919455,23
+283,Ute,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,1060617376,63
+284,Tigo Paraguay,Telecommunications,Paraguai,Assunção,Spot Quote,4708614885,37
+285,Ancap,Energy & Utilities,Uruguay,Paysandú,Framework Agreement,427254880,42
+286,Cervepar,Food & Beverage,Paraguai,Luque,Annual Framework,3949395235,49
+287,Conaprole,Food & Beverage,Uruguay,Salto,Direct Negotiation,1581766187,19
+288,Pagnifique,Food & Beverage,Uruguay,Las Piedras,Annual Framework,4927129582,28
+289,Ransa,Logistics & Transport,Perú,Iquitos,Fleet Contract,3183065188,349
+290,Mirtrans,Logistics & Transport,Uruguay,Salto,Fleet Contract,3909076970,9
+291,CMPC,Industrial & Equipment,Chile,Valparaíso,RFP,3455950753,55
+292,Servientrega,Logistics & Transport,Colombia,Bogotá,Spot Quote,4767870904,310
+293,Transportes Furlong,Logistics & Transport,Argentina,Rosário,RFP,2080935464,37
+294,Cervecería Quilmes,Food & Beverage,Argentina,Córdoba,Annual Framework,1452424421,33
+295,Grupo Nutresa,Food & Beverage,Colombia,Cali,RFP,3860544388,42
+296,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Capiatá,RFP,4819087505,43
+297,Pagnifique,Food & Beverage,Uruguay,Salto,RFP,363948160,16
+298,Ferreyros,Industrial & Equipment,Perú,Lima,Public Tender,853886620,38
+299,Turbus,B2B Services,Chile,Concepción,Standard Bid,314156811,24
+300,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,Fleet Contract,521118927,41
+301,Falabella,E-commerce & Retail,Chile,Antofagasta,Spot Quote,2669637445,38
+302,Transportes Cruz del Sur,Logistics & Transport,Perú,Lima,RFP,1291429914,25
+303,Localiza,Car Rental,Brasil,Fortaleza,Quarterly Bid,1555607551,675
+304,Ferreyros,Industrial & Equipment,Perú,Trujillo,Framework Agreement,1205376150,98
+305,Localiza,Car Rental,Brasil,Rio de Janeiro,Direct Negotiation,762936116,1144
+306,Bavaria,Food & Beverage,Colombia,Cali,RFP,3964678264,445
+307,Cimportex,E-commerce & Retail,Paraguai,Assunção,Spot Quote,126640724,31
+308,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Direct Negotiation,1926047582,365
+309,Pagnifique,Food & Beverage,Uruguay,Las Piedras,Direct Negotiation,1043353745,39
+310,Cimportex,E-commerce & Retail,Paraguai,Luque,Spot Quote,1236768457,49
+311,YPF,Energy & Utilities,Argentina,Buenos Aires,RFP,3348843995,84
+312,Alicorp,Food & Beverage,Perú,Trujillo,RFP,3149514826,35
+313,Agrosuper,Food & Beverage,Chile,Santiago,Annual Framework,436042906,35
+314,Andreani,Logistics & Transport,Argentina,Buenos Aires,Spot Quote,4155613170,166
+315,Mercado Libre,E-commerce & Retail,Argentina,Rosário,Online Reverse Auction,4526395661,321
+316,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,1106618903,76
+317,Alicorp,Food & Beverage,Perú,Trujillo,RFP,2625065365,42
+318,JSL Logística,Logistics & Transport,Brasil,Brasília,RFP,1778978625,745
+319,Transportes Furlong,Logistics & Transport,Argentina,Córdoba,Fleet Contract,4575581442,31
+320,Ferreyros,Industrial & Equipment,Perú,Arequipa,RFP,3054401281,61
+321,Enel Chile,Energy & Utilities,Chile,Concepción,Framework Agreement,2559840452,67
+322,Mercado Libre,E-commerce & Retail,Argentina,La Plata,Online Reverse Auction,2869800777,181
+323,Companhia de Locação das Américas,Car Rental,Brasil,Salvador,Direct Negotiation,1936173013,646
+324,JSL Logística,Logistics & Transport,Brasil,Rio de Janeiro,Spot Quote,3983181936,1014
+325,Turbus,B2B Services,Chile,La Serena,Standard Bid,1588897232,9
+326,Alquería,Food & Beverage,Colombia,Cali,RFP,634396917,13
+327,JSL Logística,Logistics & Transport,Brasil,Rio de Janeiro,Fleet Contract,1639310435,647
+328,Bavaria,Food & Beverage,Colombia,Barranquilla,RFP,4212288494,356
+329,Mercado Libre,E-commerce & Retail,Argentina,Rosário,Direct Negotiation,4246877280,394
+330,Movida,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,1446089510,594
+331,Ute,Energy & Utilities,Uruguay,Montevidéu,RFP,974902748,50
+332,Frigorífico Concepción,Food & Beverage,Paraguai,Luque,Direct Negotiation,306715005,26
+333,Grupo Nutresa,Food & Beverage,Colombia,Bogotá,Direct Negotiation,2258199867,10
+334,CMPC,Industrial & Equipment,Chile,Antofagasta,Public Tender,4808896487,69
+335,Bavaria,Food & Beverage,Colombia,Barranquilla,RFP,472655699,379
+336,Ferreyros,Industrial & Equipment,Perú,Lima,Public Tender,3546324441,36
+337,Falabella,E-commerce & Retail,Chile,Santiago,Online Reverse Auction,3988264795,49
+338,Ferreyros,Industrial & Equipment,Perú,Chiclayo,Public Tender,4290768898,23
+339,Mercado Libre,E-commerce & Retail,Argentina,La Plata,Spot Quote,2792481131,163
+340,Ambev,Food & Beverage,Brasil,Fortaleza,RFP,4630857033,315
+341,YPF,Energy & Utilities,Argentina,Rosário,Framework Agreement,2987301450,46
+342,Enel Chile,Energy & Utilities,Chile,Santiago,RFP,1057935160,43
+343,Cimportex,E-commerce & Retail,Paraguai,Luque,Online Reverse Auction,2253137700,48
+344,Movida,Car Rental,Brasil,Brasília,Quarterly Bid,3316911704,757
+345,YPF,Energy & Utilities,Argentina,Rosário,Framework Agreement,2776374329,40
+346,Ambev,Food & Beverage,Brasil,Fortaleza,Direct Negotiation,1754110697,444
+347,YPF,Energy & Utilities,Argentina,Rosário,RFP,1304200899,68
+348,JSL Logística,Logistics & Transport,Brasil,Salvador,Fleet Contract,356775400,1118
+349,Alquería,Food & Beverage,Colombia,Cartagena,Annual Framework,442185907,42
+350,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Spot Quote,2567523534,186
+351,CMPC,Industrial & Equipment,Chile,Antofagasta,Public Tender,2450832606,79
+352,Frigorífico Concepción,Food & Beverage,Paraguai,Assunção,Annual Framework,2401460072,21
+353,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Fleet Contract,2350190467,45
+354,Transportes Cruz del Sur,Logistics & Transport,Perú,Lima,Spot Quote,503185538,10
+355,Servientrega,Logistics & Transport,Colombia,Barranquilla,Spot Quote,1779741160,203
+356,Ransa,Logistics & Transport,Perú,Arequipa,RFP,638765222,206
+357,Alicorp,Food & Beverage,Perú,Lima,Annual Framework,3357522754,26
+358,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Volume Rebate Agreement,3579893841,914
+359,Enel Chile,Energy & Utilities,Chile,Valparaíso,Framework Agreement,3880200576,87
+360,Ancap,Energy & Utilities,Uruguay,Paysandú,Framework Agreement,1810850144,23
+361,Transportes Furlong,Logistics & Transport,Argentina,La Plata,Spot Quote,815961234,31
+362,Bavaria,Food & Beverage,Colombia,Cartagena,RFP,151460019,173
+363,Ancap,Energy & Utilities,Uruguay,Las Piedras,Public Tender,442811930,95
+364,Andreani,Logistics & Transport,Argentina,La Plata,Fleet Contract,3426658460,303
+365,Backus,Food & Beverage,Perú,Iquitos,Annual Framework,2821384216,38
+366,Ancap,Energy & Utilities,Uruguay,Las Piedras,Framework Agreement,3800436535,48
+367,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Direct Negotiation,3583029310,253
+368,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,RFP,1715811429,8
+369,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,Fleet Contract,1352353170,10
+370,YPF,Energy & Utilities,Argentina,Mendoza,Public Tender,3958394608,39
+371,Conaprole,Food & Beverage,Uruguay,Montevidéu,RFP,2866932107,47
+372,Bavaria,Food & Beverage,Colombia,Cali,Annual Framework,4150061936,277
+373,Companhia de Locação das Américas,Car Rental,Brasil,Salvador,Direct Negotiation,184840035,1043
+374,Falabella,E-commerce & Retail,Chile,Antofagasta,Online Reverse Auction,1894046147,24
+375,Transportes Cruz del Sur,Logistics & Transport,Perú,Arequipa,Fleet Contract,3651922436,42
+376,Conaprole,Food & Beverage,Uruguay,Salto,RFP,1755256909,34
+377,Bavaria,Food & Beverage,Colombia,Cartagena,Annual Framework,3531006229,179
+378,Transportes Cruz del Sur,Logistics & Transport,Perú,Lima,Spot Quote,678472755,12
+379,Ute,Energy & Utilities,Uruguay,Salto,Framework Agreement,1749727517,100
+380,Movida,Car Rental,Brasil,Brasília,Direct Negotiation,2607604738,1068
+381,Conaprole,Food & Beverage,Uruguay,Ciudad de la Costa,Annual Framework,4257931496,14
+382,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,Spot Quote,4817915960,44
+383,Transportes Cruz del Sur,Logistics & Transport,Perú,Trujillo,Fleet Contract,2689235760,25
+384,Tigo Paraguay,Telecommunications,Paraguai,Capiatá,Spot Quote,719267801,25
+385,Localiza,Car Rental,Brasil,São Paulo,Quarterly Bid,3724492562,981
+386,Movida,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,4367470096,567
+387,Cimportex,E-commerce & Retail,Paraguai,Assunção,Online Reverse Auction,2063314251,8
+388,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Fleet Contract,669763663,31
+389,Conaprole,Food & Beverage,Uruguay,Salto,Direct Negotiation,2265898783,24
+390,Ransa,Logistics & Transport,Perú,Arequipa,Spot Quote,4261950632,195
+391,Companhia de Locação das Américas,Car Rental,Brasil,Salvador,Quarterly Bid,1223372460,1012
+392,Backus,Food & Beverage,Perú,Lima,Direct Negotiation,1083015569,42
+393,Movida,Car Rental,Brasil,Salvador,Direct Negotiation,773476868,908
+394,Bavaria,Food & Beverage,Colombia,Bogotá,Annual Framework,4978877053,266
+395,Ute,Energy & Utilities,Uruguay,Montevidéu,RFP,903488982,99
+396,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,Fleet Contract,2621452364,7
+397,Agrosuper,Food & Beverage,Chile,Valparaíso,Annual Framework,4398688506,19
+398,Conaprole,Food & Beverage,Uruguay,Las Piedras,RFP,2660918603,16
+399,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,2395832314,27
+400,Alicorp,Food & Beverage,Perú,Iquitos,Annual Framework,609148697,22
+401,CMPC,Industrial & Equipment,Chile,Antofagasta,RFP,1989227039,52
+402,Transportes Cruz del Sur,Logistics & Transport,Perú,Iquitos,RFP,2143909659,20
+403,Localiza,Car Rental,Brasil,Salvador,Direct Negotiation,2842619724,595
+404,Grupo Nutresa,Food & Beverage,Colombia,Cali,Annual Framework,2261928224,21
+405,Transportes Furlong,Logistics & Transport,Argentina,Mendoza,RFP,4778693066,25
+406,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,Spot Quote,1270551273,43
+407,Grupo Nutresa,Food & Beverage,Colombia,Cartagena,Annual Framework,4855652602,38
+408,Ambev,Food & Beverage,Brasil,Fortaleza,Annual Framework,3391785628,330
+409,Alicorp,Food & Beverage,Perú,Trujillo,RFP,4951094630,21
+410,Backus,Food & Beverage,Perú,Arequipa,RFP,3111387986,34
+411,Servientrega,Logistics & Transport,Colombia,Barranquilla,RFP,1833393632,229
+412,Frigorífico Concepción,Food & Beverage,Paraguai,Ciudad del Este,Annual Framework,705800182,19
+413,Agrosuper,Food & Beverage,Chile,Concepción,RFP,3009403266,45
+414,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Ciudad del Este,Fleet Contract,4110638854,37
+415,CMPC,Industrial & Equipment,Chile,Santiago,Framework Agreement,2419631708,73
+416,Transportes Furlong,Logistics & Transport,Argentina,La Plata,Fleet Contract,4769757230,36
+417,YPF,Energy & Utilities,Argentina,Buenos Aires,Framework Agreement,394211018,61
+418,YPF,Energy & Utilities,Argentina,Córdoba,RFP,4599114361,65
+419,CMPC,Industrial & Equipment,Chile,Santiago,Public Tender,4844298612,47
+420,Cimportex,E-commerce & Retail,Paraguai,San Lorenzo,Direct Negotiation,3612530107,32
+421,Enel Chile,Energy & Utilities,Chile,Antofagasta,RFP,3573889117,82
+422,Andreani,Logistics & Transport,Argentina,La Plata,RFP,2184078053,407
+423,Tigo Paraguay,Telecommunications,Paraguai,Capiatá,Online Reverse Auction,3527530889,9
+424,Mirtrans,Logistics & Transport,Uruguay,Paysandú,Fleet Contract,3546622065,38
+425,Alicorp,Food & Beverage,Perú,Chiclayo,RFP,703607815,16
+426,Cimportex,E-commerce & Retail,Paraguai,Capiatá,Spot Quote,4179423571,50
+427,Falabella,E-commerce & Retail,Chile,Valparaíso,Online Reverse Auction,348651410,24
+428,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,RFP,1307162528,13
+429,Falabella,E-commerce & Retail,Chile,Antofagasta,Direct Negotiation,1516299636,35
+430,Ambev,Food & Beverage,Brasil,São Paulo,RFP,2813287791,263
+431,Movida,Car Rental,Brasil,Rio de Janeiro,Volume Rebate Agreement,1439065751,1159
+432,JSL Logística,Logistics & Transport,Brasil,Rio de Janeiro,Fleet Contract,1947738209,726
+433,Localiza,Car Rental,Brasil,Rio de Janeiro,Volume Rebate Agreement,3414754368,707
+434,Bavaria,Food & Beverage,Colombia,Barranquilla,Direct Negotiation,3605579448,199
+435,Transportes Furlong,Logistics & Transport,Argentina,La Plata,Fleet Contract,3503258476,47
+436,Mercado Libre,E-commerce & Retail,Argentina,Córdoba,Spot Quote,2801783755,409
+437,Conaprole,Food & Beverage,Uruguay,Salto,RFP,4259462299,15
+438,Falabella,E-commerce & Retail,Chile,Valparaíso,Direct Negotiation,1291518895,6
+439,Pagnifique,Food & Beverage,Uruguay,Las Piedras,Annual Framework,909350001,46
+440,Cervecería Quilmes,Food & Beverage,Argentina,Rosário,RFP,3327272913,42
+441,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Online Reverse Auction,4590063105,26
+442,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,Annual Framework,2001746568,49
+443,Mercado Libre,E-commerce & Retail,Argentina,Mendoza,Direct Negotiation,3886770028,320
+444,Ferreyros,Industrial & Equipment,Perú,Chiclayo,Framework Agreement,2761383174,69
+445,Backus,Food & Beverage,Perú,Trujillo,Direct Negotiation,1454997236,19
+446,Conaprole,Food & Beverage,Uruguay,Paysandú,RFP,105011107,11
+447,Pagnifique,Food & Beverage,Uruguay,Montevidéu,RFP,1669579458,41
+448,Conaprole,Food & Beverage,Uruguay,Paysandú,RFP,1162186533,34
+449,Conaprole,Food & Beverage,Uruguay,Ciudad de la Costa,Direct Negotiation,1054504798,24
+450,Ancap,Energy & Utilities,Uruguay,Montevidéu,Public Tender,4173762979,87
+451,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,Fleet Contract,1178935662,29
+452,Mercado Libre,E-commerce & Retail,Argentina,Rosário,Spot Quote,1463260338,233
+453,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Volume Rebate Agreement,2670487492,787
+454,Turbus,B2B Services,Chile,Santiago,Standard Bid,2136888148,14
+455,Agrosuper,Food & Beverage,Chile,Antofagasta,RFP,1642429573,17
+456,Transportes Vigía,Logistics & Transport,Colombia,Medellín,Fleet Contract,3930237702,35
+457,JSL Logística,Logistics & Transport,Brasil,Brasília,RFP,590352108,1105
+458,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,RFP,4126281837,23
+459,Grupo Nutresa,Food & Beverage,Colombia,Barranquilla,Annual Framework,397007973,32
+460,Ferreyros,Industrial & Equipment,Perú,Arequipa,Public Tender,3130904017,39
+461,Transportes Vigía,Logistics & Transport,Colombia,Cali,RFP,3550881040,44
+462,CMPC,Industrial & Equipment,Chile,Valparaíso,Framework Agreement,2955197501,84
+463,Pagnifique,Food & Beverage,Uruguay,Las Piedras,Direct Negotiation,4401691049,21
+464,Alquería,Food & Beverage,Colombia,Medellín,RFP,286604447,38
+465,Alicorp,Food & Beverage,Perú,Lima,Direct Negotiation,1202870340,40
+466,Enel Chile,Energy & Utilities,Chile,Antofagasta,RFP,667597544,20
+467,CMPC,Industrial & Equipment,Chile,La Serena,RFP,2853013289,93
+468,Ambev,Food & Beverage,Brasil,Salvador,Direct Negotiation,3066782130,196
+469,Alquería,Food & Beverage,Colombia,Barranquilla,RFP,3243848827,35
+470,Alicorp,Food & Beverage,Perú,Trujillo,Annual Framework,4162245668,37
+471,Mercado Libre,E-commerce & Retail,Argentina,Córdoba,Online Reverse Auction,3858070057,302
+472,Ransa,Logistics & Transport,Perú,Arequipa,Spot Quote,927132553,336
+473,Servientrega,Logistics & Transport,Colombia,Bogotá,Fleet Contract,1394316817,202
+474,Movida,Car Rental,Brasil,Rio de Janeiro,Direct Negotiation,276724281,852
+475,YPF,Energy & Utilities,Argentina,Córdoba,Framework Agreement,3345658507,20
+476,Ute,Energy & Utilities,Uruguay,Montevidéu,RFP,4894595529,41
+477,Ambev,Food & Beverage,Brasil,São Paulo,Direct Negotiation,3825566520,342
+478,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,3604653770,99
+479,Cervepar,Food & Beverage,Paraguai,San Lorenzo,Annual Framework,3733588634,8
+480,Ransa,Logistics & Transport,Perú,Iquitos,RFP,258206062,254
+481,Cervecería Quilmes,Food & Beverage,Argentina,Rosário,RFP,1842860393,37
+482,Ferreyros,Industrial & Equipment,Perú,Iquitos,Public Tender,1379498738,46
+483,Cervepar,Food & Beverage,Paraguai,Capiatá,Direct Negotiation,1839246321,11
+484,Cervepar,Food & Beverage,Paraguai,Ciudad del Este,Annual Framework,4398059793,50
+485,Ambev,Food & Beverage,Brasil,Salvador,Direct Negotiation,4628768439,374
+486,Transportes Furlong,Logistics & Transport,Argentina,Buenos Aires,RFP,4195280087,41
+487,YPF,Energy & Utilities,Argentina,Mendoza,Framework Agreement,2088506042,71
+488,Alquería,Food & Beverage,Colombia,Bogotá,Direct Negotiation,2298208757,44
+489,Frigorífico Concepción,Food & Beverage,Paraguai,Luque,Annual Framework,2666261009,19
+490,Conaprole,Food & Beverage,Uruguay,Paysandú,RFP,123117702,27
+491,Cimportex,E-commerce & Retail,Paraguai,San Lorenzo,Spot Quote,143221937,17
+492,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,Spot Quote,3810431889,47
+493,YPF,Energy & Utilities,Argentina,Buenos Aires,RFP,3131039244,57
+494,Falabella,E-commerce & Retail,Chile,La Serena,Direct Negotiation,2004027423,37
+495,Mercado Libre,E-commerce & Retail,Argentina,Córdoba,Online Reverse Auction,682117211,162
+496,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,Spot Quote,4923428445,14
+497,Andreani,Logistics & Transport,Argentina,La Plata,RFP,654633580,326
+498,Mercado Libre,E-commerce & Retail,Argentina,Rosário,Spot Quote,4525048066,323
+499,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,RFP,920809284,9
+500,Alquería,Food & Beverage,Colombia,Medellín,Annual Framework,835931458,42
+501,JSL Logística,Logistics & Transport,Brasil,Brasília,Spot Quote,1726060381,929
+502,Frigorífico Concepción,Food & Beverage,Paraguai,Assunção,Annual Framework,2088971470,38
+503,Transportes Vigía,Logistics & Transport,Colombia,Cali,Spot Quote,3531287470,45
+504,Ransa,Logistics & Transport,Perú,Arequipa,Fleet Contract,271348504,249
+505,Localiza,Car Rental,Brasil,Fortaleza,Volume Rebate Agreement,1316343445,766
+506,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,4376945213,37
+507,Cervepar,Food & Beverage,Paraguai,Assunção,Annual Framework,3993578967,21
+508,Alicorp,Food & Beverage,Perú,Chiclayo,RFP,1500808697,5
+509,Transportes Vigía,Logistics & Transport,Colombia,Cali,RFP,831197348,20
+510,Ambev,Food & Beverage,Brasil,Brasília,RFP,1997427399,409
+511,CMPC,Industrial & Equipment,Chile,La Serena,Framework Agreement,1772126366,20
+512,Transportes Furlong,Logistics & Transport,Argentina,La Plata,RFP,2840709954,48
+513,JSL Logística,Logistics & Transport,Brasil,São Paulo,Spot Quote,1175750522,708
+514,Tigo Paraguay,Telecommunications,Paraguai,Capiatá,Online Reverse Auction,1396971206,49
+515,Enel Chile,Energy & Utilities,Chile,Concepción,Framework Agreement,930802079,92
+516,Ambev,Food & Beverage,Brasil,Rio de Janeiro,RFP,2536783626,220
+517,JSL Logística,Logistics & Transport,Brasil,Rio de Janeiro,Spot Quote,871124660,552
+518,Alquería,Food & Beverage,Colombia,Medellín,Direct Negotiation,3701340784,37
+519,Conaprole,Food & Beverage,Uruguay,Salto,Annual Framework,3053404873,43
+520,Backus,Food & Beverage,Perú,Arequipa,Direct Negotiation,2928537134,38
+521,Transportes Vigía,Logistics & Transport,Colombia,Bogotá,Fleet Contract,878576867,35
+522,Backus,Food & Beverage,Perú,Iquitos,RFP,4921914041,36
+523,JSL Logística,Logistics & Transport,Brasil,Fortaleza,Fleet Contract,3895174777,594
+524,Grupo Nutresa,Food & Beverage,Colombia,Medellín,RFP,4289273425,30
+525,Pagnifique,Food & Beverage,Uruguay,Salto,Direct Negotiation,3814227356,15
+526,Transportes Furlong,Logistics & Transport,Argentina,La Plata,Fleet Contract,2462690037,27
+527,Mirtrans,Logistics & Transport,Uruguay,Montevidéu,RFP,146266810,17
+528,Servientrega,Logistics & Transport,Colombia,Bogotá,Fleet Contract,3369281117,424
+529,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Public Tender,2001130403,26
+530,Agrosuper,Food & Beverage,Chile,Santiago,Direct Negotiation,2046877306,36
+531,Mirtrans,Logistics & Transport,Uruguay,Montevidéu,Spot Quote,553250767,22
+532,Companhia de Locação das Américas,Car Rental,Brasil,São Paulo,Quarterly Bid,3070197386,947
+533,Falabella,E-commerce & Retail,Chile,Antofagasta,Online Reverse Auction,1153550171,28
+534,Agrosuper,Food & Beverage,Chile,Santiago,Direct Negotiation,3025954553,16
+535,Alquería,Food & Beverage,Colombia,Cali,RFP,3938790163,6
+536,Movida,Car Rental,Brasil,Fortaleza,Volume Rebate Agreement,4523639342,679
+537,Ambev,Food & Beverage,Brasil,Fortaleza,RFP,4628435640,217
+538,Tigo Paraguay,Telecommunications,Paraguai,Ciudad del Este,Direct Negotiation,2702851933,32
+539,Cimportex,E-commerce & Retail,Paraguai,Luque,Spot Quote,2867196128,40
+540,Ferreyros,Industrial & Equipment,Perú,Lima,Framework Agreement,3691866635,38
+541,Alicorp,Food & Beverage,Perú,Trujillo,RFP,3835174720,17
+542,Bavaria,Food & Beverage,Colombia,Medellín,Direct Negotiation,1868420670,347
+543,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,RFP,3164895345,40
+544,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,RFP,2657265427,49
+545,Transportes Furlong,Logistics & Transport,Argentina,Rosário,Spot Quote,4658960743,13
+546,Cimportex,E-commerce & Retail,Paraguai,San Lorenzo,Spot Quote,4007556357,14
+547,Alquería,Food & Beverage,Colombia,Bogotá,Direct Negotiation,3255470649,6
+548,Falabella,E-commerce & Retail,Chile,La Serena,Direct Negotiation,4725864696,40
+549,Alquería,Food & Beverage,Colombia,Medellín,Direct Negotiation,231694426,14
+550,Transportes Vigía,Logistics & Transport,Colombia,Cali,Fleet Contract,4735706286,7
+551,Grupo Nutresa,Food & Beverage,Colombia,Bogotá,Annual Framework,3186485268,7
+552,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,Spot Quote,4577462505,23
+553,Cervecería Quilmes,Food & Beverage,Argentina,Mendoza,RFP,4627417432,12
+554,Ancap,Energy & Utilities,Uruguay,Paysandú,RFP,1500881898,45
+555,Cervepar,Food & Beverage,Paraguai,Ciudad del Este,Annual Framework,1347685232,43
+556,Transportes Furlong,Logistics & Transport,Argentina,Buenos Aires,Spot Quote,2829929726,5
+557,Bavaria,Food & Beverage,Colombia,Cartagena,RFP,348408248,437
+558,Alquería,Food & Beverage,Colombia,Cartagena,RFP,4279383217,49
+559,Falabella,E-commerce & Retail,Chile,Concepción,Spot Quote,1133100750,32
+560,Servientrega,Logistics & Transport,Colombia,Cali,Spot Quote,587295672,345
+561,Cervepar,Food & Beverage,Paraguai,Assunção,Direct Negotiation,3443404467,26
+562,Agrosuper,Food & Beverage,Chile,Santiago,Annual Framework,3798058392,16
+563,Enel Chile,Energy & Utilities,Chile,La Serena,Public Tender,2908252869,21
+564,Pagnifique,Food & Beverage,Uruguay,Salto,Direct Negotiation,2184731319,34
+565,Tigo Paraguay,Telecommunications,Paraguai,Ciudad del Este,Spot Quote,1045233445,36
+566,Transportes Furlong,Logistics & Transport,Argentina,La Plata,RFP,3892677720,18
+567,Ute,Energy & Utilities,Uruguay,Las Piedras,Public Tender,1292328143,78
+568,Grupo Nutresa,Food & Beverage,Colombia,Bogotá,Annual Framework,978346103,20
+569,Cimportex,E-commerce & Retail,Paraguai,Assunção,Spot Quote,146772652,12
+570,Cimportex,E-commerce & Retail,Paraguai,Ciudad del Este,Online Reverse Auction,593746195,47
+571,Transportes Cruz del Sur,Logistics & Transport,Perú,Lima,Fleet Contract,3126153022,14
+572,Backus,Food & Beverage,Perú,Arequipa,Annual Framework,354598988,11
+573,Transportes Furlong,Logistics & Transport,Argentina,Rosário,Fleet Contract,3064079301,43
+574,Ferreyros,Industrial & Equipment,Perú,Arequipa,Public Tender,1083507172,50
+575,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,Direct Negotiation,1609119322,20
+576,Turbus,B2B Services,Chile,Antofagasta,RFP,4648457355,48
+577,Ambev,Food & Beverage,Brasil,Brasília,RFP,4228975449,276
+578,Ambev,Food & Beverage,Brasil,São Paulo,Direct Negotiation,704427791,313
+579,Enel Chile,Energy & Utilities,Chile,Valparaíso,RFP,2940098360,78
+580,CMPC,Industrial & Equipment,Chile,La Serena,Public Tender,1361096710,70
+581,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,RFP,3796736007,39
+582,Falabella,E-commerce & Retail,Chile,La Serena,Direct Negotiation,3243573729,42
+583,Falabella,E-commerce & Retail,Chile,Antofagasta,Direct Negotiation,2582301487,41
+584,Turbus,B2B Services,Chile,Antofagasta,Standard Bid,4563477892,11
+585,Falabella,E-commerce & Retail,Chile,Valparaíso,Direct Negotiation,4515297002,19
+586,Backus,Food & Beverage,Perú,Trujillo,RFP,4864793154,37
+587,Pagnifique,Food & Beverage,Uruguay,Montevidéu,RFP,4716013134,32
+588,Falabella,E-commerce & Retail,Chile,Concepción,Online Reverse Auction,857190521,48
+589,Cervecería Quilmes,Food & Beverage,Argentina,Córdoba,Direct Negotiation,4572015189,12
+590,Alquería,Food & Beverage,Colombia,Barranquilla,RFP,443220515,10
+591,Transportes Vigía,Logistics & Transport,Colombia,Bogotá,Fleet Contract,4904925715,44
+592,Servientrega,Logistics & Transport,Colombia,Cali,Spot Quote,2917638460,197
+593,Cimportex,E-commerce & Retail,Paraguai,Luque,Online Reverse Auction,859869437,23
+594,Transportes Vigía,Logistics & Transport,Colombia,Cali,RFP,4360301638,42
+595,Cervepar,Food & Beverage,Paraguai,Luque,Direct Negotiation,4690501669,19
+596,Ransa,Logistics & Transport,Perú,Iquitos,Spot Quote,2578548204,273
+597,Tigo Paraguay,Telecommunications,Paraguai,Capiatá,Spot Quote,681111067,12
+598,Transportes Vigía,Logistics & Transport,Colombia,Barranquilla,RFP,4368382788,36
+599,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,RFP,471232228,44
+600,Bavaria,Food & Beverage,Colombia,Medellín,Direct Negotiation,2118943142,393
+601,Ancap,Energy & Utilities,Uruguay,Las Piedras,Framework Agreement,1093843573,74
+602,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Online Reverse Auction,1852899101,320
+603,Mercado Libre,E-commerce & Retail,Argentina,Rosário,Direct Negotiation,1393246513,211
+604,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Volume Rebate Agreement,1604488713,719
+605,Servientrega,Logistics & Transport,Colombia,Bogotá,Fleet Contract,3281841624,372
+606,Ferreyros,Industrial & Equipment,Perú,Trujillo,Public Tender,510267173,68
+607,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Capiatá,RFP,531670756,11
+608,CMPC,Industrial & Equipment,Chile,Valparaíso,Public Tender,1842901122,79
+609,Mirtrans,Logistics & Transport,Uruguay,Salto,RFP,361917264,40
+610,Alquería,Food & Beverage,Colombia,Barranquilla,Annual Framework,1161572205,7
+611,Alquería,Food & Beverage,Colombia,Cartagena,Annual Framework,1541113075,10
+612,Enel Chile,Energy & Utilities,Chile,Concepción,Framework Agreement,2389865891,93
+613,JSL Logística,Logistics & Transport,Brasil,Fortaleza,RFP,4024662761,979
+614,Conaprole,Food & Beverage,Uruguay,Salto,RFP,3604960325,6
+615,Ransa,Logistics & Transport,Perú,Lima,RFP,3722349986,166
+616,CMPC,Industrial & Equipment,Chile,Valparaíso,Framework Agreement,478318854,81
+617,Conaprole,Food & Beverage,Uruguay,Las Piedras,Annual Framework,3361971155,16
+618,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,Spot Quote,2038877739,31
+619,Pagnifique,Food & Beverage,Uruguay,Paysandú,Direct Negotiation,4823341084,20
+620,Enel Chile,Energy & Utilities,Chile,Santiago,Public Tender,342434300,90
+621,Cimportex,E-commerce & Retail,Paraguai,Luque,Spot Quote,3495895498,12
+622,Enel Chile,Energy & Utilities,Chile,Santiago,RFP,1864831143,92
+623,Localiza,Car Rental,Brasil,Brasília,Direct Negotiation,2897029276,866
+624,Mirtrans,Logistics & Transport,Uruguay,Paysandú,RFP,3276651843,17
+625,Alquería,Food & Beverage,Colombia,Bogotá,Annual Framework,3146322435,48
+626,Ambev,Food & Beverage,Brasil,Brasília,Annual Framework,3503828543,256
+627,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,RFP,1332854854,36
+628,Cervepar,Food & Beverage,Paraguai,Assunção,Direct Negotiation,1545831294,13
+629,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,Direct Negotiation,3368239130,35
+630,Bavaria,Food & Beverage,Colombia,Barranquilla,Direct Negotiation,4634790798,389
+631,Transportes Furlong,Logistics & Transport,Argentina,La Plata,RFP,4589776795,34
+632,Grupo Nutresa,Food & Beverage,Colombia,Cali,Annual Framework,3386295550,23
+633,Companhia de Locação das Américas,Car Rental,Brasil,Rio de Janeiro,Direct Negotiation,4246295808,1191
+634,Enel Chile,Energy & Utilities,Chile,Santiago,Framework Agreement,4366358407,24
+635,Ute,Energy & Utilities,Uruguay,Paysandú,Public Tender,3638185879,86
+636,Alquería,Food & Beverage,Colombia,Bogotá,Annual Framework,2230521259,48
+637,Enel Chile,Energy & Utilities,Chile,Santiago,Public Tender,1881071978,77
+638,Transportes Furlong,Logistics & Transport,Argentina,Rosário,RFP,4091412919,36
+639,Alicorp,Food & Beverage,Perú,Lima,Annual Framework,1526534467,10
+640,Servientrega,Logistics & Transport,Colombia,Cali,Fleet Contract,424463227,227
+641,Pagnifique,Food & Beverage,Uruguay,Salto,Annual Framework,2513694854,12
+642,Frigorífico Concepción,Food & Beverage,Paraguai,Assunção,Direct Negotiation,1979328430,26
+643,CMPC,Industrial & Equipment,Chile,Concepción,Public Tender,1937220587,97
+644,Movida,Car Rental,Brasil,Rio de Janeiro,Direct Negotiation,1107854625,587
+645,Grupo Nutresa,Food & Beverage,Colombia,Medellín,RFP,3756901889,40
+646,Conaprole,Food & Beverage,Uruguay,Paysandú,Annual Framework,1708589533,42
+647,Ambev,Food & Beverage,Brasil,Brasília,Direct Negotiation,4671558313,234
+648,Falabella,E-commerce & Retail,Chile,Antofagasta,Direct Negotiation,1387434857,42
+649,Cimportex,E-commerce & Retail,Paraguai,Luque,Direct Negotiation,3924475564,39
+650,Ransa,Logistics & Transport,Perú,Lima,RFP,2068799277,420
+651,Cimportex,E-commerce & Retail,Paraguai,Luque,Online Reverse Auction,1440730461,35
+652,Cimportex,E-commerce & Retail,Paraguai,Capiatá,Direct Negotiation,587096220,27
+653,Turbus,B2B Services,Chile,Concepción,RFP,2140211357,47
+654,Transportes Furlong,Logistics & Transport,Argentina,Buenos Aires,RFP,3203002875,25
+655,Mercado Libre,E-commerce & Retail,Argentina,Mendoza,Online Reverse Auction,2008768585,442
+656,Conaprole,Food & Beverage,Uruguay,Montevidéu,Direct Negotiation,1652680122,44
+657,JSL Logística,Logistics & Transport,Brasil,Brasília,Fleet Contract,542551983,987
+658,Enel Chile,Energy & Utilities,Chile,Santiago,Framework Agreement,236992645,25
+659,Tigo Paraguay,Telecommunications,Paraguai,Capiatá,Direct Negotiation,1451106194,35
+660,Movida,Car Rental,Brasil,Fortaleza,Volume Rebate Agreement,556913830,622
+661,Servientrega,Logistics & Transport,Colombia,Barranquilla,Fleet Contract,3017583805,293
+662,Frigorífico Concepción,Food & Beverage,Paraguai,Assunção,RFP,3347961558,13
+663,Ute,Energy & Utilities,Uruguay,Ciudad de la Costa,RFP,1556828775,27
+664,Ambev,Food & Beverage,Brasil,Brasília,RFP,936187190,253
+665,Ferreyros,Industrial & Equipment,Perú,Trujillo,Framework Agreement,3802454253,68
+666,Grupo Nutresa,Food & Beverage,Colombia,Bogotá,Direct Negotiation,3715080953,7
+667,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,703399627,37
+668,Localiza,Car Rental,Brasil,Fortaleza,Quarterly Bid,761476785,782
+669,YPF,Energy & Utilities,Argentina,Córdoba,RFP,3606241927,81
+670,Mirtrans,Logistics & Transport,Uruguay,Montevidéu,Spot Quote,1353019524,39
+671,Bavaria,Food & Beverage,Colombia,Barranquilla,RFP,579646873,368
+672,Ambev,Food & Beverage,Brasil,Fortaleza,RFP,345337815,230
+673,Transportes Cruz del Sur,Logistics & Transport,Perú,Trujillo,Fleet Contract,2354637943,29
+674,Movida,Car Rental,Brasil,São Paulo,Quarterly Bid,3828741157,1172
+675,Andreani,Logistics & Transport,Argentina,Córdoba,RFP,1001163243,249
+676,YPF,Energy & Utilities,Argentina,Rosário,Framework Agreement,1326625193,37
+677,Grupo Nutresa,Food & Beverage,Colombia,Medellín,Annual Framework,4604829891,17
+678,Mirtrans,Logistics & Transport,Uruguay,Salto,RFP,3887148765,30
+679,Conaprole,Food & Beverage,Uruguay,Paysandú,Direct Negotiation,3296180551,38
+680,Backus,Food & Beverage,Perú,Lima,Annual Framework,2006538859,33
+681,JSL Logística,Logistics & Transport,Brasil,Salvador,Spot Quote,438993448,996
+682,Transportes Vigía,Logistics & Transport,Colombia,Cali,Spot Quote,2938998561,39
+683,Alicorp,Food & Beverage,Perú,Arequipa,Direct Negotiation,3784897813,26
+684,Ambev,Food & Beverage,Brasil,Rio de Janeiro,Direct Negotiation,4021126814,186
+685,Pagnifique,Food & Beverage,Uruguay,Salto,Direct Negotiation,4424220259,41
+686,Enel Chile,Energy & Utilities,Chile,La Serena,Public Tender,2199919713,88
+687,Frigorífico Concepción,Food & Beverage,Paraguai,Capiatá,Direct Negotiation,3168896774,16
+688,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Direct Negotiation,1779812408,18
+689,Alicorp,Food & Beverage,Perú,Lima,Annual Framework,235602158,46
+690,Tigo Paraguay,Telecommunications,Paraguai,Ciudad del Este,Online Reverse Auction,3942323523,27
+691,Servientrega,Logistics & Transport,Colombia,Cali,RFP,1650516112,322
+692,Transportes Cruz del Sur,Logistics & Transport,Perú,Lima,RFP,856695873,12
+693,Alicorp,Food & Beverage,Perú,Lima,Direct Negotiation,2307279571,23
+694,Turbus,B2B Services,Chile,Concepción,Standard Bid,3861853382,17
+695,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,RFP,4913098033,49
+696,Companhia de Locação das Américas,Car Rental,Brasil,Salvador,Volume Rebate Agreement,2376157525,1156
+697,Transportes Cruz del Sur,Logistics & Transport,Perú,Arequipa,RFP,3099812975,42
+698,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Fleet Contract,1223628577,18
+699,Transportes Cruz del Sur,Logistics & Transport,Perú,Arequipa,Spot Quote,1585160803,41
+700,Ferreyros,Industrial & Equipment,Perú,Trujillo,Framework Agreement,2570608294,84
+701,Grupo Nutresa,Food & Beverage,Colombia,Cali,Direct Negotiation,4061337601,31
+702,Turbus,B2B Services,Chile,La Serena,RFP,4315134265,17
+703,Transportes Vigía,Logistics & Transport,Colombia,Cali,Fleet Contract,3006825817,21
+704,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Luque,Spot Quote,2770737931,21
+705,YPF,Energy & Utilities,Argentina,Rosário,Public Tender,2743140638,74
+706,JSL Logística,Logistics & Transport,Brasil,Salvador,RFP,2452261725,1164
+707,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,Fleet Contract,4514940959,15
+708,Companhia de Locação das Américas,Car Rental,Brasil,Salvador,Volume Rebate Agreement,4677824283,1098
+709,Ancap,Energy & Utilities,Uruguay,Las Piedras,RFP,1154603092,77
+710,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Spot Quote,2368601132,17
+711,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,Fleet Contract,2969437004,11
+712,Frigorífico Concepción,Food & Beverage,Paraguai,Capiatá,Annual Framework,1336249196,49
+713,Backus,Food & Beverage,Perú,Chiclayo,RFP,2817073124,9
+714,Conaprole,Food & Beverage,Uruguay,Ciudad de la Costa,Annual Framework,2248828803,13
+715,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,Direct Negotiation,3387620551,47
+716,Servientrega,Logistics & Transport,Colombia,Cartagena,Fleet Contract,2734326816,201
+717,JSL Logística,Logistics & Transport,Brasil,São Paulo,Fleet Contract,3103114971,1123
+718,Cervecería Quilmes,Food & Beverage,Argentina,La Plata,Direct Negotiation,4508074206,41
+719,Pagnifique,Food & Beverage,Uruguay,Salto,Annual Framework,1715977682,5
+720,Cervepar,Food & Beverage,Paraguai,Luque,Direct Negotiation,1934703689,46
+721,Enel Chile,Energy & Utilities,Chile,Valparaíso,Public Tender,4694917866,89
+722,Conaprole,Food & Beverage,Uruguay,Montevidéu,Annual Framework,1237976383,8
+723,Conaprole,Food & Beverage,Uruguay,Ciudad de la Costa,Direct Negotiation,2258641296,7
+724,Falabella,E-commerce & Retail,Chile,Antofagasta,Online Reverse Auction,1079715033,46
+725,Cervepar,Food & Beverage,Paraguai,Ciudad del Este,Direct Negotiation,3002884887,30
+726,Companhia de Locação das Américas,Car Rental,Brasil,Fortaleza,Direct Negotiation,3210395962,951
+727,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,RFP,1774048633,43
+728,Turbus,B2B Services,Chile,Concepción,Standard Bid,4127112270,26
+729,Ransa,Logistics & Transport,Perú,Iquitos,Fleet Contract,4044756817,369
+730,Localiza,Car Rental,Brasil,Salvador,Volume Rebate Agreement,2597190611,760
+731,Agrosuper,Food & Beverage,Chile,Valparaíso,RFP,4509305182,20
+732,Servientrega,Logistics & Transport,Colombia,Cartagena,RFP,3830985516,215
+733,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Assunção,Spot Quote,2443832469,33
+734,Ute,Energy & Utilities,Uruguay,Montevidéu,Public Tender,4734326658,69
+735,Grupo Nutresa,Food & Beverage,Colombia,Barranquilla,Direct Negotiation,1566366995,15
+736,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Direct Negotiation,4387375456,428
+737,Pagnifique,Food & Beverage,Uruguay,Montevidéu,Annual Framework,4201101394,44
+738,Backus,Food & Beverage,Perú,Chiclayo,Annual Framework,3802130907,10
+739,Frigorífico Concepción,Food & Beverage,Paraguai,Assunção,RFP,3851579583,17
+740,Cimportex,E-commerce & Retail,Paraguai,Assunção,Online Reverse Auction,689217716,19
+741,JSL Logística,Logistics & Transport,Brasil,Rio de Janeiro,RFP,3316818770,867
+742,Ancap,Energy & Utilities,Uruguay,Las Piedras,Public Tender,1388494107,74
+743,Transportes Vigía,Logistics & Transport,Colombia,Bogotá,Spot Quote,925065529,37
+744,Alicorp,Food & Beverage,Perú,Arequipa,RFP,2975639875,49
+745,Transportes Furlong,Logistics & Transport,Argentina,Rosário,Fleet Contract,2675065421,35
+746,Transportes Vigía,Logistics & Transport,Colombia,Medellín,Fleet Contract,3904194000,45
+747,Conaprole,Food & Beverage,Uruguay,Paysandú,Annual Framework,3125640553,40
+748,Ancap,Energy & Utilities,Uruguay,Paysandú,Framework Agreement,3386257623,98
+749,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Spot Quote,760714084,45
+750,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,4061253065,14
+751,Tigo Paraguay,Telecommunications,Paraguai,Ciudad del Este,Spot Quote,550303576,13
+752,Cervepar,Food & Beverage,Paraguai,San Lorenzo,Direct Negotiation,635310953,14
+753,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,Spot Quote,2316378758,30
+754,Cimportex,E-commerce & Retail,Paraguai,Luque,Direct Negotiation,3654951563,46
+755,Companhia de Locação das Américas,Car Rental,Brasil,Salvador,Quarterly Bid,4979038085,1084
+756,Transportes Vigía,Logistics & Transport,Colombia,Cali,Fleet Contract,4720422625,24
+757,Backus,Food & Beverage,Perú,Lima,Direct Negotiation,4070681080,16
+758,Transportes Vigía,Logistics & Transport,Colombia,Medellín,Spot Quote,3206792860,10
+759,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,Spot Quote,3600173842,23
+760,Localiza,Car Rental,Brasil,Salvador,Volume Rebate Agreement,3362638760,1108
+761,Bavaria,Food & Beverage,Colombia,Cali,RFP,4811378858,448
+762,Ute,Energy & Utilities,Uruguay,Montevidéu,Framework Agreement,2282398442,41
+763,Alquería,Food & Beverage,Colombia,Cartagena,Annual Framework,1801357096,30
+764,JSL Logística,Logistics & Transport,Brasil,Fortaleza,Spot Quote,2320669104,1023
+765,Pagnifique,Food & Beverage,Uruguay,Ciudad de la Costa,RFP,3651793386,29
+766,Ferreyros,Industrial & Equipment,Perú,Iquitos,RFP,3567465425,60
+767,Pagnifique,Food & Beverage,Uruguay,Paysandú,Annual Framework,3894758754,8
+768,Cervepar,Food & Beverage,Paraguai,San Lorenzo,Annual Framework,2056799636,34
+769,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,3890695126,89
+770,Frigorífico Concepción,Food & Beverage,Paraguai,Ciudad del Este,RFP,1518618950,18
+771,Falabella,E-commerce & Retail,Chile,Concepción,Spot Quote,2343932331,27
+772,Cervecería Quilmes,Food & Beverage,Argentina,Rosário,Annual Framework,928505510,46
+773,YPF,Energy & Utilities,Argentina,Mendoza,Framework Agreement,888621891,59
+774,Turbus,B2B Services,Chile,Valparaíso,Standard Bid,4893015623,28
+775,Cervecería Quilmes,Food & Beverage,Argentina,La Plata,RFP,1842099433,16
+776,Servientrega,Logistics & Transport,Colombia,Medellín,RFP,3448224883,420
+777,Falabella,E-commerce & Retail,Chile,Concepción,Online Reverse Auction,2891869086,36
+778,Alicorp,Food & Beverage,Perú,Chiclayo,Annual Framework,3431538583,45
+779,Falabella,E-commerce & Retail,Chile,La Serena,Spot Quote,4657247922,29
+780,Companhia de Locação das Américas,Car Rental,Brasil,São Paulo,Direct Negotiation,985027783,980
+781,Ancap,Energy & Utilities,Uruguay,Montevidéu,Public Tender,4135064184,81
+782,Transportes Vigía,Logistics & Transport,Colombia,Cali,Spot Quote,2895084625,47
+783,Grupo Nutresa,Food & Beverage,Colombia,Cartagena,RFP,4744317037,32
+784,Servientrega,Logistics & Transport,Colombia,Bogotá,RFP,3254699395,385
+785,Alicorp,Food & Beverage,Perú,Lima,Annual Framework,992368190,16
+786,Enel Chile,Energy & Utilities,Chile,Santiago,RFP,3483433664,79
+787,Turbus,B2B Services,Chile,Valparaíso,Standard Bid,3533570450,47
+788,Servientrega,Logistics & Transport,Colombia,Cartagena,RFP,4059138343,180
+789,Transportes Vigía,Logistics & Transport,Colombia,Medellín,RFP,2223758027,9
+790,JSL Logística,Logistics & Transport,Brasil,Fortaleza,Fleet Contract,812009432,1106
+791,Conaprole,Food & Beverage,Uruguay,Las Piedras,Direct Negotiation,4245882741,6
+792,Andreani,Logistics & Transport,Argentina,Mendoza,Spot Quote,4501363345,406
+793,Bavaria,Food & Beverage,Colombia,Cartagena,RFP,3694234334,223
+794,Cimportex,E-commerce & Retail,Paraguai,Luque,Direct Negotiation,1519322078,16
+795,Grupo Nutresa,Food & Beverage,Colombia,Medellín,Direct Negotiation,3954369477,32
+796,Agrosuper,Food & Beverage,Chile,Concepción,Annual Framework,2008690081,5
+797,Grupo Nutresa,Food & Beverage,Colombia,Cartagena,RFP,1815623454,22
+798,Pagnifique,Food & Beverage,Uruguay,Paysandú,Direct Negotiation,1486048262,16
+799,Transportes Vigía,Logistics & Transport,Colombia,Cartagena,Fleet Contract,4232484717,45
+800,Alquería,Food & Beverage,Colombia,Medellín,RFP,4104649828,33
+801,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Capiatá,Fleet Contract,2059598403,37
+802,Cervecería Quilmes,Food & Beverage,Argentina,La Plata,RFP,3906784759,50
+803,CMPC,Industrial & Equipment,Chile,Santiago,Framework Agreement,564900285,95
+804,Conaprole,Food & Beverage,Uruguay,Las Piedras,RFP,2036903794,43
+805,Transportes Furlong,Logistics & Transport,Argentina,La Plata,RFP,4419296850,9
+806,Movida,Car Rental,Brasil,Brasília,Volume Rebate Agreement,3338691796,924
+807,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,4610005218,89
+808,Localiza,Car Rental,Brasil,Brasília,Quarterly Bid,333648753,916
+809,Pagnifique,Food & Beverage,Uruguay,Salto,Annual Framework,4756349058,46
+810,Ferreyros,Industrial & Equipment,Perú,Iquitos,Public Tender,1657151633,47
+811,Turbus,B2B Services,Chile,Valparaíso,Standard Bid,196442213,14
+812,Mirtrans,Logistics & Transport,Uruguay,Montevidéu,RFP,3815184925,17
+813,Enel Chile,Energy & Utilities,Chile,Concepción,RFP,2400434201,52
+814,YPF,Energy & Utilities,Argentina,Buenos Aires,RFP,4097269669,58
+815,Turbus,B2B Services,Chile,Concepción,Standard Bid,4726462873,45
+816,Servientrega,Logistics & Transport,Colombia,Cali,Fleet Contract,3020081972,332
+817,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,RFP,1938550763,19
+818,Ransa,Logistics & Transport,Perú,Iquitos,RFP,4617787486,345
+819,Pagnifique,Food & Beverage,Uruguay,Paysandú,Direct Negotiation,4716931776,39
+820,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Ciudad del Este,Spot Quote,816196621,33
+821,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,3469516477,35
+822,Andreani,Logistics & Transport,Argentina,Buenos Aires,RFP,2994575407,408
+823,Bavaria,Food & Beverage,Colombia,Bogotá,Annual Framework,1134140899,376
+824,JSL Logística,Logistics & Transport,Brasil,Salvador,Fleet Contract,4242584710,505
+825,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,3795032310,11
+826,Transportes Furlong,Logistics & Transport,Argentina,Rosário,RFP,2409494852,14
+827,Ambev,Food & Beverage,Brasil,Salvador,RFP,2465522132,221
+828,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,Spot Quote,3172805033,45
+829,Transportes Cruz del Sur,Logistics & Transport,Perú,Iquitos,RFP,4007540425,27
+830,Ferreyros,Industrial & Equipment,Perú,Iquitos,Framework Agreement,686249991,95
+831,Movida,Car Rental,Brasil,Brasília,Quarterly Bid,917807975,1063
+832,Transportes Furlong,Logistics & Transport,Argentina,Córdoba,RFP,104016855,6
+833,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Online Reverse Auction,3138996088,44
+834,Turbus,B2B Services,Chile,Concepción,RFP,3122765321,34
+835,Alquería,Food & Beverage,Colombia,Cali,Direct Negotiation,3682653417,32
+836,Ransa,Logistics & Transport,Perú,Arequipa,RFP,4435601162,282
+837,CMPC,Industrial & Equipment,Chile,Antofagasta,RFP,4764795181,86
+838,Turbus,B2B Services,Chile,Santiago,Standard Bid,2216500038,46
+839,Frigorífico Concepción,Food & Beverage,Paraguai,Ciudad del Este,Annual Framework,1116212525,10
+840,CMPC,Industrial & Equipment,Chile,Santiago,RFP,4565541640,67
+841,Cimportex,E-commerce & Retail,Paraguai,San Lorenzo,Online Reverse Auction,1253199647,40
+842,YPF,Energy & Utilities,Argentina,Córdoba,RFP,1759722643,99
+843,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Fleet Contract,4167524039,36
+844,Falabella,E-commerce & Retail,Chile,Santiago,Spot Quote,2572959315,27
+845,Ferreyros,Industrial & Equipment,Perú,Iquitos,RFP,2391362089,31
+846,Movida,Car Rental,Brasil,Brasília,Direct Negotiation,3828052949,912
+847,Conaprole,Food & Beverage,Uruguay,Las Piedras,Annual Framework,3442587583,45
+848,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Volume Rebate Agreement,4172833377,1017
+849,Ferreyros,Industrial & Equipment,Perú,Trujillo,RFP,4404586361,22
+850,Ambev,Food & Beverage,Brasil,Fortaleza,Direct Negotiation,206185012,279
+851,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Direct Negotiation,1204076362,663
+852,Andreani,Logistics & Transport,Argentina,Buenos Aires,RFP,3236433567,438
+853,CMPC,Industrial & Equipment,Chile,La Serena,RFP,1463276088,58
+854,Falabella,E-commerce & Retail,Chile,Santiago,Direct Negotiation,1262434520,17
+855,Alquería,Food & Beverage,Colombia,Medellín,Annual Framework,4470849431,8
+856,Mercado Libre,E-commerce & Retail,Argentina,Mendoza,Online Reverse Auction,3236902977,228
+857,Grupo Nutresa,Food & Beverage,Colombia,Barranquilla,RFP,733133950,26
+858,Localiza,Car Rental,Brasil,Salvador,Direct Negotiation,2409713952,897
+859,Mirtrans,Logistics & Transport,Uruguay,Ciudad de la Costa,RFP,1245473168,29
+860,Conaprole,Food & Beverage,Uruguay,Montevidéu,RFP,4933257177,5
+861,JSL Logística,Logistics & Transport,Brasil,São Paulo,Fleet Contract,3364909786,745
+862,Turbus,B2B Services,Chile,Concepción,RFP,225891812,17
+863,Backus,Food & Beverage,Perú,Chiclayo,Direct Negotiation,4706629212,7
+864,Ute,Energy & Utilities,Uruguay,Paysandú,Public Tender,4748662100,43
+865,CMPC,Industrial & Equipment,Chile,Valparaíso,Framework Agreement,3036788771,87
+866,Andreani,Logistics & Transport,Argentina,Mendoza,Spot Quote,4902110419,378
+867,Enel Chile,Energy & Utilities,Chile,Valparaíso,Framework Agreement,101419369,43
+868,Grupo Nutresa,Food & Beverage,Colombia,Bogotá,Direct Negotiation,2985849555,6
+869,Mercado Libre,E-commerce & Retail,Argentina,Rosário,Direct Negotiation,4942587185,203
+870,Backus,Food & Beverage,Perú,Trujillo,RFP,3433065575,13
+871,Servientrega,Logistics & Transport,Colombia,Barranquilla,Fleet Contract,1227027479,415
+872,Andreani,Logistics & Transport,Argentina,La Plata,Spot Quote,3600689013,325
+873,Turbus,B2B Services,Chile,Valparaíso,Standard Bid,3131468654,11
+874,Agrosuper,Food & Beverage,Chile,La Serena,Annual Framework,914313693,15
+875,Servientrega,Logistics & Transport,Colombia,Bogotá,Spot Quote,2551331065,441
+876,Movida,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,1280288943,1161
+877,Bavaria,Food & Beverage,Colombia,Medellín,RFP,4419855561,158
+878,Falabella,E-commerce & Retail,Chile,Concepción,Spot Quote,391571677,16
+879,Transportes Furlong,Logistics & Transport,Argentina,Buenos Aires,Fleet Contract,3482201140,13
+880,Mirtrans,Logistics & Transport,Uruguay,Salto,Fleet Contract,130294484,47
+881,Turbus,B2B Services,Chile,Concepción,RFP,944810514,42
+882,Grupo Nutresa,Food & Beverage,Colombia,Cartagena,Annual Framework,2426113763,36
+883,Mercado Libre,E-commerce & Retail,Argentina,Mendoza,Direct Negotiation,1901521238,320
+884,Alicorp,Food & Beverage,Perú,Iquitos,RFP,199735484,21
+885,Ambev,Food & Beverage,Brasil,São Paulo,Direct Negotiation,4246049853,219
+886,JSL Logística,Logistics & Transport,Brasil,Rio de Janeiro,Fleet Contract,2655805104,889
+887,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Direct Negotiation,911354509,307
+888,Servientrega,Logistics & Transport,Colombia,Cartagena,Fleet Contract,1177862700,396
+889,Turbus,B2B Services,Chile,Antofagasta,Standard Bid,358321646,6
+890,Ferreyros,Industrial & Equipment,Perú,Chiclayo,Public Tender,847535245,47
+891,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,RFP,2058698049,29
+892,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Direct Negotiation,473107222,436
+893,Ferreyros,Industrial & Equipment,Perú,Iquitos,Framework Agreement,2272191966,46
+894,Ambev,Food & Beverage,Brasil,Brasília,Annual Framework,3174680485,249
+895,Ransa,Logistics & Transport,Perú,Lima,RFP,3670911805,400
+896,Ute,Energy & Utilities,Uruguay,Ciudad de la Costa,Public Tender,4101672209,71
+897,Ransa,Logistics & Transport,Perú,Trujillo,Fleet Contract,695715193,187
+898,Transportes Furlong,Logistics & Transport,Argentina,Córdoba,RFP,1587146551,17
+899,Transportes Vigía,Logistics & Transport,Colombia,Cali,RFP,842702741,9
+900,Cimportex,E-commerce & Retail,Paraguai,Luque,Spot Quote,4764776237,42
+901,Alquería,Food & Beverage,Colombia,Barranquilla,RFP,2729816833,16
+902,Cervepar,Food & Beverage,Paraguai,Capiatá,Direct Negotiation,2321922172,19
+903,Grupo Nutresa,Food & Beverage,Colombia,Medellín,Direct Negotiation,3187757733,21
+904,Tigo Paraguay,Telecommunications,Paraguai,Luque,Spot Quote,4750704488,28
+905,Transportes Vigía,Logistics & Transport,Colombia,Medellín,Spot Quote,725830630,16
+906,Servientrega,Logistics & Transport,Colombia,Bogotá,Fleet Contract,3138783854,225
+907,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,Annual Framework,1087351360,12
+908,Servientrega,Logistics & Transport,Colombia,Cali,Fleet Contract,3395238673,186
+909,Ancap,Energy & Utilities,Uruguay,Salto,Public Tender,3858535234,75
+910,Turbus,B2B Services,Chile,Antofagasta,Standard Bid,4534717541,13
+911,Turbus,B2B Services,Chile,Valparaíso,Standard Bid,2203807514,14
+912,Ancap,Energy & Utilities,Uruguay,Las Piedras,RFP,1945032798,21
+913,JSL Logística,Logistics & Transport,Brasil,São Paulo,RFP,1447715139,801
+914,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,Framework Agreement,674769863,20
+915,Falabella,E-commerce & Retail,Chile,La Serena,Spot Quote,1233537521,42
+916,Conaprole,Food & Beverage,Uruguay,Montevidéu,RFP,2712272810,29
+917,Companhia de Locação das Américas,Car Rental,Brasil,Brasília,Quarterly Bid,3934295635,658
+918,Pagnifique,Food & Beverage,Uruguay,Montevidéu,RFP,4979243784,41
+919,Ute,Energy & Utilities,Uruguay,Paysandú,RFP,271427630,94
+920,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Capiatá,Fleet Contract,3480016146,18
+921,Alquería,Food & Beverage,Colombia,Bogotá,Direct Negotiation,4538086176,45
+922,Cimportex,E-commerce & Retail,Paraguai,San Lorenzo,Direct Negotiation,4694544214,15
+923,Servientrega,Logistics & Transport,Colombia,Barranquilla,Spot Quote,3908985927,339
+924,Falabella,E-commerce & Retail,Chile,La Serena,Direct Negotiation,3699792588,37
+925,Falabella,E-commerce & Retail,Chile,Antofagasta,Direct Negotiation,3981476152,47
+926,Localiza,Car Rental,Brasil,Brasília,Direct Negotiation,4545631025,987
+927,Enel Chile,Energy & Utilities,Chile,Valparaíso,RFP,2466162136,74
+928,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,RFP,3234451266,10
+929,Backus,Food & Beverage,Perú,Trujillo,Annual Framework,2101739040,26
+930,Cervepar,Food & Beverage,Paraguai,Capiatá,Annual Framework,3774313724,40
+931,Pagnifique,Food & Beverage,Uruguay,Salto,Direct Negotiation,2937095701,15
+932,Alicorp,Food & Beverage,Perú,Arequipa,Annual Framework,168035626,31
+933,JSL Logística,Logistics & Transport,Brasil,Fortaleza,Fleet Contract,1087803380,1005
+934,Ambev,Food & Beverage,Brasil,Rio de Janeiro,RFP,3857245208,309
+935,Grupo Nutresa,Food & Beverage,Colombia,Medellín,RFP,1134050706,42
+936,CMPC,Industrial & Equipment,Chile,Antofagasta,RFP,4659156361,87
+937,Turbus,B2B Services,Chile,Antofagasta,RFP,2346981541,22
+938,Companhia de Locação das Américas,Car Rental,Brasil,Fortaleza,Direct Negotiation,1534637216,1034
+939,Transportes Vigía,Logistics & Transport,Colombia,Cali,Spot Quote,891823943,28
+940,Cervepar,Food & Beverage,Paraguai,Capiatá,RFP,971668850,24
+941,Transportes Furlong,Logistics & Transport,Argentina,Rosário,Spot Quote,2224556239,39
+942,Falabella,E-commerce & Retail,Chile,Santiago,Spot Quote,366956299,5
+943,Ferreyros,Industrial & Equipment,Perú,Trujillo,Public Tender,3901348592,51
+944,Alquería,Food & Beverage,Colombia,Bogotá,RFP,2784949210,50
+945,Ute,Energy & Utilities,Uruguay,Montevidéu,Framework Agreement,1358622012,58
+946,Tigo Paraguay,Telecommunications,Paraguai,San Lorenzo,Direct Negotiation,3575913559,36
+947,Cervecería Quilmes,Food & Beverage,Argentina,La Plata,Direct Negotiation,2265958944,28
+948,Andreani,Logistics & Transport,Argentina,La Plata,RFP,1668877579,311
+949,Movida,Car Rental,Brasil,São Paulo,Direct Negotiation,2348216209,739
+950,Conaprole,Food & Beverage,Uruguay,Salto,Annual Framework,4498877961,19
+951,Turbus,B2B Services,Chile,Santiago,Standard Bid,2763807716,10
+952,Falabella,E-commerce & Retail,Chile,Santiago,Online Reverse Auction,1394719424,36
+953,Alicorp,Food & Beverage,Perú,Iquitos,Annual Framework,219517080,48
+954,Ambev,Food & Beverage,Brasil,Salvador,Annual Framework,2606669311,225
+955,Conaprole,Food & Beverage,Uruguay,Paysandú,RFP,1077272433,22
+956,Ancap,Energy & Utilities,Uruguay,Ciudad de la Costa,RFP,3853772636,78
+957,Ransa,Logistics & Transport,Perú,Arequipa,Spot Quote,2309752922,184
+958,Frigorífico Concepción,Food & Beverage,Paraguai,San Lorenzo,RFP,2722099425,27
+959,Ferreyros,Industrial & Equipment,Perú,Chiclayo,Framework Agreement,355169413,64
+960,Companhia de Locação das Américas,Car Rental,Brasil,Salvador,Volume Rebate Agreement,4207057954,989
+961,YPF,Energy & Utilities,Argentina,Buenos Aires,Public Tender,4970376593,53
+962,Ferreyros,Industrial & Equipment,Perú,Lima,RFP,3065115448,47
+963,Cimportex,E-commerce & Retail,Paraguai,Assunção,Spot Quote,4016356819,18
+964,Bavaria,Food & Beverage,Colombia,Cartagena,Annual Framework,1037295596,334
+965,Falabella,E-commerce & Retail,Chile,Valparaíso,Spot Quote,4681861940,36
+966,Alicorp,Food & Beverage,Perú,Arequipa,Direct Negotiation,4295379575,6
+967,Servientrega,Logistics & Transport,Colombia,Medellín,RFP,3421843646,286
+968,Cervecería Quilmes,Food & Beverage,Argentina,Buenos Aires,Direct Negotiation,2434128153,28
+969,Tigo Paraguay,Telecommunications,Paraguai,Assunção,Direct Negotiation,4369255754,12
+970,Conaprole,Food & Beverage,Uruguay,Paysandú,RFP,3958922049,9
+971,Mercado Libre,E-commerce & Retail,Argentina,Buenos Aires,Direct Negotiation,4509659705,226
+972,Alicorp,Food & Beverage,Perú,Trujillo,Annual Framework,1800230877,18
+973,Turbus,B2B Services,Chile,Concepción,RFP,1851027797,6
+974,Transportes Furlong,Logistics & Transport,Argentina,La Plata,Spot Quote,4681894039,40
+975,Mirtrans,Logistics & Transport,Uruguay,Paysandú,Fleet Contract,2138996919,11
+976,Enel Chile,Energy & Utilities,Chile,La Serena,Framework Agreement,1623657838,81
+977,Andreani,Logistics & Transport,Argentina,Mendoza,Fleet Contract,500225081,359
+978,Cimportex,E-commerce & Retail,Paraguai,Assunção,Spot Quote,4829268421,23
+979,Transportes Cruz del Sur,Logistics & Transport,Perú,Chiclayo,Fleet Contract,3199537646,37
+980,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,Capiatá,RFP,1518849075,17
+981,YPF,Energy & Utilities,Argentina,Mendoza,Framework Agreement,3543239059,22
+982,Tigo Paraguay,Telecommunications,Paraguai,Assunção,Online Reverse Auction,1428259578,48
+983,Nuestra Señora de la Asunción,Logistics & Transport,Paraguai,San Lorenzo,Fleet Contract,972209332,15
+984,JSL Logística,Logistics & Transport,Brasil,Rio de Janeiro,Fleet Contract,577566324,755
+985,Pagnifique,Food & Beverage,Uruguay,Las Piedras,Direct Negotiation,1358773449,29
+986,Transportes Furlong,Logistics & Transport,Argentina,La Plata,RFP,304555921,26
+987,Bavaria,Food & Beverage,Colombia,Bogotá,Annual Framework,1144982727,278
+988,Frigorífico Concepción,Food & Beverage,Paraguai,Ciudad del Este,RFP,515482478,9
+989,Tigo Paraguay,Telecommunications,Paraguai,Luque,Direct Negotiation,2637130181,11
+990,Bavaria,Food & Beverage,Colombia,Cartagena,RFP,1332538591,161
+991,Cervecería Quilmes,Food & Beverage,Argentina,La Plata,Annual Framework,2411867409,38
+992,Grupo Nutresa,Food & Beverage,Colombia,Bogotá,Direct Negotiation,3895955005,25
+993,Movida,Car Rental,Brasil,Rio de Janeiro,Quarterly Bid,2524119215,1155
+994,Alquería,Food & Beverage,Colombia,Cartagena,Annual Framework,634802131,33
+995,Transportes Vigía,Logistics & Transport,Colombia,Barranquilla,Spot Quote,4550236693,30
+996,Ancap,Energy & Utilities,Uruguay,Montevidéu,RFP,2182198281,82
+997,Ute,Energy & Utilities,Uruguay,Las Piedras,Public Tender,1292076358,50
+998,Andreani,Logistics & Transport,Argentina,Córdoba,RFP,1108681701,360
+999,Turbus,B2B Services,Chile,Santiago,RFP,963447010,47
+1000,Backus,Food & Beverage,Perú,Iquitos,Direct Negotiation,4964376053,33

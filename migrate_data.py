@@ -1,41 +1,31 @@
-import polars as pl
-import logging
+import pandas as pd
 import os
-from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("DataMigration")
-load_dotenv()
+# Definição de caminhos baseada na sua estrutura de pastas
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+json_path = os.path.join(BASE_DIR, 'data', 'black_crow_unified.json')
+parquet_path = os.path.join(BASE_DIR, 'data', 'black_crow_intel.parquet')
 
-def migrate_raw_data():
-    """
-    Converte o JSON bruto para Parquet, preservando a granularidade
-    para permitir filtros dinâmicos de Marca e UF.
-    """
-    source = "data/MOCK_DATA.json"
-    target = "data/market_data.parquet"
+def migrate_to_parquet():
+    if not os.path.exists(json_path):
+        print(f"❌ Erro: JSON não encontrado em {json_path}")
+        return
+
+    print(f"🔄 Migrando JSON para Parquet...")
     
-    try:
-        logger.info("Lendo JSON original...")
-        df = pl.read_json(source)
+    # Lendo o JSON
+    df = pd.read_json(json_path)
 
-        # 1. Tratamento de Tipos (O Rigor do Mestre)
-        # Convertemos date e garantimos que model_year seja inteiro
-        df = df.with_columns([
-            pl.col("date").str.to_date("%Y-%m-%d").alias("data"),
-            pl.col("model_year").cast(pl.Int32),
-            pl.col("date").str.to_date("%Y-%m-%d").dt.day().alias("dia_do_mes")
-        ])
+    # Sanity Check: Garantindo que faturamento e frota sejam numéricos
+    # Útil para evitar erros em cálculos no Power BI
+    df['annual_revenue'] = pd.to_numeric(df['annual_revenue'], errors='coerce')
+    df['fleet_size'] = pd.to_numeric(df['fleet_size'], errors='coerce')
 
-        # 2. Seleção de colunas necessárias
-        df = df.select(["data", "dia_do_mes", "marca", "modelo", "model_year", "uf"])
-
-        # 3. Persistência em Parquet ZSTD
-        df.write_parquet(target, compression="zstd")
-        logger.info(f"Sucesso! {df.height} registros migrados para {target}")
-
-    except Exception as e:
-        logger.error(f"Falha na migração: {str(e)}")
+    # Salvando em Parquet com compressão snappy (padrão ouro do Databricks)
+    df.to_parquet(parquet_path, compression='snappy', index=False)
+    
+    print(f"✅ Sucesso! Camada Silver gerada em: {parquet_path}")
+    print(f"📊 Linhas processadas: {len(df)}")
 
 if __name__ == "__main__":
-    migrate_raw_data()
+    migrate_to_parquet()
