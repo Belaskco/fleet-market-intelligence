@@ -43,8 +43,8 @@ def run_dashboard():
         </style>
     """, unsafe_allow_html=True)
 
-    @st.cache_data
-    def get_cached_data(ttl=3600):
+    @st.cache_data(ttl=3600)
+    def get_cached_data():
         return load_processed_data()
 
     df_raw = get_cached_data()
