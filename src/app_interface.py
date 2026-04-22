@@ -108,33 +108,28 @@ def run_dashboard():
         with c2:
             st.subheader("📈 Estabilidade (SPC - Carta I)")
             
-            # Cálculo de métricas estatísticas via AnalyticsService
             v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
             
             if not v_dia.is_empty():
-                # REGULAGEM TÉCNICA: Recuperação de metadados (marca) se ausentes no v_dia
-                # Garante que o hover e os alertas funcionem mesmo com agregações agressivas
+                # Garantia de recuperação da marca via Join
                 if "marca" not in v_dia.columns:
-                    # Join simples para trazer a marca principal de cada dia
                     v_dia = v_dia.join(
                         df_filt.select(["dia_do_mes", "marca"]).unique(subset=["dia_do_mes"]),
                         on="dia_do_mes",
                         how="left"
                     )
 
-                # Parametrização Sigma 2 e LCL de segurança
                 k_sigma = 2 
                 ucl = m + k_sigma * s
                 lcl = max(1, m - k_sigma * s)
 
-                # Feature engineering: Semântica de Alertas (Expansão vs Retração)
                 v_dia = v_dia.with_columns(
                     status=pl.when(pl.col("vol") > ucl).then(pl.lit("Expansão"))
                             .when(pl.col("vol") <= lcl).then(pl.lit("Retração"))
                             .otherwise(pl.lit("Estável"))
                 )
 
-                # Alertas Nominais: Foco total em conversão comercial
+                # Alertas Nominais
                 exp_pts = v_dia.filter(pl.col("status") == "Expansão")
                 ret_pts = v_dia.filter(pl.col("status") == "Retração")
                 
@@ -146,19 +141,32 @@ def run_dashboard():
                     nomes = ", ".join(ret_pts["marca"].unique().to_list())
                     st.error(f"⚠️ **Risco de Retração:** Investigar churn em **{nomes}**.")
 
-                # Visualização com Hover Detalhado (Tooltips)
-                fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', 
-                                markers=True, 
-                                hover_data=['dia_do_mes', 'vol', 'marca', 'status'],
-                                template="plotly_dark",
-                                range_y=[-0.5, max(ucl, v_dia["vol"].max()) * 1.2])
-                
-                # Plotagem dos limites estatísticos
+                # MUDANÇA CRÍTICA: Passando as colunas como séries explícitas para o Plotly
+                # Isso resolve o problema de mapeamento no Streamlit Cloud
+                fig_spc = px.line(
+                    v_dia, 
+                    x='dia_do_mes', 
+                    y='vol', 
+                    markers=True, 
+                    custom_data=['marca', 'status'], # Usamos custom_data para blindar o dado
+                    template="plotly_dark",
+                    range_y=[-0.5, max(ucl, v_dia["vol"].max()) * 1.2]
+                )
+
+                # Configuração do Hover via template (mais estável em Cloud)
+                fig_spc.update_traces(
+                    hovertemplate="<br>".join([
+                        "Dia: %{x}",
+                        "Volume: %{y}",
+                        "Marca: %{customdata[0]}",
+                        "Status: %{customdata[1]}"
+                    ])
+                )
+
                 fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL (Expansão)")
                 fig_spc.add_hline(y=m, line_dash="solid", line_color="white", opacity=0.2)
                 fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL (Retração)")
 
-                # Mapping de cores para anomalias estatísticas
                 color_map = {'Expansão': '#238636', 'Retração': '#da3633', 'Estável': THEME_COLOR}
                 colors = [color_map[st] for st in v_dia["status"].to_list()]
                 
