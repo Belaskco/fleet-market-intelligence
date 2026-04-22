@@ -23,7 +23,7 @@ def apply_enterprise_styles():
         .stMetric {{ 
             border: 1px solid rgba(128, 128, 128, 0.2); 
             padding: 20px; 
-            border-radius: 12px; 
+            border-radius: 10px; 
             background: rgba(128,128,128,0.03); 
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }}
