@@ -10,14 +10,13 @@ logger = logging.getLogger("PredictionService")
 
 class PredictionService:
     """
-    Motor de Inteligência Black Crow.
-    Versão Completa: Forecasting Macro, Forecast Diário (Pontilhado), 
-    Detecção de Anomalias e Antecipação Nominal.
+    Motor Black Crow.
+    Versão Completa: Forecasting, Projeção Pontilhada, Anomalias e Antecipação.
     """
 
     @staticmethod
     def get_market_trend(df: pl.DataFrame):
-        """Calcula tendência macro e volume mensal projetado."""
+        """Previsão macro de fechamento mensal."""
         if df.is_empty() or "data_faturamento" not in df.columns:
             return 0, "Estável"
         try:
@@ -30,8 +29,7 @@ class PredictionService:
             pred = fcst.predict(1)
             
             proj_vol = int(pred["LGBMRegressor"].sum() * 30)
-            last_real = df_macro["y"].iloc[-1]
-            diff = (pred["LGBMRegressor"].iloc[0] - last_real) / (last_real if last_real > 0 else 1)
+            diff = (pred["LGBMRegressor"].iloc[0] - df_macro["y"].iloc[-1]) / (df_macro["y"].iloc[-1] if df_macro["y"].iloc[-1] > 0 else 1)
             
             return proj_vol, ("Alta" if diff > 0.05 else "Baixa" if diff < -0.05 else "Estável")
         except:
@@ -39,7 +37,7 @@ class PredictionService:
 
     @staticmethod
     def get_daily_forecast(df: pl.DataFrame, horizon=7):
-        """Gera pontos futuros para a linha pontilhada (Rapha Mode)."""
+        """Gera os dados para a linha pontilhada que o Rapha pediu."""
         if df.is_empty() or "data_faturamento" not in df.columns:
             return pl.DataFrame()
         try:
@@ -61,7 +59,7 @@ class PredictionService:
 
     @staticmethod
     def identify_anomalies(df: pl.DataFrame):
-        """Detecção original de outliers estatísticos via Z-Score."""
+        """Detecção original de outliers via Z-Score."""
         if df.is_empty(): return pl.DataFrame()
         v_dia = df.group_by("dia_do_mes").len(name="vol")
         mean, std = v_dia["vol"].mean(), v_dia["vol"].std()
@@ -69,7 +67,7 @@ class PredictionService:
 
     @staticmethod
     def get_client_predictions(df: pl.DataFrame):
-        """Predição nominal Nixtla (Oportunidades por Cliente)."""
+        """Tabela nominal por cliente com volume e valor."""
         if df.is_empty() or "data_faturamento" not in df.columns:
             return pl.DataFrame()
         try:

@@ -1,7 +1,9 @@
-import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
+import sys
+import os
+import plotly.graph_objects as go
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
@@ -9,7 +11,7 @@ from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
 def human_format(num):
-    """Formatação simplificada (K, M, B) para volumes financeiros."""
+    """Formatação K, M, B (Rapha Style)."""
     if num is None or num == 0: return "0"
     magnitude = 0
     while abs(num) >= 1000:
@@ -23,7 +25,7 @@ def set_all_state(label, options, value):
 def run_dashboard():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # CSS Adaptativo (Rapha Style)
+    # CSS Adaptativo para Light/Dark Mode
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
@@ -59,7 +61,7 @@ def run_dashboard():
     # --- BLINDAGEM D-1 & RESOLUÇÃO DE COLUNA ---
     date_col = "data_faturamento"
     if date_col not in df_raw.columns:
-        st.error(f"⚠️ Erro de Schema: Coluna {date_col} não encontrada.")
+        st.error(f"⚠️ Erro Crítico: Coluna {date_col} não encontrada após processamento.")
         st.stop()
 
     max_date = df_raw[date_col].max()
@@ -67,13 +69,13 @@ def run_dashboard():
     if sel_setores:
         df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
     
-    # Filtro D-1: Remove o último dia para evitar queda artificial
+    # Filtro D-1 (Rapha Logic)
     df_filt = df_filt.filter(pl.col(date_col) < max_date)
 
     if not df_filt.is_empty():
         total_vol = len(df_filt)
         v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
-        # Pareto: Ordenado para que o líder fique no topo do gráfico horizontal
+        # Pareto: Ordenado para Líder no Topo
         dist_data = AnalyticsService.get_pareto_distribution(df_filt).sort("vendas", descending=False)
         proj_vol, trend = PredictionService.get_market_trend(df_filt)
         v_future = PredictionService.get_daily_forecast(df_filt)
@@ -87,12 +89,12 @@ def run_dashboard():
             lider = dist_data.tail(1)
             k2.metric("Líder Market", f"{lider['marca'][0][:12]}...", delta=f"{(lider['vendas'][0]/total_vol):.1%} Share")
         k3.metric("Frequência", f"{total_vol/(sel_days[1]-sel_days[0]+1):.1f} un/dia")
-        k4.metric("Mercados Ativos", f"{len(df_filt['uf'].unique())}")
-        k5.metric("Forecast (USD)", human_format(proj_vol * 1200000), delta=trend)
+        k4.metric("Países Ativos", f"{len(df_filt['uf'].unique())}")
+        k5.metric("Forecast (USD)", human_format(proj_vol * 450000), delta=trend)
 
         st.divider()
 
-        # Ciclos e Oportunidades
+        # Visuals Híbridos
         c_left, c_right = st.columns([1.6, 1])
         with c_left:
             st.subheader("📊 Ciclos de Faturamento")
@@ -109,7 +111,7 @@ def run_dashboard():
 
         st.divider()
 
-        # Pareto e SPC
+        # Pareto e SPC Forecast
         c1, c2 = st.columns(2)
         with c1:
             st.subheader("🏆 Pareto de Líderes")
