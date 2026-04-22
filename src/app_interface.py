@@ -16,21 +16,15 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 def set_all_state(label, options, value):
-    """
-    CALLBACK DE ESTADO: Garante sincronia entre botões e checkboxes.
-    Crucial para o funcionamento estável no Streamlit.io.
-    """
+    """Callback de sincronia Master/Detail para checkboxes."""
     for opt in options:
         st.session_state[f"chk_{label}_{opt}"] = value
 
 def run_dashboard():
-    """
-    Interface Black Crow Intel. 
-    Framework completo: KPIs, Nixtla Forecast, SPC e Logic Engine Dinâmico.
-    """
+    """Interface Black Crow Intel - Focada em Antecipação Nominal de Compras."""
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # CSS: Identidade Dark Mode e Métricas de Alta Densidade
+    # Injeção de CSS para identidade visual Dark
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
@@ -42,12 +36,10 @@ def run_dashboard():
     """, unsafe_allow_html=True)
 
     @st.cache_data(ttl=3600)
-    def get_cached_data(): 
-        return load_processed_data()
+    def get_cached_data(): return load_processed_data()
 
     df_raw = get_cached_data()
-    if df_raw.is_empty(): 
-        st.error("❌ Erro de Infraestrutura: Base fct_sales indisponível."); st.stop()
+    if df_raw.is_empty(): st.error("❌ Base indisponível."); st.stop()
 
     # --- SIDEBAR: SEGMENTAÇÃO ---
     with st.sidebar:
@@ -65,18 +57,15 @@ def run_dashboard():
         sel_marcas = create_smart_filter("Marcas", sorted(df_raw["marca"].unique().to_list()))
         sel_paises = create_smart_filter("Mercados", sorted(df_raw["uf"].unique().to_list()))
         sel_setores = create_smart_filter("Setores", sorted(df_raw["industry_sector"].unique().to_list()))
-        
         st.divider()
         sel_days = st.slider("Janela de Observação (Dias):", 1, 31, (1, 31))
-        st.caption("Black Crow Intelligence | v2.1.5 Platinum")
 
     # --- ENGINE DE DADOS ---
     df_filt = apply_business_filters(df_raw, sel_marcas, sel_paises, sel_days)
-    if sel_setores: 
-        df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
+    if sel_setores: df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
 
     if not df_filt.is_empty():
-        # --- CÁLCULOS ANALÍTICOS ---
+        # Cálculos de Inteligência Macro
         v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
         dist_data = AnalyticsService.get_pareto_distribution(df_filt)
         total_vol = len(df_filt)
@@ -84,52 +73,60 @@ def run_dashboard():
         
         st.title(f"{APP_TITLE}")
         
-        # --- BLOCO 1: KPIs (RESUMO EXECUTIVO) ---
+        # --- BLOCO 1: KPIs ---
         k1, k2, k3, k4, k5 = st.columns(5)
         k1.metric("Volume Total", f"{total_vol:,}")
         if not dist_data.is_empty():
             k2.metric("Líder de Mix", f"{dist_data['marca'][0][:12]}...", delta=f"{(dist_data['vendas'][0]/total_vol):.1%} Share")
         k3.metric("Taxa Conversão", f"{total_vol/(sel_days[1]-sel_days[0]+1):.1f} un/dia")
-        k4.metric("Abrangência", f"{len(df_filt['uf'].unique())} Mercados")
+        k4.metric("Abrangência", f"{len(df_filt['uf'].unique())} Países")
         k5.metric("Forecast Total", f"{proj_vol} un", delta=trend)
 
         st.divider()
 
-        # --- BLOCO 2: DIAGNÓSTICO DE TRAJETÓRIA ---
+        # --- BLOCO 2: TRAJETÓRIA ---
         st.subheader("📊 Diagnóstico de Trajetória")
-        fig_area = px.area(v_dia, x='dia_do_mes', y='vol', template="plotly_dark", color_discrete_sequence=[THEME_COLOR])
-        fig_area.update_layout(height=250, margin=dict(t=10, b=10))
-        st.plotly_chart(fig_area, use_container_width=True)
-        
+        st.plotly_chart(px.area(v_dia, x='dia_do_mes', y='vol', template="plotly_dark", color_discrete_sequence=[THEME_COLOR]).update_layout(height=250), use_container_width=True)
         st.info(f"O mercado apresenta trajetória **{trend}**. Forecast de faturamento estimado: **{proj_vol} unidades**.")
 
         st.divider()
 
-        # --- BLOCO 3: PREDIÇÃO NOMINAL (NIXTLA) ---
-        st.subheader("🔮 Antecipação de Compras por Cliente (Nixtla)")
+        # --- BLOCO 3: ANTECIPAÇÃO NOMINAL (NIXTLA) ---
+        st.subheader("🔮 Oportunidades de Compra Próxima Janela (Nixtla)")
+        
         try:
+            # Chamada ao motor de predição nominal
             df_forecast = PredictionService.get_client_predictions(df_filt)
+            
             if not df_forecast.is_empty():
-                st.dataframe(df_forecast, use_container_width=True, hide_index=True,
-                             column_config={"Cliente": "🎯 Alvo de Compra", "Qtd_Prevista": "Pedidos Est.", "Volume_Est": "Vol. Total"})
+                # Formatação da Tabela de Oportunidades
+                st.dataframe(
+                    df_forecast, 
+                    use_container_width=True, 
+                    hide_index=True,
+                    column_config={
+                        "Cliente": st.column_config.TextColumn("🎯 Nome do Cliente"),
+                        "Qtd_Prevista": st.column_config.NumberColumn("Volume Est. (Un)", format="%d"),
+                        "Valor_Est": st.column_config.NumberColumn("Valor Previsto (USD)", format="$ %.2f"),
+                        "Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1)
+                    }
+                )
             else:
-                st.warning("ℹ️ Dados insuficientes para predição nominal nesta segmentação.")
-        except:
-            st.info("💡 Aceleração Analítica: O modelo Nixtla está processando novos dados contextuais.")
+                st.info("💡 Aceleração Analítica: O volume de transações para este filtro é insuficiente para gerar predições nominais.")
+        except Exception as e:
+            st.warning("⚠️ Serviço de Predição Nominal temporariamente indisponível. Verifique a conexão com a API Nixtla.")
 
         st.divider()
 
         # --- BLOCO 4: ESTABILIDADE E MIX ---
         c1, c2 = st.columns(2)
         with c1:
-            st.subheader("🏆 Distribuição de Mix (Pareto)")
+            st.subheader("🏆 Mix de Clientes (Pareto)")
             st.plotly_chart(px.bar(dist_data, x='vendas', y='marca', orientation='h', template="plotly_dark"), use_container_width=True)
 
         with c2:
             st.subheader("📈 Estabilidade Estatística (SPC)")
             ucl, lcl = m + 2*s, max(0, m - 2*s)
-            
-            # Notificações SPC Nominais
             v_dia = v_dia.join(df_filt.select(["dia_do_mes", "marca"]).unique(subset=["dia_do_mes"]), on="dia_do_mes", how="left")
             v_dia = v_dia.with_columns(status=pl.when(pl.col("vol") > ucl).then(pl.lit("Exp")).when(pl.col("vol") <= lcl).then(pl.lit("Ret")).otherwise(pl.lit("Est")))
             
@@ -144,22 +141,19 @@ def run_dashboard():
 
         st.divider()
 
-        # --- BLOCO 5: LOGIC ENGINE (DIAGNÓSTICO ISENTO) ---
+        # --- BLOCO 5: LOGIC ENGINE ---
         st.subheader("🧠 Drivers de Decisão (Logic Engine)")
         hhi = (dist_data["vendas"] / total_vol).pow(2).sum()
         vol_cv = (s / m) if m > 0 else 0
         confianca = max(0, 100 - (vol_cv * 100))
-        vol_inicial = v_dia.filter(pl.col("dia_do_mes") <= (sel_days[0]+sel_days[1])/2)["vol"].sum()
-        conc_temp = "FRONT-LOADED" if vol_inicial > total_vol/2 else "BACK-LOADED"
         
         st.markdown(f"""
         ```python
-        # Strategic Insights - Logic Engine v2.1.5
+        # Analytical Diagnosis - Logic Engine v2.2.0
         - Saúde da Carteira: Perfil {'CONCENTRADO' if hhi > 0.25 else 'DIVERSIFICADO'} (Índice HHI: {hhi:.2f}).
-        - Dinâmica Temporal: Fluxo de faturamento {conc_temp} na janela selecionada.
-        - Previsibilidade: Nota de Confiança em {confianca:.1f}% (Base estatística Nixtla/Sigma-2).
-        - Estabilidade: {'Flutuação atípica detectada.' if vol_cv > 0.4 else 'Fluxo operacional em regime de normalidade.'}
+        - Previsibilidade: Nota de Confiança em {confianca:.1f}% (Base estatística Nixtla).
+        - Insight Comercial: {len(df_forecast) if 'df_forecast' in locals() else 0} oportunidades de faturamento nominal detectadas.
+        - Estabilidade: {'Atenção: Alta flutuação volumétrica.' if vol_cv > 0.4 else 'Fluxo operando em normalidade estatística.'}
         ```
         """, unsafe_allow_html=True)
-
-    else: st.sidebar.warning("⚠️ Ajuste os filtros para gerar análise.")
+    else: st.sidebar.warning("⚠️ Ajuste os filtros para gerar análise operacional.")
