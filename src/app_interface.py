@@ -135,10 +135,25 @@ def run_dashboard():
             fig_p = px.bar(dist_data, x='vendas', y='marca', orientation='h', color='vendas', template="plotly_dark")
             st.plotly_chart(fig_p, use_container_width=True)
         with c2:
-            st.subheader("🏢 Penetração Setorial")
-            sec_df = df_filt.group_by("industry_sector").len(name="quantidade").sort("quantidade", descending=True)
-            fig_pie = px.pie(sec_df, values="quantidade", names="industry_sector", hole=0.4, template="plotly_dark")
-            st.plotly_chart(fig_pie, use_container_width=True)
+            st.subheader("📈 Estabilidade Operacional (SPC - Carta I)")
+            v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
+            fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', markers=True, 
+                            template="plotly_dark", title="Carta de Controle Individual (I-Chart)")
+            fig_spc.add_hline(y=m, line_dash="solid", line_color="#30363d", 
+                            annotation_text=f"Média: {m:.2f}", annotation_position="bottom left")
+            fig_spc.add_hline(y=m + 3*s, line_dash="dash", line_color="#f85149", 
+                            annotation_text=f"UCL: {m+3*s:.2f}", annotation_position="top left")
+            lcl_val = max(0, m - 3*s)
+            fig_spc.add_hline(y=lcl_val, line_dash="dash", line_color="#f85149", 
+                            annotation_text=f"LCL: {lcl_val:.2f}", annotation_position="bottom left")
+            v_dia = v_dia.with_columns(
+                is_anomaly=pl.when((pl.col("vol") > m + 3*s) | (pl.col("vol") < m - 3*s))
+                .then(pl.lit("Anomalia"))
+                .otherwise(pl.lit("Normal"))
+            )
+            
+            fig_spc.update_traces(mode='lines+markers', marker=dict(size=8))
+            st.plotly_chart(fig_spc, use_container_width=True)
 
         st.divider()
         st.subheader("🧠 Drivers de Decisão (Logic Engine)")
