@@ -177,8 +177,10 @@ def human_format(num):
     return f"{num:.1f}T"
 
 def run_dashboard():
-    """Maestro que orquestra todos os componentes do Dashboard Black Crow v4.8."""
+    # Maestro que orquestra todos os componentes do Dashboard
+    st.set_page_config(page_title=APP_TITLE, layout="wide")
     apply_enterprise_styles()
+
     df_raw = load_processed_data()
     if df_raw.is_empty(): 
         st.error("❌ Base de dados Fleet não carregada corretamente."); st.stop()
