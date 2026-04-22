@@ -1,47 +1,66 @@
-# Automotive Market Intelligence Portal
+# Black Crow Intelligence | Fleet Market Intelligence Framework
 
-Pare de tentar adivinhar o mercado usando médias mentirosas no Excel. Este portal separa o sinal do ruído usando engenharia de verdade e estatística aplicada, sem firulas. Desenvolvido para processar grandes volumes de dados automotivos com performance de baixo nível e inteligência de alto nível.
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![Polars](https://img.shields.io/badge/Engine-Polars-orange.svg)
+![Status](https://img.shields.io/badge/Version-1.3.0--Platinum-brightgreen.svg)
 
-# Arquitetura
-O projeto foi modularizado para ser escalável e resiliente. Se você busca scripts monolíticos e desorganizados, este repositório não é para você.
+> "Ceaseless watcher of anomalies. Tireless weaver of patterns." 
 
-```python
-Market_Intel/
-├── data/               # Camada de Persistência (Parquet/Zstd)
-├── src/                # Núcleo Lógico
-│   ├── engine.py       # Motor de ETL (Vetorização em Rust via Polars)
-│   └── intelligence.py # Analytics Avançado (SPC & Anomaly Detection)
-├── app.py              # Orquestrador da Interface
-└── requirements.txt    # Gestão de Dependências
+**Black Crow Intelligence** não é apenas mais um dashboard bonitinho feito em Power BI por alguém que não sabe o que é um desvio padrão. É um ecossistema preditivo de alta performance para o mercado de frotas (B2B), construído para quem prefere fatos estatísticos a palpites de corredor.
+
+## 🚀 Por que Polars e não o "velho" Pandas?
+
+Porque o tempo é curto e o processamento em Rust é soberano. Enquanto o Pandas ainda está tentando entender o que é um arquivo Parquet pesado, o **Polars** já entregou o resultado, lavou a louça e assistiu a um episódio de *Evangelion*. Performance aqui não é luxo, é pré-requisito.
+
+## 🧠 Camadas de Inteligência
+
+### 1. Core Analytics (O "Health Check" da Realidade)
+* **Pareto Market Share:** Para você saber quem manda no parquinho.
+* **SPC (Statistical Process Control):** Implementação de Z-Score para detectar anomalias. Se o gráfico deu um pulo, o Corvo avisa. Se for ruído estatístico, ele ignora (diferente do seu chefe).
+
+### 2. Predictive Engine (O Oráculo Nixtla-ish)
+* **Sales Radar:** Lead Scoring que separa o "provável comprador" do "curioso que só quer orçamento". Municiamos o time de vendas com alvos reais, não com esperança.
+* **Trend Forecasting:** Projeções de fechamento de mês inspiradas na arquitetura da Nixtla. Prevemos o futuro para que você não precise de uma bola de cristal.
+
+### 3. Logic Engine (A voz da consciência)
+* Tradução de métricas complexas em **Drivers de Decisão**. O sistema mastiga o dado e cospe a ação. Menos reunião, mais execução.
+
+## 🛠️ Stack Tecnológica (O Cinto de Utilidades)
+
+* **Engine:** Polars & PyArrow (Data Processing on Steroids)
+* **Brain:** Scikit-Learn (O básico bem feito vence o hype)
+* **HUD:** Streamlit (Minority Report feelings, mas sem as luvas bregas)
+* **Style:** Plotly Express (Porque gráficos feios deveriam ser crime)
+
+## 📂 Estrutura do Projeto (Organizado por quem tem TOC)
+
+```text
+├── data/               # Onde os dados moram (Parquet/CSV)
+├── src/                # Onde a mágica (e o suor) acontece
+│   ├── analytics_service.py   # Estatística pura, sem filtros
+│   ├── prediction_service.py  # Adivinhando o amanhã com math
+│   ├── data_engine.py         # Ingestão em alta velocidade
+│   └── app_interface.py       # A cara do Corvo
+├── app.py              # O botão de "Ligar" (Root)
+└── requirements.txt    # O que você precisa para não passar passar raiva
 ```
 
-# O que tem por baixo do capô
-* SPC (Statistical Process Control): Monitoramento de estabilidade via limites 3-Sigma. O que sai da linha é anomalia de causa especial, não flutuação comum de mercado.
-* Processamento Arrow-Native: Migração de legado JSON para Parquet com compressão Zstd, garantindo leituras 50x mais rápidas e tipagem estática.
-* Engine Polars: Substituição do Pandas por uma engine multithreaded escrita em Rust, otimizando o uso de CPU no ambiente WSL.
+## ⚙️ Como rodar essa beleza?
 
-## Como rodar (Se você tiver o mínimo de competência)
-Certifique-se de estar em um ambiente Linux/WSL. Copie e execute um bloco por vez.
+```Bash
+git clone (https://github.com/Belaskco/fleet-market-intelligence.git)
+cd fleet-market-intelligence
+```
 
-```bash
-# Clone o repositório
-git clone https://github.com/belaskco/market_intel.git
-# Entre na pasta (O passo que a maioria esquece)
-cd market_intel
-# Instale as dependências (Use seu venv)
+Instalar o que importa:
+```Bash
 pip install -r requirements.txt
-# Execute a aplicação
+```
+
+Rodar o Streamlit:
+```Bash
 streamlit run app.py
 ```
 
-# Utilitários de Engenharia
-O repositório inclui ferramentas de elite para manutenção de dados:
-
-* ```migrate_data.py```: Converte o lixo JSON em ouro Parquet.
-* ```inspect_parquet.py```: Validação técnica de schema e integridade binária.
-
-# Considerações
-Matemática aplicada ao caos automotivo. Se o código for útil, ótimo. Se encontrar um bug, sinta-se à vontade para consertar e abrir um Pull Request — ou continue reclamando no LinkedIn.
-
-### Desenvolvido por Cassio de Andrade.
-https://www.linkedin.com/in/cassioandrade84/
+---
+*Desenvolvido com café, ódio direcionado e precisão cirúrgica por Cássio Ferreira de Andrade.*
