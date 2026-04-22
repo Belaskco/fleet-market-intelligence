@@ -31,10 +31,10 @@ def set_all_state(label, options, value):
         st.session_state[f"chk_{label}_{opt}"] = value
 
 def run_dashboard():
-    """Interface Fleet Intel - Edição Adaptativa & Preditiva."""
+    """Interface Fleet Intel v2.5.5 - Adaptive & Preditiva."""
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # CSS Adaptativo: Bordas e sombras para suporte a Light/Dark Mode
+    # CSS Adaptativo: Suporte a Light/Dark Mode com foco em legibilidade executiva
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
@@ -52,9 +52,10 @@ def run_dashboard():
     def get_cached_data(): return load_processed_data()
 
     df_raw = get_cached_data()
-    if df_raw.is_empty(): st.error("❌ Base Fleet não encontrada."); st.stop()
+    if df_raw.is_empty(): 
+        st.error("❌ Base Fleet não encontrada."); st.stop()
 
-    # --- SIDEBAR: SEGMENTAÇÃO ---
+    # --- SIDEBAR: SEGMENTAÇÃO ESTRATÉGICA ---
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
         st.title("Fleet Control")
@@ -67,28 +68,42 @@ def run_dashboard():
                 c2.button("Nenhum", key=f"none_{label}", on_click=set_all_state, args=(label, options, False))
                 return [opt for opt in options if st.checkbox(opt, key=f"chk_{label}_{opt}", value=st.session_state.get(f"chk_{label}_{opt}", True))]
 
+        # Filtros restaurados e renomeados
         sel_marcas = create_smart_filter("Marcas", sorted(df_raw["marca"].unique().to_list()))
-        sel_ufs = create_smart_filter("Mercados (UF)", sorted(df_raw["uf"].unique().to_list()))
+        sel_paises = create_smart_filter("Países", sorted(df_raw["uf"].unique().to_list()))
+        sel_setores = create_smart_filter("Setores", sorted(df_raw["industry_sector"].unique().to_list()))
+        
         st.divider() 
         sel_days = st.slider("Janela de Observação (Dias):", 1, 31, (1, 31))
-        st.caption("v2.5.0 | Fleet Adaptive Nixtla")
+        st.caption("v2.5.5 | Fleet Adaptive Edition")
 
-    # --- BLINDAGEM D-1 ---
-    max_date = df_raw["data_faturamento"].max()
-    df_filt = apply_business_filters(df_raw, sel_marcas, sel_ufs, sel_days)
-    df_filt = df_filt.filter(pl.col("data_faturamento") < max_date)
+    # --- BLINDAGEM D-1 E PROCESSAMENTO ---
+    # Verificação de segurança para a coluna de data faturamento
+    if "data_faturamento" in df_raw.columns:
+        max_date = df_raw["data_faturamento"].max()
+        df_filt = apply_business_filters(df_raw, sel_marcas, sel_paises, sel_days)
+        # Filtro de Indústria (Setores)
+        if sel_setores:
+            df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
+        
+        # Blindagem Rapha: Corta o último dia para evitar "quedas artificiais"
+        df_filt = df_filt.filter(pl.col("data_faturamento") < max_date)
+    else:
+        st.error("⚠️ Coluna 'data_faturamento' não localizada na base.")
+        st.stop()
 
     if not df_filt.is_empty():
         # Inteligência Analítica
         total_vol = len(df_filt)
         v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
+        # Pareto: Ordenação descendente para extrair o líder no código
         dist_data = AnalyticsService.get_pareto_distribution(df_filt).sort("vendas", descending=True)
         proj_vol, trend = PredictionService.get_market_trend(df_filt)
         v_future = PredictionService.get_daily_forecast(df_filt)
         
         st.title(f"{APP_TITLE}")
         
-        # --- KPIs ---
+        # --- BLOCO 1: KPIs ---
         k1, k2, k3, k4, k5 = st.columns(5)
         k1.metric("Vendas (D-1)", f"{total_vol:,}")
         if not dist_data.is_empty():
@@ -96,11 +111,12 @@ def run_dashboard():
             k2.metric("Líder de Canal", f"{dist_data['marca'][0][:12]}...", delta=f"{share:.1%} Share")
         k3.metric("Frequência", f"{total_vol/(sel_days[1]-sel_days[0]+1):.1f} un/dia")
         k4.metric("Mercados Ativos", f"{len(df_filt['uf'].unique())}")
+        # Valor monetário formatado para leitura simplificada
         k5.metric("Forecast (USD)", human_format(proj_vol * 450000), delta=trend)
 
         st.divider()
 
-        # --- CICLOS E OPORTUNIDADES ---
+        # --- BLOCO 2: CICLOS E OPORTUNIDADES ---
         c_left, c_right = st.columns([1.5, 1])
         with c_left:
             st.subheader("📊 Ciclos de Faturamento (Histórico)")
@@ -120,11 +136,11 @@ def run_dashboard():
 
         st.divider()
 
-        # --- PARETO E SPC FORECAST ---
+        # --- BLOCO 3: PARETO E SPC FORECAST ---
         c1, c2 = st.columns(2)
         with c1:
             st.subheader("🏆 Pareto de Líderes")
-            # Invertido: Maior no topo (head 10 ordenado ASC para gráfico horizontal)
+            # Invertido para que o líder apareça no TOPO do gráfico horizontal (ordenado ASC)
             fig_bar = px.bar(dist_data.head(10).sort("vendas", descending=False), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR])
             fig_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=0, b=0))
             st.plotly_chart(fig_bar, use_container_width=True)
@@ -133,7 +149,7 @@ def run_dashboard():
             st.subheader("📈 Estabilidade + Forecast Pontilhado")
             ucl, lcl = m + 2*s, max(0, m - 2*s)
             fig_spc = go.Figure()
-            # Histórico Real
+            # Histórico Real (Sólido)
             fig_spc.add_trace(go.Scatter(x=v_dia['dia_do_mes'], y=v_dia['vol'], mode='lines+markers', name='Real', line=dict(color=THEME_COLOR)))
             # Forecast Nixtla (Pontilhado)
             if not v_future.is_empty():
