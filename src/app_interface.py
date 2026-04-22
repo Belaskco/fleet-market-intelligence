@@ -9,7 +9,7 @@ from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
-# Setup de path para garantir consistência dos imports em diferentes ambientes
+# Setup de path para garantir consistência dos imports em deploy (Streamlit Cloud)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
@@ -18,12 +18,12 @@ if project_root not in sys.path:
 def run_dashboard():
     """
     Orquestrador da interface. Foco em Sales Intelligence e visões preditivas 
-    para suporte à decisão comercial.
+    para suporte à decisão estratégica e operacional.
     """
     
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # Injection de CSS para manter a identidade visual Dark/GitHub
+    # Injeção de CSS para garantir identidade visual Dark/GitHub Enterprise
     st.markdown(f"""
         <style>
         .stMetric {{ 
@@ -73,7 +73,7 @@ def run_dashboard():
         sel_days = st.slider("Janela de Observação (Dias):", 1, 31, (1, 31))
         st.caption("Black Crow Intelligence | v1.3.0 Platinum")
 
-    # Pipeline de filtragem baseado nas regras de negócio
+    # Execução do pipeline de filtragem via DataEngine
     df_filt = apply_business_filters(df_raw, sel_marcas, sel_ufs, sel_days)
     if not sel_setores == setores_disp:
         df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
@@ -99,7 +99,6 @@ def run_dashboard():
         col_list, col_chart = st.columns([2, 1])
         
         with col_list:
-            st.write("Clientes com maior propensão de renovação/expansão de frota:")
             st.dataframe(
                 opportunities, 
                 column_config={
@@ -115,15 +114,15 @@ def run_dashboard():
         with col_chart:
             proj_vol, trend = PredictionService.get_market_trend(df_filt)
             st.metric("Forecast Fechamento Mês", f"{proj_vol} un.", delta=trend)
-            st.info(f"Tendência de mercado: **{trend}**. Focar ações em propensão 'Alta'.")
+            st.info(f"Tendência detectada: **{trend}**. Priorizar leads com propensão 'Alta'.")
 
         st.divider()
 
-        # --- BLOCO 3: DIAGNÓSTICO & HEALTH CHECK ---
+        # --- BLOCO 3: DIAGNÓSTICO OPERACIONAL ---
         st.subheader("📊 Diagnóstico Operacional")
-        anomalies = PredictionService.identify_anomalies(df_filt)
-        if not anomalies.is_empty():
-            st.warning(f"Atenção: Detectadas {len(anomalies)} oscilações atípicas no período.")
+        anomalies_df = PredictionService.identify_anomalies(df_filt)
+        if not anomalies_df.is_empty():
+            st.warning(f"Atenção: Detectadas {len(anomalies_df)} oscilações atípicas no período.")
         else:
             st.success("✅ Estabilidade estatística confirmada no volume de vendas.")
 
@@ -132,44 +131,54 @@ def run_dashboard():
         c1, c2 = st.columns(2)
         
         with c1:
-            st.subheader("🏆 Market Share")
+            st.subheader("🏆 Market Share (Pareto)")
             fig_p = px.bar(dist_data, x='vendas', y='marca', orientation='h', color='vendas', template="plotly_dark")
             st.plotly_chart(fig_p, use_container_width=True)
             
         with c2:
             st.subheader("📈 Estabilidade (SPC - Carta I)")
-            # Cálculo de métricas para Carta I (Individual) via AnalyticsService
+            
+            # Cálculo de métricas estatísticas via AnalyticsService
             v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
             
-            # Feature engineering para highlight visual de anomalias estatísticas (>3 sigma)
-            v_dia = v_dia.with_columns(
-                is_anomaly=pl.when((pl.col("vol") > m + 3*s) | (pl.col("vol") < m - 3*s))
-                .then(pl.lit("Anomalia"))
-                .otherwise(pl.lit("Normal"))
-            )
-
-            fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', markers=True, 
-                            template="plotly_dark", title="Carta de Controle Individual")
-            
-            # Plotagem dos limites estatísticos (UCL/LCL/CL)
-            fig_spc.add_hline(y=m, line_dash="solid", line_color="#30363d", 
-                            annotation_text=f"Média: {m:.2f}")
-            fig_spc.add_hline(y=m + 3*s, line_dash="dash", line_color="#f85149", 
-                            annotation_text=f"UCL: {m+3*s:.2f}")
-            
-            lcl_val = max(0, m - 3*s)
-            fig_spc.add_hline(y=lcl_val, line_dash="dash", line_color="#f85149", 
-                            annotation_text=f"LCL: {lcl_val:.2f}")
-            
-            # Override visual: Marcadores vermelhos para anomalias estatísticas
-            fig_spc.update_traces(
-                mode='lines+markers',
-                marker=dict(
-                    color=['#f85149' if a == "Anomalia" else THEME_COLOR for a in v_dia["is_anomaly"]],
-                    size=10
+            if not v_dia.is_empty():
+                # Feature engineering: Highlighting de anomalias estatísticas (> 3 sigma)
+                v_dia = v_dia.with_columns(
+                    is_anomaly=pl.when((pl.col("vol") > m + 3*s) | (pl.col("vol") < m - 3*s))
+                    .then(pl.lit("Anomalia"))
+                    .otherwise(pl.lit("Normal"))
                 )
-            )
-            st.plotly_chart(fig_spc, use_container_width=True)
+
+                fig_spc = px.line(
+                    v_dia, 
+                    x='dia_do_mes', 
+                    y='vol', 
+                    markers=True, 
+                    template="plotly_dark",
+                    title="Carta de Controle Individual (I-Chart)"
+                )
+                
+                # Plotagem das linhas de controle (UCL/LCL/CL)
+                fig_spc.add_hline(y=m, line_dash="solid", line_color="#30363d", annotation_text=f"Média: {m:.2f}")
+                fig_spc.add_hline(y=m + 3*s, line_dash="dash", line_color="#f85149", annotation_text=f"UCL: {m+3*s:.2f}")
+                
+                lcl_val = max(0, m - 3*s)
+                fig_spc.add_hline(y=lcl_val, line_dash="dash", line_color="#f85149", annotation_text=f"LCL: {lcl_val:.2f}")
+                
+                # Tratamento visual: Marcadores vermelhos para anomalias estatísticas
+                colors = ['#f85149' if a == "Anomalia" else THEME_COLOR for a in v_dia["is_anomaly"].to_list()]
+                
+                fig_spc.update_traces(
+                    mode='lines+markers',
+                    marker=dict(
+                        color=colors,
+                        size=10,
+                        line=dict(width=1, color='white')
+                    )
+                )
+                st.plotly_chart(fig_spc, use_container_width=True)
+            else:
+                st.info("ℹ️ Dados insuficientes para cálculo de estabilidade no período.")
 
         st.divider()
         st.subheader("🧠 Drivers de Decisão (Logic Engine)")
