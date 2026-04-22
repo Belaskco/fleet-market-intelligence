@@ -16,13 +16,13 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 def set_all_state(label, options, value):
-    """Callback para controle de massa dos filtros (Todos/Nenhum)."""
+    # Callback para controle de massa dos filtros (Todos/Nenhum).
     for opt in options:
         st.session_state[f"chk_{label}_{opt}"] = value
 
 def run_dashboard():
     """
-    Interface Black Crow Intel v2.2.8.
+    Interface Black Crow Intel.
     Arquitetura focada em Predição Nominal e Diagnóstico de Estabilidade.
     """
     st.set_page_config(page_title=APP_TITLE, layout="wide")
@@ -154,6 +154,7 @@ def run_dashboard():
         # Strategic Insights - Logic Engine v2.2.8
         - Saúde da Carteira: Perfil {'CONCENTRADO' if hhi > 0.25 else 'DIVERSIFICADO'} (HHI: {hhi:.2f}).
         - Previsibilidade: Nota de Confiança em {confianca:.1f}% (Base Sigma-2).
+        - Insight Comercial: {len(df_forecast) if 'df_forecast' in locals() else 0} oportunidades de faturamento nominal detectadas.
         - Estabilidade: {'Flutuação atípica detectada.' if vol_cv > 0.4 else 'Fluxo operacional em regime de normalidade.'}
         ```
         """, unsafe_allow_html=True)
