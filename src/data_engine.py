@@ -1,7 +1,7 @@
 import polars as pl
 import logging
 import os
-from src.config import FCT_SALES_PATH, COLUMN_MAP
+from src.config import FCT_SALES_PATH
 from typing import List
 
 logging.basicConfig(level=logging.INFO)
@@ -9,8 +9,8 @@ logger = logging.getLogger("DataEngine")
 
 def load_processed_data() -> pl.DataFrame:
     """
-    Carrega o Parquet real (fct_sales_history.parquet) e normaliza 
-    as colunas detetadas na inspeção para o padrão do sistema.
+    Carrega e normaliza os dados. 
+    Centraliza o mapeamento de colunas para simplificar a visualização.
     """
     if not os.path.exists(FCT_SALES_PATH):
         logger.error(f"Ficheiro não encontrado: {FCT_SALES_PATH}")
@@ -19,20 +19,24 @@ def load_processed_data() -> pl.DataFrame:
     try:
         df = pl.read_parquet(FCT_SALES_PATH)
         
-        # 1. Normalização de Schema baseada na inspeção (image_564ce2.png)
-        # Mapeamos os nomes reais do Parquet para os nomes que o resto do app usa
+        # Mapeamento Universal: O dashboard só conhece estes 4 nomes
         schema_map = {
             "company_name": "marca",
+            "marca": "marca",
             "hq_country": "uf",
+            "uf": "uf",
             "order_value": "faturamento",
-            "purchase_date": "data_faturamento"
+            "faturamento": "faturamento",
+            "purchase_date": "data_faturamento",
+            "data_faturamento": "data_faturamento"
         }
         
-        # Aplicamos o mapeamento (respeitando o que já existe no COLUMN_MAP se necessário)
-        df = df.rename({k: v for k, v in schema_map.items() if k in df.columns})
+        # Renomeia apenas as colunas que existem no ficheiro
+        current_cols = df.columns
+        rename_dict = {k: v for k, v in schema_map.items() if k in current_cols and k != v}
+        df = df.rename(rename_dict)
         
-        # 2. Tratamento Crítico de Datas
-        # O Nixtla precisa que 'data_faturamento' seja Date (sem horas)
+        # Normalização de Tipos
         if "data_faturamento" in df.columns:
             df = df.with_columns([
                 pl.col("data_faturamento").cast(pl.Date),
@@ -41,11 +45,11 @@ def load_processed_data() -> pl.DataFrame:
             
         return df
     except Exception as e:
-        logger.error(f"Falha na carga dos dados reais: {e}")
+        logger.error(f"Falha na carga/normalização: {e}")
         return pl.DataFrame()
 
 def apply_business_filters(df: pl.DataFrame, marcas: List[str], ufs: List[str], dias: tuple) -> pl.DataFrame:
-    """Aplica filtros operacionais usando a Rust Engine do Polars."""
+    """Aplica filtros usando a performance da Rust Engine do Polars."""
     if df.is_empty():
         return df
     
