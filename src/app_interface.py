@@ -9,24 +9,37 @@ from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
-# Setup de ambiente para garantir a resolução de módulos em produção
+# Setup de ambiente: Garante a resolução de caminhos no Streamlit Cloud
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
+def set_all_state(label, options, value):
+    """
+    CORE UX LOGIC: Callback para controle de massa.
+    Atualiza o Session State de todos os checkboxes de um grupo antes do rerun,
+    garantindo sincronia total no ambiente Streamlit.io.
+    """
+    for opt in options:
+        st.session_state[f"chk_{label}_{opt}"] = value
+
 def run_dashboard():
-    # Interface Black Crow Intel. 
-    
+    """
+    Interface Black Crow Intel. 
+    Design focado em baixa carga cognitiva, filtros expansíveis e 
+    diagnóstico estatístico de mercado (SPC).
+    """
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # Injeção de CSS para identidade visual e métricas compactas
+    # Injeção de CSS: Padronização Visual Dark Mode & Customização de Métricas
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
         .stMetric {{ background-color: #161b22; border: 1px solid #30363d; padding: 15px; border-radius: 10px; }}
         div[data-testid="stSidebar"] {{ background-color: #0d1117; }}
-        .stButton button {{ width: 100%; padding: 0px; height: 1.5rem; font-size: 0.7rem !important; }}
+        div[data-testid="stInfo"] {{ background-color: #0d1117; border: 1px solid #30363d; color: {THEME_COLOR}; }}
+        .stButton button {{ width: 100%; height: 1.8rem; font-size: 0.8rem !important; }}
         </style>
     """, unsafe_allow_html=True)
 
@@ -37,10 +50,10 @@ def run_dashboard():
     df_raw = get_cached_data()
 
     if df_raw.is_empty():
-        st.error("❌ Erro de Sistema: Falha na ingestão do repositório de dados.")
+        st.error("❌ Erro de Infraestrutura: Base fct_sales não encontrada ou vazia.")
         st.stop()
 
-    # --- SIDEBAR: SEGMENTAÇÃO COM CONTROLE DE MASSA ---
+    # --- SIDEBAR: SEGMENTAÇÃO E FILTROS COMPACTOS ---
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=80)
         st.title("Market Control")
@@ -49,66 +62,53 @@ def run_dashboard():
         st.subheader("🎯 Filtros Estratégicos")
 
         def create_smart_filter(label, options):
-            
-            # Expander com lógica funcional de Select All / Clear All.
+            """Gera expander com botões de Todos/Nenhum via Callbacks."""
             with st.expander(label, expanded=False):
                 c1, c2 = st.columns(2)
                 
-                # Chaves de controle
-                state_key = f"master_{label}"
-                if state_key not in st.session_state:
-                    st.session_state[state_key] = True
-
-                # Callbacks para forçar a atualização dos checkboxes individuais
-                if c1.button("Todos", key=f"btn_all_{label}"):
-                    st.session_state[state_key] = True
-                    for opt in options:
-                        st.session_state[f"chk_{label}_{opt}"] = True
-                
-                if c2.button("Nenhum", key=f"btn_none_{label}"):
-                    st.session_state[state_key] = False
-                    for opt in options:
-                        st.session_state[f"chk_{label}_{opt}"] = False
+                # Botões com disparadores de callback (Solução para Streamlit.io)
+                c1.button("Todos", key=f"btn_all_{label}", on_click=set_all_state, args=(label, options, True))
+                c2.button("Nenhum", key=f"btn_none_{label}", on_click=set_all_state, args=(label, options, False))
 
                 selected = []
                 for opt in options:
-                    # O checkbox amarrado diretamente à sua própria chave no session_state
                     chk_key = f"chk_{label}_{opt}"
+                    # Inicialização segura do estado (Default: True)
                     if chk_key not in st.session_state:
-                        st.session_state[chk_key] = st.session_state[state_key]
+                        st.session_state[chk_key] = True
                     
                     if st.checkbox(opt, key=chk_key):
                         selected.append(opt)
                 return selected
 
-        # Renderização dos filtros
+        # Renderização dos Expanders (Substituindo os Chiclets/Multiselect)
         marcas_disp = sorted(df_raw["marca"].unique().to_list())
-        sel_marcas = create_smart_filter("Foco em Marcas", marcas_disp)
+        sel_marcas = create_smart_filter("Marcas", marcas_disp)
 
         paises_disp = sorted(df_raw["uf"].unique().to_list())
-        sel_paises = create_smart_filter("Mercados Internacionais", paises_disp)
+        sel_paises = create_smart_filter("Mercados", paises_disp)
 
         setores_disp = sorted(df_raw["industry_sector"].unique().to_list())
-        sel_setores = create_smart_filter("Setores Industriais", setores_disp)
+        sel_setores = create_smart_filter("Setores", setores_disp)
 
         st.divider()
         sel_days = st.slider("Janela de Observação (Dias):", 1, 31, (1, 31))
-        st.caption("Black Crow Intelligence | v1.6.5 Platinum")
+        st.caption("Black Crow Intelligence | v1.7.5 Final Platinum")
 
-    # --- PROCESSAMENTO DE DADOS ---
+    # --- PROCESSAMENTO DE DADOS (CLEAN ENGINE) ---
     df_filt = apply_business_filters(df_raw, sel_marcas, sel_paises, sel_days)
     if sel_setores:
         df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
 
     if not df_filt.is_empty():
-        # PRÉ-CÁLCULO: Variáveis globais para estabilidade de renderização
+        # Cálculos de Inteligência
         v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
         dist_data = AnalyticsService.get_pareto_distribution(df_filt)
         total_vol = len(df_filt)
         
         st.title(f"{APP_TITLE}")
         
-        # --- BLOCO 1: STRATEGIC MARKET KPIs ---
+        # --- BLOCO 1: STRATEGIC KPIs (UX ANTI-TRUNCAMENTO) ---
         k1, k2, k3, k4, k5 = st.columns(5)
         
         loc_col = "city" if "city" in df_filt.columns else "uf"
@@ -128,7 +128,7 @@ def run_dashboard():
 
         k3.metric("Taxa de Conversão", f"{total_vol/(sel_days[1]-sel_days[0]+1):.1f} un/dia")
         k4.metric("Capilaridade", f"{len(dist_loc)} Locais", help=f"Hub detectado: {top_loc}")
-        k5.metric("Conc. Regional", f"{concentracao:.1%}", help=f"Localidade dominante: {top_loc}")
+        k5.metric("Conc. Regional", f"{concentracao:.1%}", help=f"Risco: {top_loc} detém {concentracao:.1%} do share.")
 
         st.divider()
 
@@ -143,7 +143,7 @@ def run_dashboard():
 
         st.divider()
 
-        # --- BLOCO 3: ESTRATÉGIA & ESTABILIDADE (SPC) ---
+        # --- BLOCO 3: ESTRATÉGIA & SPC (ESTABILIDADE) ---
         c1, c2 = st.columns(2)
 
         with c1:
@@ -153,9 +153,9 @@ def run_dashboard():
 
         with c2:
             st.subheader("📈 Estabilidade (SPC - Carta I)")
-            ucl = m + 2 * s
-            lcl = max(1, m - 2 * s)
+            ucl, lcl = m + 2 * s, max(1, m - 2 * s)
 
+            # Blindagem de metadados para Hover dinâmico
             if "marca" not in v_dia.columns:
                 v_dia = v_dia.join(df_filt.select(["dia_do_mes", "marca"]).unique(subset=["dia_do_mes"]), on="dia_do_mes", how="left")
 
@@ -165,30 +165,25 @@ def run_dashboard():
                         .otherwise(pl.lit("Estável"))
             )
 
-            # Alertas Nominais: Conversão de sinais estatísticos em alertas de negócio
+            # Alertas Nominais
             exp_pts = v_dia.filter(pl.col("status") == "Expansão")
             ret_pts = v_dia.filter(pl.col("status") == "Retração")
             
             if not exp_pts.is_empty():
                 st.success(f"🚀 **Expansão:** Picos detectados em **{', '.join(exp_pts['marca'].unique().to_list())}**.")
             if not ret_pts.is_empty():
-                st.error(f"⚠️ **Risco:** Inatividade/Queda em **{', '.join(ret_pts['marca'].unique().to_list())}**.")
+                st.error(f"⚠️ **Risco:** Queda de performance em **{', '.join(ret_pts['marca'].unique().to_list())}**.")
 
-            fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', markers=True, 
-                            custom_data=['marca', 'status'], template="plotly_dark",
-                            range_y=[-0.5, max(ucl, v_dia["vol"].max()) * 1.2])
+            # Renderização Plotly com Custom Data para Hover em Nuvem
+            fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', markers=True, custom_data=['marca', 'status'], template="plotly_dark")
+            fig_spc.update_traces(hovertemplate="<br>".join(["Dia: %{x}", "Vol: %{y}", "Marca: %{customdata[0]}", "Status: %{customdata[1]}"]))
             
-            fig_spc.update_traces(
-                hovertemplate="<br>".join(["Dia: %{x}", "Vol: %{y}", "Marca: %{customdata[0]}", "Status: %{customdata[1]}"])
-            )
-
-            fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL (Expansão)")
+            fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL")
             fig_spc.add_hline(y=m, line_dash="solid", line_color="white", opacity=0.2)
-            fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL (Retração)")
+            fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL")
 
             color_map = {'Expansão': '#238636', 'Retração': '#da3633', 'Estável': THEME_COLOR}
             colors = [color_map[v] for v in v_dia["status"].to_list()]
-            
             fig_spc.update_traces(marker=dict(color=colors, size=10, line=dict(width=1, color='white')))
             st.plotly_chart(fig_spc, use_container_width=True)
 
@@ -197,4 +192,4 @@ def run_dashboard():
         st.code(AnalyticsService.get_decision_rules(df_filt), language='python')
 
     else:
-        st.sidebar.warning("⚠️ Seleção sem dados. Revise os filtros de segmentação.")
+        st.sidebar.warning("⚠️ Seleção sem dados. Revise os filtros operacionais.")
