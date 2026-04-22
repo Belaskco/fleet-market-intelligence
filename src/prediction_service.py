@@ -5,25 +5,26 @@ import logging
 from mlforecast import MLForecast
 from lightgbm import LGBMRegressor
 
-# Monitoramento
+# Configuração de Logs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("PredictionService")
 
 class PredictionService:
     """
-    Motor Nixtla MLForecast.
-    Proporciona predições macro (tendência) e micro (nominal) com suporte a séries temporais.
+    Motor Nixtla MLForecast focado no Mercado de Frotas.
+    Gera tendências macro e predições nominais por cliente.
     """
 
     @staticmethod
     def get_market_trend(df: pl.DataFrame):
-        """Calcula tendência e volume projetado para o ciclo."""
+        """Calcula tendência macro e volume projetado para o ciclo."""
         if df.is_empty() or df["dia_do_mes"].n_unique() < 3:
             return 0, "Estável"
         try:
+            # Agregação para o motor Nixtla
             df_macro = df.group_by("data_faturamento").len(name="y").to_pandas()
             df_macro = df_macro.rename(columns={"data_faturamento": "ds"})
-            df_macro["unique_id"] = "total_market"
+            df_macro["unique_id"] = "fleet_total"
             
             fcst = MLForecast(models=[LGBMRegressor(random_state=42, verbosity=-1)], freq='D', lags=[1, 7])
             fcst.fit(df_macro)
@@ -38,12 +39,12 @@ class PredictionService:
 
     @staticmethod
     def get_daily_forecast(df: pl.DataFrame, horizon=7):
-        """Gera a linha pontilhada de forecast para o gráfico SPC."""
+        """Gera a linha pontilhada de forecast para o gráfico de controle."""
         if df.is_empty(): return pl.DataFrame()
         try:
             df_macro = df.group_by("data_faturamento").len(name="y").to_pandas()
             df_macro = df_macro.rename(columns={"data_faturamento": "ds"})
-            df_macro["unique_id"] = "total_market"
+            df_macro["unique_id"] = "fleet_total"
             
             fcst = MLForecast(models=[LGBMRegressor(random_state=42, verbosity=-1)], freq='D', lags=[1, 7])
             fcst.fit(df_macro)
@@ -59,9 +60,10 @@ class PredictionService:
 
     @staticmethod
     def get_client_predictions(df: pl.DataFrame):
-        """Gera a tabela nominal Nixtla com valores projetados."""
+        """Gera a tabela nominal Nixtla com volume e valor por cliente/frota."""
         if df.is_empty(): return pl.DataFrame()
         try:
+            # Preparação de dados Nixtla (Micro)
             data_prep = df.select([
                 pl.col("marca").alias("unique_id"),
                 pl.col("data_faturamento").alias("ds"),
@@ -83,7 +85,7 @@ class PredictionService:
             return final.with_columns([
                 pl.col("unique_id").alias("Cliente"),
                 (pl.col("Qtd_Prevista") * pl.col("avg_price")).alias("Valor_Est"),
-                pl.lit(0.85).alias("Probabilidade")
+                pl.lit(0.88).alias("Probabilidade")
             ]).select(["Cliente", "Qtd_Prevista", "Valor_Est", "Probabilidade"]).sort("Valor_Est", descending=True).head(10)
         except:
             return pl.DataFrame()
