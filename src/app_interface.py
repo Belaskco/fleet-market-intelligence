@@ -12,7 +12,7 @@ from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
 def human_format(num):
-    """Formata números para leitura humana (K, M, B)."""
+    """Formata números para escala K, M, B de fácil leitura."""
     if num is None or num == 0: return "0"
     magnitude = 0
     while abs(num) >= 1000:
@@ -26,12 +26,12 @@ def set_all_state(label, options, value):
 
 def run_dashboard():
     """
-    Interface Black Crow Intel v2.8.0.
-    Foco em Previsão Mensal, Timeline Linear e Alertas de Estabilidade.
+    Interface Black Crow Intel v3.0.0.
+    Foco: Ciclo Mensal Atual + 7 Dias Preditivos (Semana Seguinte).
     """
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # CSS Adaptativo para suporte a Light/Dark Mode (Estilo Enterprise)
+    # CSS Customizado (Rapha Edition)
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
@@ -51,12 +51,10 @@ def run_dashboard():
     df_raw = get_cached_data()
     if df_raw.is_empty(): st.error("❌ Base de dados Fleet não encontrada."); st.stop()
 
-    # --- MAPEAMENTO DE COLUNA DE DATA (purchase_date do seu Parquet) ---
+    # --- MAPEAMENTO DE COLUNA DE DATA ---
     date_col = "purchase_date" if "purchase_date" in df_raw.columns else "data_faturamento"
-    if date_col not in df_raw.columns:
-        st.error(f"⚠️ Erro de Schema: Coluna {date_col} não encontrada."); st.stop()
-
-    # --- SIDEBAR: FILTROS ---
+    
+    # --- SIDEBAR: FILTROS E SEGMENTAÇÃO ---
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
         st.title("Market Control")
@@ -73,7 +71,7 @@ def run_dashboard():
         sel_paises = create_smart_filter("Países", sorted(df_raw["uf"].unique().to_list()))
         sel_setores = create_smart_filter("Setores", sorted(df_raw["industry_sector"].unique().to_list()))
         st.divider()
-        sel_days = st.slider("Janela de Observação (Dias do Mês):", 1, 31, (1, 31))
+        sel_days = st.slider("Janela Mensal (Dias do Mês):", 1, 31, (1, 31))
 
     # --- PROCESSAMENTO D-1 E FILTROS ---
     max_date = df_raw[date_col].max()
@@ -81,22 +79,31 @@ def run_dashboard():
     if sel_setores:
         df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
     
-    # Blindagem: Removemos o último dia incompleto para evitar distorções
+    # Blindagem D-1
     df_filt = df_filt.filter(pl.col(date_col) < max_date)
 
     if not df_filt.is_empty():
         # Inteligência Analítica
         total_vol = len(df_filt)
-        v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
-        
-        # Agregação temporal real para garantir linha contínua (Timeline)
         v_temporal = df_filt.group_by(date_col).len(name="vol").sort(date_col)
         
-        dist_data = AnalyticsService.get_pareto_distribution(df_filt).sort("vendas", descending=False)
+        # Identificamos o Mês Atual para o Gráfico de Controle
+        latest_month = max_date.month
+        latest_year = max_date.year
         
-        # Previsão focada no mês seguinte (horizonte de ~30 dias)
+        # Filtramos a série temporal para mostrar apenas o mês atual
+        v_current_month = v_temporal.filter(
+            (pl.col(date_col).dt.month() == latest_month) & 
+            (pl.col(date_col).dt.year() == latest_year)
+        )
+        
+        # Previsão: Próxima semana (7 dias)
         proj_vol, trend = PredictionService.get_market_trend(df_filt)
-        v_future = PredictionService.get_daily_forecast(df_filt, horizon=30) 
+        v_future = PredictionService.get_daily_forecast(df_filt, horizon=7) 
+        
+        # Estatísticas SPC (calculadas sobre a janela filtrada para manter contexto)
+        v_dia_spc, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
+        dist_data = AnalyticsService.get_pareto_distribution(df_filt).sort("vendas", descending=False)
         
         st.title(f"{APP_TITLE}")
         
@@ -109,76 +116,94 @@ def run_dashboard():
             k2.metric("Líder de Canal", f"{lider['marca'][0][:12]}...", delta=f"{share:.1%} Share")
         k3.metric("Frequência", f"{total_vol/(sel_days[1]-sel_days[0]+1):.1f} un/dia")
         k4.metric("Mercados Ativos", f"{len(df_filt['uf'].unique())}")
-        k5.metric("Forecast Próx. Mês", human_format(proj_vol * 450000), delta=trend)
+        k5.metric("Forecast Próx. Ciclo", human_format(proj_vol * 450000), delta=trend)
 
         st.divider()
 
         # --- BLOCO 2: DIAGNÓSTICO E ANTECIPAÇÃO ---
         c_left, c_right = st.columns([1.6, 1])
         with c_left:
-            st.subheader("📊 Diagnóstico de Trajetória")
+            st.subheader("📊 Diagnóstico de Trajetória (Série Completa)")
             fig_area = px.area(v_temporal, x=date_col, y='vol', color_discrete_sequence=[THEME_COLOR])
             fig_area.update_layout(height=280, margin=dict(t=10, b=10, l=10, r=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig_area, use_container_width=True)
-            st.info(f"O mercado apresenta trajetória **{trend}**. Projeção para o mês seguinte: **{proj_vol} unidades**.")
+            st.info(f"O mercado apresenta trajetória **{trend}**. Projeção estimada: **{proj_vol} unidades**.")
         
         with c_right:
-            st.subheader("🔮 Antecipação Nominal (Próx. Mês)")
+            st.subheader("🔮 Antecipação Nominal (Próx. Semana)")
             df_forecast = PredictionService.get_client_predictions(df_filt)
             if not df_forecast.is_empty():
                 df_view = df_forecast.with_columns(pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor Formatado"))
                 st.dataframe(df_view.select(["Cliente", "Qtd_Prevista", "Valor Formatado", "Probabilidade"]), use_container_width=True, hide_index=True,
                              column_config={"Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1)})
-            else:
-                st.info("💡 Dados insuficientes para forecast nominal por cliente.")
 
         st.divider()
 
-        # --- BLOCO 3: ESTABILIDADE E MIX ---
+        # --- BLOCO 3: ESTABILIDADE E PARETO ---
         c1, c2 = st.columns(2)
         with c1:
-            st.subheader("🏆 Mix de Líderes (Pareto)")
+            st.subheader("🏆 Pareto de Líderes")
             fig_bar = px.bar(dist_data.tail(10), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR])
             fig_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=0, b=0))
             st.plotly_chart(fig_bar, use_container_width=True)
             
         with c2:
-            st.subheader("📈 Controle Estatístico + Forecast Pontilhado")
+            st.subheader("📈 Controle (Mês Atual + 7D Forecast)")
             ucl, lcl = m + 2*s, max(0, m - 2*s)
             
-            # Alertas de Estabilidade SPC
-            last_vol = v_temporal.tail(1)["vol"][0]
-            if last_vol > ucl:
-                st.success(f"🚀 **Expansão Detectada:** Último volume ({last_vol}) rompeu o limite superior (UCL).")
-            elif last_vol < lcl:
-                st.error(f"⚠️ **Retração Detectada:** Último volume ({last_vol}) abaixo do limite inferior (LCL).")
-            else:
-                st.info("✅ **Operação Estável:** Volume dentro dos limites estatísticos de controlo.")
+            # Alertas baseados no último ponto real do mês
+            if not v_current_month.is_empty():
+                last_vol = v_current_month.tail(1)["vol"][0]
+                if last_vol > ucl:
+                    st.success(f"🚀 **Expansão:** Volume ({last_vol}) acima do UCL.")
+                elif last_vol < lcl:
+                    st.error(f"⚠️ **Retração:** Volume ({last_vol}) abaixo do LCL.")
+                else:
+                    st.info("✅ **Estabilidade:** Operação dentro da normalidade estatística.")
 
             fig_spc = go.Figure()
-            # Série Histórica Real
-            fig_spc.add_trace(go.Scatter(x=v_temporal[date_col], y=v_temporal['vol'], mode='lines+markers', name='Real', line=dict(color=THEME_COLOR)))
+            # 1. Histórico Real do Mês Atual (Linha Sólida)
+            fig_spc.add_trace(go.Scatter(
+                x=v_current_month[date_col], 
+                y=v_current_month['vol'], 
+                mode='lines+markers', 
+                name='Real', 
+                line=dict(color=THEME_COLOR, width=2)
+            ))
             
-            # Projeção Pontilhada (Próximo Mês)
+            # 2. Projeção de 7 dias (Linha Pontilhada)
             if not v_future.is_empty():
-                last_real_date = v_temporal.tail(1)[date_col][0]
+                last_real_date = v_current_month.tail(1)[date_col][0] if not v_current_month.is_empty() else max_date
                 
-                # Sincronização de Timeline para o Forecast
                 v_fut_plot = v_future.with_columns([
                     pl.Series([last_real_date + timedelta(days=i+1) for i in range(len(v_future))]).alias(date_col)
                 ]).select([date_col, "vol"])
                 
-                # Conexão entre histórico e previsão
-                hist_point = v_temporal.select([date_col, "vol"]).tail(1)
-                hist_point = hist_point.with_columns([pl.col(date_col).cast(pl.Date), pl.col("vol").cast(pl.Float64)])
+                # Conexão entre as linhas
+                hist_tail = v_current_month.select([date_col, "vol"]).tail(1)
+                hist_tail = hist_tail.with_columns([pl.col(date_col).cast(pl.Date), pl.col("vol").cast(pl.Float64)])
                 v_fut_plot = v_fut_plot.with_columns([pl.col(date_col).cast(pl.Date), pl.col("vol").cast(pl.Float64)])
                 
-                conn = pl.concat([hist_point, v_fut_plot])
-                fig_spc.add_trace(go.Scatter(x=conn[date_col], y=conn['vol'], mode='lines', name='Forecast', line=dict(color=THEME_COLOR, dash='dot')))
+                conn = pl.concat([hist_tail, v_fut_plot])
+                fig_spc.add_trace(go.Scatter(
+                    x=conn[date_col], 
+                    y=conn['vol'], 
+                    mode='lines', 
+                    name='Forecast', 
+                    line=dict(color=THEME_COLOR, dash='dot', width=2)
+                ))
             
             fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL")
             fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL")
-            fig_spc.update_layout(height=300, margin=dict(t=10, b=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
+            
+            fig_spc.update_layout(
+                height=300, 
+                margin=dict(t=10, b=10), 
+                paper_bgcolor='rgba(0,0,0,0)', 
+                plot_bgcolor='rgba(0,0,0,0)', 
+                showlegend=False,
+                xaxis=dict(tickformat="%d/%m") # Formatação amigável de dia/mês
+            )
             st.plotly_chart(fig_spc, use_container_width=True)
 
         st.divider()
@@ -188,10 +213,10 @@ def run_dashboard():
         hhi = (dist_data['vendas'].tail(10) / total_vol).pow(2).sum()
         st.markdown(f"""
         ```python
-        # Strategic Insights - Logic Engine v2.8.0
-        - Saúde da Carteira: Perfil {'CONCENTRADO' if hhi > 0.25 else 'DIVERSIFICADO'} (Índice HHI: {hhi:.2f}).
-        - Previsibilidade do Canal: Nota de Confiança em {max(0, 100-(vol_cv*100)):.1f}%.
-        - Estabilidade Operacional: {'Alerta de volatilidade atípica detectada.' if vol_cv > 0.4 else 'Fluxo operacional em regime de normalidade.'}
+        # Strategic Insights - Logic Engine v3.0.0
+        - Saúde da Carteira: Perfil {'CONCENTRADO' if hhi > 0.25 else 'DIVERSIFICADO'} (HHI: {hhi:.2f}).
+        - Previsibilidade: Nota de Confiança em {max(0, 100-(vol_cv*100)):.1f}%.
+        - Estabilidade: Operando em regime de {'volatilidade' if vol_cv > 0.4 else 'normalidade'}.
         ```
         """)
     else:
