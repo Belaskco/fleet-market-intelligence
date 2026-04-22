@@ -26,12 +26,12 @@ def set_all_state(label, options, value):
 
 def run_dashboard():
     """
-    Interface Black Crow Intel v2.7.0.
-    Resolução de Eixo Temporal, Alertas SPC e Design Adaptativo.
+    Interface Black Crow Intel v2.8.0.
+    Foco em Previsão Mensal, Timeline Linear e Alertas de Estabilidade.
     """
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # CSS Adaptativo para suporte a Light/Dark Mode (Rapha Mode)
+    # CSS Adaptativo para suporte a Light/Dark Mode (Estilo Enterprise)
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
@@ -49,14 +49,14 @@ def run_dashboard():
     def get_cached_data(): return load_processed_data()
 
     df_raw = get_cached_data()
-    if df_raw.is_empty(): st.error("❌ Base Fleet não encontrada."); st.stop()
+    if df_raw.is_empty(): st.error("❌ Base de dados Fleet não encontrada."); st.stop()
 
     # --- MAPEAMENTO DE COLUNA DE DATA (purchase_date do seu Parquet) ---
     date_col = "purchase_date" if "purchase_date" in df_raw.columns else "data_faturamento"
     if date_col not in df_raw.columns:
         st.error(f"⚠️ Erro de Schema: Coluna {date_col} não encontrada."); st.stop()
 
-    # --- SIDEBAR ---
+    # --- SIDEBAR: FILTROS ---
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
         st.title("Market Control")
@@ -81,7 +81,7 @@ def run_dashboard():
     if sel_setores:
         df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
     
-    # Blindagem Rapha: Cortamos o dia incompleto
+    # Blindagem: Removemos o último dia incompleto para evitar distorções
     df_filt = df_filt.filter(pl.col(date_col) < max_date)
 
     if not df_filt.is_empty():
@@ -89,13 +89,14 @@ def run_dashboard():
         total_vol = len(df_filt)
         v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
         
-        # Agregação temporal real para evitar o efeito "zigue-zague"
+        # Agregação temporal real para garantir linha contínua (Timeline)
         v_temporal = df_filt.group_by(date_col).len(name="vol").sort(date_col)
         
-        # Pareto: Ordenado para que o líder fique no topo (tail no plot horizontal)
         dist_data = AnalyticsService.get_pareto_distribution(df_filt).sort("vendas", descending=False)
+        
+        # Previsão focada no mês seguinte (horizonte de ~30 dias)
         proj_vol, trend = PredictionService.get_market_trend(df_filt)
-        v_future = PredictionService.get_daily_forecast(df_filt)
+        v_future = PredictionService.get_daily_forecast(df_filt, horizon=30) 
         
         st.title(f"{APP_TITLE}")
         
@@ -108,74 +109,71 @@ def run_dashboard():
             k2.metric("Líder de Canal", f"{lider['marca'][0][:12]}...", delta=f"{share:.1%} Share")
         k3.metric("Frequência", f"{total_vol/(sel_days[1]-sel_days[0]+1):.1f} un/dia")
         k4.metric("Mercados Ativos", f"{len(df_filt['uf'].unique())}")
-        k5.metric("Forecast (USD)", human_format(proj_vol * 450000), delta=trend)
+        k5.metric("Forecast Próx. Mês", human_format(proj_vol * 450000), delta=trend)
 
         st.divider()
 
-        # --- BLOCO 2: CICLOS E OPORTUNIDADES ---
+        # --- BLOCO 2: DIAGNÓSTICO E ANTECIPAÇÃO ---
         c_left, c_right = st.columns([1.6, 1])
         with c_left:
             st.subheader("📊 Diagnóstico de Trajetória")
-            # Gráfico temporal para trajetórias limpas
             fig_area = px.area(v_temporal, x=date_col, y='vol', color_discrete_sequence=[THEME_COLOR])
             fig_area.update_layout(height=280, margin=dict(t=10, b=10, l=10, r=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig_area, use_container_width=True)
-            st.info(f"O mercado apresenta trajetória **{trend}**. Forecast estimado de fechamento: **{proj_vol} unidades**.")
+            st.info(f"O mercado apresenta trajetória **{trend}**. Projeção para o mês seguinte: **{proj_vol} unidades**.")
         
         with c_right:
-            st.subheader("🔮 Antecipação Nixtla")
+            st.subheader("🔮 Antecipação Nominal (Próx. Mês)")
             df_forecast = PredictionService.get_client_predictions(df_filt)
             if not df_forecast.is_empty():
                 df_view = df_forecast.with_columns(pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor Formatado"))
                 st.dataframe(df_view.select(["Cliente", "Qtd_Prevista", "Valor Formatado", "Probabilidade"]), use_container_width=True, hide_index=True,
                              column_config={"Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1)})
             else:
-                st.info("💡 Volume insuficiente para forecast nominal.")
+                st.info("💡 Dados insuficientes para forecast nominal por cliente.")
 
         st.divider()
 
-        # --- BLOCO 3: PARETO E SPC ---
+        # --- BLOCO 3: ESTABILIDADE E MIX ---
         c1, c2 = st.columns(2)
         with c1:
-            st.subheader("🏆 Pareto de Líderes")
+            st.subheader("🏆 Mix de Líderes (Pareto)")
             fig_bar = px.bar(dist_data.tail(10), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR])
             fig_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=0, b=0))
             st.plotly_chart(fig_bar, use_container_width=True)
             
         with c2:
-            st.subheader("📈 Estabilidade + Forecast Pontilhado")
+            st.subheader("📈 Controle Estatístico + Forecast Pontilhado")
             ucl, lcl = m + 2*s, max(0, m - 2*s)
             
-            # Alertas Estatísticos SPC
+            # Alertas de Estabilidade SPC
             last_vol = v_temporal.tail(1)["vol"][0]
             if last_vol > ucl:
-                st.success(f"🚀 **Expansão Detectada:** Último volume ({last_vol}) rompeu o limite superior.")
+                st.success(f"🚀 **Expansão Detectada:** Último volume ({last_vol}) rompeu o limite superior (UCL).")
             elif last_vol < lcl:
-                st.error(f"⚠️ **Retração Detectada:** Último volume ({last_vol}) abaixo do limite inferior.")
+                st.error(f"⚠️ **Retração Detectada:** Último volume ({last_vol}) abaixo do limite inferior (LCL).")
             else:
-                st.info("✅ **Operação Estável:** Volume dentro dos limites estatísticos.")
+                st.info("✅ **Operação Estável:** Volume dentro dos limites estatísticos de controlo.")
 
             fig_spc = go.Figure()
-            # Histórico Real (Temporal)
+            # Série Histórica Real
             fig_spc.add_trace(go.Scatter(x=v_temporal[date_col], y=v_temporal['vol'], mode='lines+markers', name='Real', line=dict(color=THEME_COLOR)))
             
-            # Forecast Pontilhado
+            # Projeção Pontilhada (Próximo Mês)
             if not v_future.is_empty():
-                # Reconstruímos as datas futuras para alinhar no eixo X temporal
                 last_real_date = v_temporal.tail(1)[date_col][0]
                 
-                # Criamos um DataFrame de conexão com as datas corretas
-                v_fut_dates = v_future.with_columns([
+                # Sincronização de Timeline para o Forecast
+                v_fut_plot = v_future.with_columns([
                     pl.Series([last_real_date + timedelta(days=i+1) for i in range(len(v_future))]).alias(date_col)
                 ]).select([date_col, "vol"])
                 
-                # Conexão suave (Último ponto real + forecast)
-                hist_tail = v_temporal.select([date_col, "vol"]).tail(1)
-                # Garantimos tipos idênticos para evitar erro de concat
-                hist_tail = hist_tail.with_columns([pl.col(date_col).cast(pl.Date), pl.col("vol").cast(pl.Float64)])
-                v_fut_dates = v_fut_dates.with_columns([pl.col(date_col).cast(pl.Date), pl.col("vol").cast(pl.Float64)])
+                # Conexão entre histórico e previsão
+                hist_point = v_temporal.select([date_col, "vol"]).tail(1)
+                hist_point = hist_point.with_columns([pl.col(date_col).cast(pl.Date), pl.col("vol").cast(pl.Float64)])
+                v_fut_plot = v_fut_plot.with_columns([pl.col(date_col).cast(pl.Date), pl.col("vol").cast(pl.Float64)])
                 
-                conn = pl.concat([hist_tail, v_fut_dates])
+                conn = pl.concat([hist_point, v_fut_plot])
                 fig_spc.add_trace(go.Scatter(x=conn[date_col], y=conn['vol'], mode='lines', name='Forecast', line=dict(color=THEME_COLOR, dash='dot')))
             
             fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL")
@@ -185,15 +183,15 @@ def run_dashboard():
 
         st.divider()
         
-        # --- LOGIC ENGINE INSIGHTS ---
+        # --- BLOCO 4: LOGIC ENGINE ---
         vol_cv = (s / m) if m > 0 else 0
         hhi = (dist_data['vendas'].tail(10) / total_vol).pow(2).sum()
         st.markdown(f"""
         ```python
-        # Strategic Insights - Logic Engine v2.7.0
+        # Strategic Insights - Logic Engine v2.8.0
         - Saúde da Carteira: Perfil {'CONCENTRADO' if hhi > 0.25 else 'DIVERSIFICADO'} (Índice HHI: {hhi:.2f}).
         - Previsibilidade do Canal: Nota de Confiança em {max(0, 100-(vol_cv*100)):.1f}%.
-        - Estabilidade: {'Alerta de volatilidade atípica.' if vol_cv > 0.4 else 'Fluxo operacional em regime de normalidade.'}
+        - Estabilidade Operacional: {'Alerta de volatilidade atípica detectada.' if vol_cv > 0.4 else 'Fluxo operacional em regime de normalidade.'}
         ```
         """)
     else:
