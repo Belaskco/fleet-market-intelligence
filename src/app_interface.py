@@ -1,9 +1,7 @@
+import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
-import sys
-import os
-import plotly.graph_objects as go
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
