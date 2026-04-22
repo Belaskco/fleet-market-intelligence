@@ -132,14 +132,41 @@ def run_dashboard():
 
         st.divider()
 
-        # --- BLOCO 2: DIAGNÓSTICO DE TRAJETÓRIA ---
-        st.subheader("📊 Diagnóstico de Trajetória")
+        # --- BLOCO 2: DIAGNÓSTICO DE TRAJETÓRIA & ANTECIPAÇÃO ---
+        st.subheader("📊 Diagnóstico de Trajetória & Predição Nominal")
+        
+        # O gráfico de área agora ocupa o topo para dar contexto temporal
         fig_area = px.area(v_dia, x='dia_do_mes', y='vol', template="plotly_dark", color_discrete_sequence=[THEME_COLOR])
         fig_area.update_layout(height=250, margin=dict(t=10, b=10))
         st.plotly_chart(fig_area, use_container_width=True)
         
-        proj_vol, trend = PredictionService.get_market_trend(df_filt)
-        st.info(f"O mercado apresenta tendência **{trend}**. Forecast de fechamento: **{proj_vol} unidades**.")
+        # Grid de Predição: Cruzamos a tendência macro com o micro (por cliente)
+        c_trend, c_nixtla = st.columns([1, 2])
+        
+        with c_trend:
+            # Mantemos o insight de tendência macro do Nixtla
+            proj_vol, trend = PredictionService.get_market_trend(df_filt)
+            st.info(f"Tendência: **{trend}**\n\nForecast: **{proj_vol} un.**")
+            st.caption("Projeção baseada em volume histórico agregado.")
+
+        with c_nixtla:
+            # Tabela de Compras Futuras: O "pulo do gato" para o time de vendas
+            # PredictionService.get_client_predictions deve retornar as colunas: Cliente, Qtd_Prevista, Volume_Est
+            df_forecast = PredictionService.get_client_predictions(df_filt)
+            
+            if not df_forecast.is_empty():
+                st.dataframe(
+                    df_forecast, 
+                    use_container_width=True, 
+                    hide_index=True,
+                    column_config={
+                        "Cliente": st.column_config.TextColumn("🎯 Próximas Compras"),
+                        "Qtd_Prevista": st.column_config.NumberColumn("Pedidos"),
+                        "Volume_Est": st.column_config.NumberColumn("Vol. Total")
+                    }
+                )
+            else:
+                st.warning("⚠️ Volume insuficiente para predição nominal por cliente.")
 
         st.divider()
 
