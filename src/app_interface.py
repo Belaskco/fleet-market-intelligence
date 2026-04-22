@@ -189,7 +189,27 @@ def run_dashboard():
 
         st.divider()
         st.subheader("🧠 Drivers de Decisão (Logic Engine)")
-        st.code(AnalyticsService.get_decision_rules(df_filt), language='python')
+        
+        # Saúde da Carteira
+        hhi = (dist_data["vendas"] / total_vol).pow(2).sum()
+        perfil_hhi = "CONCENTRADO" if hhi > 0.25 else "DIVERSIFICADO"
+        
+        # Sazonalidade Detectada
+        vol_inicial = v_dia.filter(pl.col("dia_do_mes") <= (sel_days[0]+sel_days[1])/2)["vol"].sum()
+        concentracao_temp = "FRONT-LOADED (Início)" if vol_inicial > total_vol/2 else "BACK-LOADED (Fim)"
+        
+        # Previsibilidade Operacional
+        vol_cv = (s / m) if m > 0 else 0
+        confianca = max(0, 100 - (vol_cv * 100))
+        
+        st.markdown(f"""
+        ```python
+        - Saúde da Carteira: Perfil {perfil_hhi} (Índice de concentração HHI: {hhi:.2f}).
+        - Dinâmica Temporal: Fluxo de faturamento {concentracao_temp} na janela selecionada.
+        - Previsibilidade: Nota de Confiança em {confianca:.1f}% (Base estatística Sigma-2).
+        - Estabilidade: {'Atenção: Oscilação atípica detectada.' if vol_cv > 0.4 else 'Fluxo operacional operando em regime de normalidade estatística.'}
+        ```
+        """, unsafe_allow_html=True)
 
     else:
         st.sidebar.warning("⚠️ Seleção sem dados. Revise os filtros operacionais.")
