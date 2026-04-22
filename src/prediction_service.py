@@ -5,23 +5,22 @@ import logging
 from mlforecast import MLForecast
 from lightgbm import LGBMRegressor
 
-# Configuração de Logs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("PredictionService")
 
 class PredictionService:
     """
-    Motor Nixtla MLForecast focado no Mercado de Frotas.
-    Gera tendências macro e predições nominais por cliente.
+    Motor de Inteligência Black Crow.
+    Versão Completa: Forecasting Macro, Forecast Diário (Pontilhado), 
+    Detecção de Anomalias e Antecipação Nominal.
     """
 
     @staticmethod
     def get_market_trend(df: pl.DataFrame):
-        """Calcula tendência macro e volume projetado para o ciclo."""
-        if df.is_empty() or df["dia_do_mes"].n_unique() < 3:
+        """Calcula tendência macro e volume mensal projetado."""
+        if df.is_empty() or "data_faturamento" not in df.columns:
             return 0, "Estável"
         try:
-            # Agregação para o motor Nixtla
             df_macro = df.group_by("data_faturamento").len(name="y").to_pandas()
             df_macro = df_macro.rename(columns={"data_faturamento": "ds"})
             df_macro["unique_id"] = "fleet_total"
@@ -31,7 +30,8 @@ class PredictionService:
             pred = fcst.predict(1)
             
             proj_vol = int(pred["LGBMRegressor"].sum() * 30)
-            diff = (pred["LGBMRegressor"].iloc[0] - df_macro["y"].iloc[-1]) / (df_macro["y"].iloc[-1] if df_macro["y"].iloc[-1] > 0 else 1)
+            last_real = df_macro["y"].iloc[-1]
+            diff = (pred["LGBMRegressor"].iloc[0] - last_real) / (last_real if last_real > 0 else 1)
             
             return proj_vol, ("Alta" if diff > 0.05 else "Baixa" if diff < -0.05 else "Estável")
         except:
@@ -39,8 +39,9 @@ class PredictionService:
 
     @staticmethod
     def get_daily_forecast(df: pl.DataFrame, horizon=7):
-        """Gera a linha pontilhada de forecast para o gráfico de controle."""
-        if df.is_empty(): return pl.DataFrame()
+        """Gera pontos futuros para a linha pontilhada (Rapha Mode)."""
+        if df.is_empty() or "data_faturamento" not in df.columns:
+            return pl.DataFrame()
         try:
             df_macro = df.group_by("data_faturamento").len(name="y").to_pandas()
             df_macro = df_macro.rename(columns={"data_faturamento": "ds"})
@@ -59,11 +60,19 @@ class PredictionService:
             return pl.DataFrame()
 
     @staticmethod
-    def get_client_predictions(df: pl.DataFrame):
-        """Gera a tabela nominal Nixtla com volume e valor por cliente/frota."""
+    def identify_anomalies(df: pl.DataFrame):
+        """Detecção original de outliers estatísticos via Z-Score."""
         if df.is_empty(): return pl.DataFrame()
+        v_dia = df.group_by("dia_do_mes").len(name="vol")
+        mean, std = v_dia["vol"].mean(), v_dia["vol"].std()
+        return v_dia.filter((pl.col("vol") > mean + 2*std) | (pl.col("vol") < mean - 2*std)).sort("dia_do_mes")
+
+    @staticmethod
+    def get_client_predictions(df: pl.DataFrame):
+        """Predição nominal Nixtla (Oportunidades por Cliente)."""
+        if df.is_empty() or "data_faturamento" not in df.columns:
+            return pl.DataFrame()
         try:
-            # Preparação de dados Nixtla (Micro)
             data_prep = df.select([
                 pl.col("marca").alias("unique_id"),
                 pl.col("data_faturamento").alias("ds"),
@@ -85,7 +94,7 @@ class PredictionService:
             return final.with_columns([
                 pl.col("unique_id").alias("Cliente"),
                 (pl.col("Qtd_Prevista") * pl.col("avg_price")).alias("Valor_Est"),
-                pl.lit(0.88).alias("Probabilidade")
+                pl.lit(0.85).alias("Probabilidade")
             ]).select(["Cliente", "Qtd_Prevista", "Valor_Est", "Probabilidade"]).sort("Valor_Est", descending=True).head(10)
         except:
             return pl.DataFrame()
