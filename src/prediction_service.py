@@ -103,4 +103,4 @@ class PredictionService:
     @staticmethod
     def _heuristic_client_fallback(df):
         return df.group_by("marca").agg([pl.len().alias("Qtd_Prevista"), pl.col("faturamento").mean().alias("avg_price")]).with_columns([pl.col("marca").alias("Cliente"),
-        (pl.col("Qtd_Prevista") * pl.col("avg_price")).alias("Valor_Est"), pl.lit(0.60).alias("Probabilidade")]).sort("Valor_Est", descending=True).head(10)
+                                                                                                                                         (pl.col("Qtd_Prevista") * pl.col("avg_price")).alias("Valor_Est"), pl.lit(0.60).alias("Probabilidade")]).sort("Valor_Est", descending=True).head(10)
