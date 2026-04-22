@@ -15,82 +15,99 @@ def apply_enterprise_styles():
     # Aplica o DNA visual da Black Crow para um visual executivo de alto nível.
     st.markdown(f"""
         <style>
-        /* 1. FUNDO DA PÁGINA (SLATE 50) */
+        /* 1. FUNDO DA PÁGINA (SOFT GRAY) */
         [data-testid="stAppViewContainer"] {{
-            background-color: #F8FAFC;
+            background-color: #F1F5F9;
         }}
 
         /* FUNDO DA SIDEBAR */
         [data-testid="stSidebar"] {{
             background-color: #FFFFFF;
-            border-right: 1px solid #E2E8F0;
+            border-right: 1px solid #CBD5E1;
         }}
 
-        /* 2. LARGURA DO CONTEÚDO (MODO WIDE REAL) */
+        /* 2. LARGURA DO CONTEÚDO */
         .block-container {{
             max-width: 98% !important;
-            padding-left: 3rem !important;
-            padding-right: 3rem !important;
-            padding-top: 1.5rem !important;
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+            padding-top: 1rem !important;
         }}
 
-        /* 3. DESIGN DOS PAINÉIS / CARDS (WHITE ELEVATION) */
+        /* 3. DESIGN DOS PAINÉIS / CARDS (ELEVATION) */
         .stMetric {{ 
-            border: 1px solid #E2E8F0; 
-            padding: 24px; 
-            border-radius: 12px; 
+            border: 1px solid #CBD5E1; 
+            padding: 20px; 
+            border-radius: 10px; 
             background-color: #FFFFFF;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }}
 
+        /* CORREÇÃO DE TEXTO NAS MÉTRICAS */
         [data-testid="stMetricValue"] {{ 
-            font-size: 2.1rem !important; 
+            font-size: 1.8rem !important; 
             font-weight: 800; 
-            color: {THEME_COLOR}; 
+            color: #0F172A !important; 
         }}
         
+        [data-testid="stMetricLabel"] {{
+            color: #475569 !important;
+            font-weight: 600 !important;
+        }}
+
         /* BOTÕES PROFISSIONAIS */
         .stButton button {{ 
             width: 100%; 
             font-weight: 700; 
             text-transform: uppercase; 
-            border-radius: 8px;
+            border-radius: 6px;
             background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            color: #475569;
+            border: 1px solid #94A3B8;
+            color: #1E293B;
             transition: all 0.2s;
         }}
+        
         .stButton button:hover {{
             border-color: {THEME_COLOR};
             color: {THEME_COLOR};
+            background-color: #F8FAFC;
         }}
         
         /* HEADER EXECUTIVO */
         .header-title {{ 
-            font-size: 2.6rem; 
+            font-size: 2.2rem; 
             font-weight: 800; 
-            color: #1E293B; 
+            color: #0F172A; 
             border-bottom: 4px solid {THEME_COLOR}; 
-            padding-bottom: 15px; 
-            margin-bottom: 30px; 
+            padding-bottom: 10px; 
+            margin-bottom: 25px; 
             letter-spacing: -0.5px;
         }}
 
         /* SUBHEADERS */
-        h3 {{
-            color: #334155 !important;
+        h3, h2, h1 {{
+            color: #1E293B !important;
             font-weight: 700 !important;
-            letter-spacing: -0.3px;
         }}
 
+        /* TEXTO GERAL E TABELAS */
+        p, span, label {{
+            color: #1E293B !important;
+        }}
+        
         .section-header {{
-            color: #64748B;
-            font-size: 0.9rem;
+            color: #475569;
+            font-size: 0.85rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
+            letter-spacing: 0.8px;
+            margin-top: 1.2rem;
+            margin-bottom: 0.4rem;
+        }}
+
+        /* CORREÇÃO PARA DATAFRAMES (EVITAR TEXTO INVISÍVEL) */
+        .stDataFrame div {{
+            color: #0F172A !important;
         }}
         </style>
     """, unsafe_allow_html=True)
