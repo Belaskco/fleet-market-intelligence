@@ -134,11 +134,13 @@ def run_dashboard():
         st.subheader("🧠 Drivers de Decisão (Logic Engine)")
         hhi = (dist_data["vendas"] / total_vol).pow(2).sum() if total_vol > 0 else 0
         vol_cv = (s / m) if m > 0 else 0
+        confianca = max(0, 100 - (vol_cv * 100))
         st.markdown(f"""
         ```python
         # Strategic Insights - Logic Engine v2.2.7
         - Saúde da Carteira: Perfil {'CONCENTRADO' if hhi > 0.25 else 'DIVERSIFICADO'} (HHI: {hhi:.2f}).
-        - Previsibilidade: Nota de Confiança em {max(0, 100-(vol_cv*100)):.1f}% (Base Nixtla/Sigma-2).
+        - Previsibilidade: Nota de Confiança em {confianca:.1f}% (Base Nixtla/Sigma-2).
+        - Insight Comercial: {len(df_forecast) if 'df_forecast' in locals() else 0} oportunidades de faturamento nominal detectadas.
         - Estabilidade: {'Flutuação atípica detectada.' if vol_cv > 0.4 else 'Fluxo operacional em regime de normalidade.'}
         ```
         """, unsafe_allow_html=True)
