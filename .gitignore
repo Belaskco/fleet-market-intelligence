@@ -7,6 +7,8 @@ env/
 bin/
 lib/
 share/
+inspect_parquet.py
+fix.parquet.py
 
 # Python caches
 
@@ -18,7 +20,6 @@ pycache/
 # Dados e Utilitários de Migração
 
 data/MOCK_DATA.json
-inspect_parquet.py
 
 # Streamlit
 
