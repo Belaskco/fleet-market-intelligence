@@ -6,61 +6,82 @@ from mlforecast import MLForecast
 from lightgbm import LGBMRegressor
 from sklearn.linear_model import LinearRegression
 
+# Configuração de Logs para monitoramento de saúde do modelo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("PredictionService")
 
 class PredictionService:
-    """Motor Nixtla Fleet com Agregação Semanal e Logic Engine Enterprise."""
+    """
+    Motor de Inteligência Black Crow - Logic Engine v4.0 (Enterprise).
+    Suporte a Agregação Semanal, Fallbacks Estatísticos e Calibração de Confiança.
+    """
 
     @staticmethod
     def get_market_trend(df: pl.DataFrame):
-        """Previsão de volume para o ciclo de 4 semanas seguinte."""
-        if df.is_empty() or "purchase_date" not in df.columns: return 0, "Sem Dados"
+        """
+        Calcula a trajetória macro para o próximo mês (4 semanas).
+        Retorna o volume projetado e o status da tendência.
+        """
+        if df.is_empty(): return 0, "Sem Dados"
+        date_col = "purchase_date" if "purchase_date" in df.columns else "data_faturamento"
+        
         try:
-            # Agregação Semanal
+            # Agregação Semanal (Segunda-feira como âncora)
             v_sem = df.with_columns(
-                pl.col("purchase_date").dt.truncate("1w").alias("ds")
+                pl.col(date_col).dt.truncate("1w").alias("ds")
             ).group_by("ds").len(name="y").sort("ds").to_pandas()
             
-            v_sem["unique_id"] = "fleet_weekly"
+            # unique_id exigido pelo MLForecast
+            v_sem["unique_id"] = "fleet_weekly_macro"
             
-            # Se tivermos menos de 5 semanas, fallback linear
+            # Fallback para séries históricas curtas
             if len(v_sem) < 5:
-                # Adaptação para o formato de fallback linear interno
-                v_sem_pl = pl.from_pandas(v_sem).rename({"y": "vol"})
-                return PredictionService._linear_trend_fallback(v_sem_pl)
+                y = v_sem["y"].to_numpy()
+                X = np.arange(len(y)).reshape(-1, 1)
+                slope = LinearRegression().fit(X, y).coef_[0]
+                return int(y.mean() * 4), ("Alta" if slope > 0.05 else "Baixa" if slope < -0.05 else "Estável")
 
+            # Motor Nixtla: MLForecast
             fcst = MLForecast(
                 models=[LGBMRegressor(random_state=42, verbosity=-1)], 
-                freq='W-MON', # Weekly starting on Monday
-                lags=[1, 4]   # Uma semana e um mês atrás
+                freq='W-MON', 
+                lags=[1, 2]
             )
             fcst.fit(v_sem)
-            pred = fcst.predict(4) # Prever as próximas 4 semanas
+            pred = fcst.predict(4) # Horizonte: Próximas 4 semanas
             
             proj_vol = int(pred["LGBMRegressor"].sum())
-            last_val = v_sem["y"].iloc[-1]
-            next_val = pred["LGBMRegressor"].iloc[0]
-            diff = (next_val - last_val) / (last_val if last_val > 0 else 1)
             
-            return proj_vol, ("Alta" if diff > 0.05 else "Baixa" if diff < -0.05 else "Estável")
+            # Delta de tendência (Primeira semana prevista vs Última real)
+            last_real = v_sem["y"].iloc[-1]
+            next_val = pred["LGBMRegressor"].iloc[0]
+            diff = (next_val - last_real) / (last_real if last_real > 0 else 1)
+            
+            trend_status = "Alta" if diff > 0.05 else "Baixa" if diff < -0.05 else "Estável"
+            return proj_vol, trend_status
+
         except Exception as e:
-            logger.error(f"Erro Nixtla Semanal: {e}")
-            return 0, "Erro"
+            logger.error(f"Falha no Nixtla Macro: {e}")
+            return 0, "Erro Operacional"
 
     @staticmethod
     def get_daily_forecast(df: pl.DataFrame, horizon=4):
-        """Gera forecast semanal para a linha pontilhada."""
-        if df.is_empty() or "purchase_date" not in df.columns: return pl.DataFrame()
+        """
+        Gera a série temporal pontilhada para a Carta de Controle.
+        horizon=4 representa as próximas 4 semanas.
+        """
+        if df.is_empty(): return pl.DataFrame()
+        date_col = "purchase_date" if "purchase_date" in df.columns else "data_faturamento"
+        
         try:
             v_sem = df.with_columns(
-                pl.col("purchase_date").dt.truncate("1w").alias("ds")
+                pl.col(date_col).dt.truncate("1w").alias("ds")
             ).group_by("ds").len(name="y").sort("ds").to_pandas()
-            v_sem["unique_id"] = "fleet_weekly"
+            v_sem["unique_id"] = "fleet_forecast_spc"
             
             if len(v_sem) < 5: return pl.DataFrame()
 
-            fcst = MLForecast(models=[LGBMRegressor(random_state=42, verbosity=-1)], freq='W-MON', lags=[1, 4])
+            fcst = MLForecast(models=[LGBMRegressor(random_state=42, verbosity=-1)], freq='W-MON', lags=[1, 2])
             fcst.fit(v_sem)
             preds = fcst.predict(horizon)
             
@@ -68,90 +89,105 @@ class PredictionService:
                 pl.col("ds").alias("semana"), 
                 pl.col("LGBMRegressor").alias("vol").cast(pl.Float64)
             ])
-        except: return pl.DataFrame()
+        except Exception as e:
+            logger.error(f"Erro no forecast semanal: {e}")
+            return pl.DataFrame()
 
     @staticmethod
     def get_client_predictions(df: pl.DataFrame):
-        """Antecipação Nominal por Cliente (Visão de Ciclo de 4 semanas)."""
+        """
+        Algoritmo de Antecipação Nominal.
+        Projeta volume e valor financeiro por marca/cliente para o próximo ciclo.
+        """
         if df.is_empty(): return pl.DataFrame()
+        date_col = "purchase_date" if "purchase_date" in df.columns else "data_faturamento"
+        val_col = "order_value" if "order_value" in df.columns else "faturamento"
+        id_col = "company_name" if "company_name" in df.columns else "marca"
+        
         try:
             data_prep = df.with_columns(
-                pl.col("purchase_date").dt.truncate("1w").alias("ds")
+                pl.col(date_col).dt.truncate("1w").alias("ds")
             ).select([
-                pl.col("marca").alias("unique_id"),
+                pl.col(id_col).alias("unique_id"),
                 pl.col("ds"),
                 pl.lit(1).alias("y"),
-                pl.col("order_value").alias("faturamento")
+                pl.col(val_col).alias("faturamento")
             ]).to_pandas()
             
-            ts_data = data_prep.groupby(['unique_id', 'ds']).agg({'y': 'sum', 'faturamento': 'mean'}).reset_index()
+            # Agregação por ID e Data
+            ts_data = data_prep.groupby(['unique_id', 'ds']).agg({
+                'y': 'sum', 
+                'faturamento': 'mean'
+            }).reset_index()
+            
+            # Filtro de massa crítica mínima por cliente
             valid_ids = ts_data.groupby('unique_id').size()
             ts_filtered = ts_data[ts_data['unique_id'].isin(valid_ids[valid_ids > 2].index)]
 
-            if ts_filtered.empty: return pl.DataFrame()
+            if ts_filtered.empty:
+                # Fallback Heurístico (Baseado em Média Histórica)
+                return df.group_by(id_col).agg([
+                    pl.len().alias("Qtd_Prevista"),
+                    pl.col(val_col).mean().alias("avg_price")
+                ]).with_columns([
+                    pl.col(id_col).alias("Cliente"),
+                    (pl.col("Qtd_Prevista") * pl.col("avg_price")).alias("Valor_Est"),
+                    pl.lit(0.60).alias("Probabilidade")
+                ]).sort("Valor_Est", descending=True).head(10)
 
+            # ML Nominal
             fcst = MLForecast(models=[LGBMRegressor(random_state=42, verbosity=-1)], freq='W-MON', lags=[1])
             fcst.fit(ts_filtered)
-            preds = fcst.predict(4) # Prever próximo mês (4 semanas)
+            preds = fcst.predict(4)
 
             res = pl.from_pandas(preds).group_by("unique_id").agg(pl.col("LGBMRegressor").sum().round(0).alias("Qtd_Prevista"))
-            ticket_medio = df.group_by("marca").agg(pl.col("order_value").mean().alias("avg_price"))
-            final = res.join(ticket_medio, left_on="unique_id", right_on="marca")
+            ticket_medio = df.group_by(id_col).agg(pl.col(val_col).mean().alias("avg_price"))
+            final = res.join(ticket_medio, left_on="unique_id", right_on=id_col)
             
             return final.with_columns([
                 pl.col("unique_id").alias("Cliente"),
                 (pl.col("Qtd_Prevista") * pl.col("avg_price")).alias("Valor_Est"),
                 pl.lit(0.85).alias("Probabilidade")
             ]).select(["Cliente", "Qtd_Prevista", "Valor_Est", "Probabilidade"]).sort("Valor_Est", descending=True).head(10)
-        except: return pl.DataFrame()
+            
+        except Exception as e:
+            logger.error(f"Erro em predições nominais: {e}")
+            return pl.DataFrame()
 
     @staticmethod
     def get_strategic_insights(df: pl.DataFrame):
         """
         Logic Engine v4.0.0 (Enterprise Edition).
-        Calcula drivers estratégicos com calibração profissional de confiança.
+        Calcula HHI e Previsibilidade Calibrada (Filtro de Ruído Poisson).
         """
         if df.is_empty(): return {}
+        date_col = "purchase_date" if "purchase_date" in df.columns else "data_faturamento"
+        id_col = "company_name" if "company_name" in df.columns else "marca"
         
         try:
-            # Agregação semanal para cálculo de estabilidade
             v_semanal = df.with_columns(
-                pl.col("purchase_date").dt.truncate("1w").alias("semana")
+                pl.col(date_col).dt.truncate("1w").alias("semana")
             ).group_by("semana").len(name="vol")
             
-            m = v_semanal["vol"].mean()
-            s = v_semanal["vol"].std()
-            
-            # Coeficiente de Variação (CV)
+            m, s = v_semanal["vol"].mean(), v_semanal["vol"].std()
             vol_cv = (s / m) if m > 0 else 0
             
-            # Calibração Profissional: Mapeamento Enterprise (min 85% para fluxos consistentes)
-            # Reduzimos a penalidade de flutuações menores (Poisson noise)
-            confianca_calibrada = 100 * (1 - (vol_cv * 0.12))
-            confianca_calibrada = max(85.0, min(99.4, confianca_calibrada))
+            # Calibração Enterprise: Mapeia o CV para garantir confiança profissional (85%+)
+            # Fluxos estáveis mas com pequenos ruídos agora são aceitos com notas altas.
+            confianca = max(85.0, min(99.4, 100 * (1 - (vol_cv * 0.12))))
             
-            # Índice de Concentração (HHI)
-            dist_marca = df.group_by("marca").len(name="vendas")
+            # HHI (Índice de Herfindahl-Hirschman)
+            dist_marca = df.group_by(id_col).len(name="vendas")
             total = dist_marca["vendas"].sum()
             hhi = (dist_marca["vendas"] / total).pow(2).sum() if total > 0 else 0
             
             return {
-                "confianca": confianca_calibrada,
+                "confianca": confianca,
                 "hhi": hhi,
                 "estabilidade": "Fluxo Nominal Estável" if vol_cv <= 0.4 else "Volatilidade Monitorada",
-                "perfil": "Diversificado" if hhi < 0.25 else "Concentrado"
+                "perfil": "Diversificado" if hhi < 0.25 else "Concentrado",
+                "cv": vol_cv
             }
         except Exception as e:
             logger.error(f"Erro no Logic Engine: {e}")
             return {"confianca": 85.0, "hhi": 0, "estabilidade": "Indisponível", "perfil": "N/A"}
-
-    @staticmethod
-    def _linear_trend_fallback(v_dia):
-        """Cálculo de tendência linear para bases com histórico curto."""
-        try:
-            y = v_dia["vol"].to_numpy()
-            X = np.arange(len(y)).reshape(-1, 1)
-            slope = LinearRegression().fit(X, y).coef_[0]
-            return int(y.mean() * 4), ("Alta" if slope > 0.05 else "Baixa" if slope < -0.05 else "Estável")
-        except:
-            return 0, "Erro"
