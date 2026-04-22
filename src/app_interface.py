@@ -106,10 +106,24 @@ def render_spc_chart(v_semanal, v_future, m, s):
     # Série Preditiva Nixtla (Pontilhada)
     if not v_future.is_empty():
         last_date = v_semanal.tail(1)["semana"][0]
+        
+        # Sincronização de Timeline para o Forecast
         v_fut_dates = v_future.with_columns([
             pl.Series([last_date + timedelta(weeks=i+1) for i in range(len(v_future))]).alias("semana")
         ])
-        conn = pl.concat([v_semanal.select(["semana", "vol"]).tail(1), v_fut_dates.select(["semana", "vol"])])
+        
+        # BLINDAGEM DE SCHEMA: Garante que ambos os DataFrames tenham as mesmas colunas e tipos antes do concat
+        hist_tail = v_semanal.select(["semana", "vol"]).tail(1).with_columns([
+            pl.col("semana").cast(pl.Date), 
+            pl.col("vol").cast(pl.Float64)
+        ])
+        
+        fut_tail = v_fut_dates.select(["semana", "vol"]).with_columns([
+            pl.col("semana").cast(pl.Date), 
+            pl.col("vol").cast(pl.Float64)
+        ])
+        
+        conn = pl.concat([hist_tail, fut_tail])
         
         fig.add_trace(go.Scatter(
             x=conn['semana'], y=conn['vol'], 
