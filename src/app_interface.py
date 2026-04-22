@@ -152,7 +152,12 @@ def run_dashboard():
                 .otherwise(pl.lit("Normal"))
             )
             
-            fig_spc.update_traces(mode='lines+markers', marker=dict(size=8))
+            fig_spc.update_traces(
+                marker=dict(
+                    color=['#f85149' if a == "Anomalia" else THEME_COLOR for a in v_dia["is_anomaly"]],
+                    size=10
+                )
+            )
             st.plotly_chart(fig_spc, use_container_width=True)
 
         st.divider()
