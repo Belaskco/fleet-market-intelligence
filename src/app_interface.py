@@ -12,41 +12,85 @@ from src.config import APP_TITLE, THEME_COLOR
 # --- UI COMPONENTS (COMPONENTES MODULARES) ---
 
 def apply_enterprise_styles():
-    """Aplica o DNA visual da Black Crow para um visual executivo de alto nível."""
+    # Aplica o DNA visual da Black Crow para um visual executivo de alto nível.
     st.markdown(f"""
         <style>
+        /* 1. FUNDO DA PÁGINA (SLATE 50) */
+        [data-testid="stAppViewContainer"] {{
+            background-color: #F8FAFC;
+        }}
+
+        /* FUNDO DA SIDEBAR */
+        [data-testid="stSidebar"] {{
+            background-color: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+        }}
+
+        /* 2. LARGURA DO CONTEÚDO (MODO WIDE REAL) */
+        .block-container {{
+            max-width: 98% !important;
+            padding-left: 3rem !important;
+            padding-right: 3rem !important;
+            padding-top: 1.5rem !important;
+        }}
+
+        /* 3. DESIGN DOS PAINÉIS / CARDS (WHITE ELEVATION) */
+        .stMetric {{ 
+            border: 1px solid #E2E8F0; 
+            padding: 24px; 
+            border-radius: 12px; 
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }}
+
         [data-testid="stMetricValue"] {{ 
-            font-size: 2rem !important; 
+            font-size: 2.1rem !important; 
             font-weight: 800; 
             color: {THEME_COLOR}; 
         }}
-        .stMetric {{ 
-            border: 1px solid rgba(128, 128, 128, 0.2); 
-            padding: 20px; 
-            border-radius: 10px; 
-            background: rgba(128,128,128,0.03); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }}
+        
+        /* BOTÕES PROFISSIONAIS */
         .stButton button {{ 
             width: 100%; 
             font-weight: 700; 
             text-transform: uppercase; 
-            border-radius: 8px; 
-            letter-spacing: 0.5px;
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            color: #475569;
+            transition: all 0.2s;
         }}
-        .header-title {{ 
-            font-size: 2.4rem; 
-            font-weight: 800; 
-            color: {THEME_COLOR}; 
-            border-bottom: 3px solid {THEME_COLOR}; 
-            padding-bottom: 12px; 
-            margin-bottom: 25px; 
-        }}
-        .section-header {{
+        .stButton button:hover {{
+            border-color: {THEME_COLOR};
             color: {THEME_COLOR};
+        }}
+        
+        /* HEADER EXECUTIVO */
+        .header-title {{ 
+            font-size: 2.6rem; 
+            font-weight: 800; 
+            color: #1E293B; 
+            border-bottom: 4px solid {THEME_COLOR}; 
+            padding-bottom: 15px; 
+            margin-bottom: 30px; 
+            letter-spacing: -0.5px;
+        }}
+
+        /* SUBHEADERS */
+        h3 {{
+            color: #334155 !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.3px;
+        }}
+
+        .section-header {{
+            color: #64748B;
+            font-size: 0.9rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-top: 1.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }}
         </style>
     """, unsafe_allow_html=True)

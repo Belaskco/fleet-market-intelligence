@@ -1,154 +1,283 @@
 import plotly.express as px
 import streamlit as st
 import polars as pl
-import sys
-import os
+import plotly.graph_objects as go
+from datetime import timedelta
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
-# Setup de ambiente: Garante a resolução de caminhos no Streamlit Cloud
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+# --- UI COMPONENTS (COMPONENTES MODULARES) ---
 
-def set_all_state(label, options, value):
-    for opt in options:
-        st.session_state[f"chk_{label}_{opt}"] = value
-
-def run_dashboard():
-    st.set_page_config(page_title=APP_TITLE, layout="wide")
-
-    # Injeção de CSS para identidade visual Dark
+def apply_enterprise_styles():
+    # Aplica o DNA visual da Black Crow para um visual executivo de alto nível.
     st.markdown(f"""
         <style>
-        [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
-        .stMetric {{ background-color: #161b22; border: 1px solid #30363d; padding: 15px; border-radius: 10px; }}
-        div[data-testid="stSidebar"] {{ background-color: #0d1117; }}
-        div[data-testid="stInfo"] {{ background-color: #0d1117; border: 1px solid #30363d; color: {THEME_COLOR}; }}
-        .stButton button {{ width: 100%; height: 1.6rem; font-size: 0.7rem !important; font-weight: bold; }}
+        [data-testid="stMetricValue"] {{ 
+            font-size: 2rem !important; 
+            font-weight: 800; 
+            color: {THEME_COLOR}; 
+        }}
+        .stMetric {{ 
+            border: 1px solid rgba(128, 128, 128, 0.2); 
+            padding: 20px; 
+            border-radius: 10px; 
+            background: rgba(128,128,128,0.03); 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }}
+        .stButton button {{ 
+            width: 100%; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            border-radius: 8px; 
+            letter-spacing: 0.5px;
+        }}
+        .header-title {{ 
+            font-size: 2.4rem; 
+            font-weight: 800; 
+            color: {THEME_COLOR}; 
+            border-bottom: 3px solid {THEME_COLOR}; 
+            padding-bottom: 12px; 
+            margin-bottom: 25px; 
+        }}
+        .section-header {{
+            color: {THEME_COLOR};
+            font-weight: 700;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }}
         </style>
     """, unsafe_allow_html=True)
 
-    @st.cache_data(ttl=3600)
-    def get_cached_data(): return load_processed_data()
-
-    df_raw = get_cached_data()
-    if df_raw.is_empty(): st.error("❌ Base indisponível."); st.stop()
-
-    # --- SIDEBAR: SEGMENTAÇÃO ---
+def render_sidebar(df):
+    """Gerencia todos os filtros de segmentação e controles na barra lateral."""
     with st.sidebar:
-        st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
+        st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=90)
         st.title("Market Control")
+        st.caption("Engine: Black Crow v4.8 | Logic: Weekly Cycle")
         st.divider()
         
-        def create_smart_filter(label, options):
-            with st.expander(label, expanded=False):
+        def smart_filter(label, col):
+            opts = sorted(df[col].unique().to_list())
+            with st.expander(f"Filtro: {label}", expanded=False):
                 c1, c2 = st.columns(2)
-                c1.button("Todos", key=f"all_{label}", on_click=set_all_state, args=(label, options, True))
-                c2.button("Nenhum", key=f"none_{label}", on_click=set_all_state, args=(label, options, False))
-                return [opt for opt in options if st.checkbox(opt, key=f"chk_{label}_{opt}", value=st.session_state.get(f"chk_{label}_{opt}", True))]
+                c1.button("Todos", key=f"all_{label}", on_click=set_all_state, args=(label, opts, True))
+                c2.button("Nenhum", key=f"none_{label}", on_click=set_all_state, args=(label, opts, False))
+                return [o for o in opts if st.checkbox(o, key=f"chk_{label}_{o}", value=st.session_state.get(f"chk_{label}_{o}", True))]
 
-        sel_marcas = create_smart_filter("Marcas", sorted(df_raw["marca"].unique().to_list()))
-        sel_paises = create_smart_filter("Mercados", sorted(df_raw["uf"].unique().to_list()))
-        sel_setores = create_smart_filter("Setores", sorted(df_raw["industry_sector"].unique().to_list()))
-        st.divider()
-        sel_days = st.slider("Janela de Observação (Dias):", 1, 31, (1, 31))
-
-    # --- ENGINE DE DADOS ---
-    df_filt = apply_business_filters(df_raw, sel_marcas, sel_paises, sel_days)
-    if sel_setores: df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
-
-    if not df_filt.is_empty():
-        # Cálculos de Inteligência Macro
-        v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
-        dist_data = AnalyticsService.get_pareto_distribution(df_filt)
-        total_vol = len(df_filt)
-        proj_vol, trend = PredictionService.get_market_trend(df_filt)
+        # Mapeamento dinâmico baseado na inspeção do Parquet
+        id_col = "company_name" if "company_name" in df.columns else "marca"
+        geo_col = "hq_country" if "hq_country" in df.columns else "uf"
         
-        st.title(f"{APP_TITLE}")
-        
-        # --- KPIs ---
-        k1, k2, k3, k4, k5 = st.columns(5)
-        k1.metric("Volume Total", f"{total_vol:,}")
-        if not dist_data.is_empty():
-            k2.metric("Líder de Mix", f"{dist_data['marca'][0][:12]}...", delta=f"{(dist_data['vendas'][0]/total_vol):.1%} Share")
-        k3.metric("Taxa Conversão", f"{total_vol/(sel_days[1]-sel_days[0]+1):.1f} un/dia")
-        k4.metric("Abrangência", f"{len(df_filt['uf'].unique())} Países")
-        k5.metric("Forecast Total", f"{proj_vol} un", delta=trend)
+        filtros = {
+            "marcas": smart_filter("Marcas / Empresas", id_col),
+            "paises": smart_filter("Países / Mercados", geo_col),
+            "setores": smart_filter("Setores Industriais", "industry_sector"),
+            "dias": st.slider("Recorte por Dia do Mês:", 1, 31, (1, 31))
+        }
+        st.info("💡 Filtros D-1 aplicados automaticamente para garantir integridade dos dados.")
+        return filtros
 
+def render_spc_chart(v_semanal, v_future, m, s):
+    """Renderiza a Carta de Controle com Forecast Pontilhado e Alertas Estatísticos."""
+    ucl, lcl = m + 2*s, max(0, m - 2*s)
+    
+    # 1. Alerta de Execução Real (Topo)
+    last_vol = v_semanal.tail(1)["vol"][0]
+    if last_vol > ucl: 
+        st.success(f"🚀 **Expansão Crítica:** Último ciclo ({last_vol}) rompeu o limite superior UCL ({ucl:.1f}).")
+    elif last_vol < lcl: 
+        st.error(f"⚠️ **Retração Crítica:** Último ciclo ({last_vol}) abaixo do limite inferior LCL ({lcl:.1f}).")
+    else: 
+        st.info(f"✅ **Estabilidade:** Fluxo operacional em regime nominal ({last_vol} pedidos/sem).")
+
+    # 2. Gráfico Plotly SPC
+    fig = go.Figure()
+    # Série Histórica Real (Sólida)
+    fig.add_trace(go.Scatter(
+        x=v_semanal['semana'], y=v_semanal['vol'], 
+        mode='lines+markers', name='Histórico', 
+        line=dict(color=THEME_COLOR, width=3),
+        marker=dict(size=8)
+    ))
+    
+    # Série Preditiva Nixtla (Pontilhada)
+    if not v_future.is_empty():
+        last_date = v_semanal.tail(1)["semana"][0]
+        
+        # Sincronização de Timeline para o Forecast
+        v_fut_dates = v_future.with_columns([
+            pl.Series([last_date + timedelta(weeks=i+1) for i in range(len(v_future))]).alias("semana")
+        ])
+        
+        # BLINDAGEM DE SCHEMA: Garante que ambos os DataFrames tenham as mesmas colunas e tipos antes do concat
+        # O erro acontecia porque o histórico é Int e o Forecast é Float.
+        hist_tail = v_semanal.select(["semana", "vol"]).tail(1).with_columns([
+            pl.col("semana").cast(pl.Date), 
+            pl.col("vol").cast(pl.Float64)
+        ])
+        
+        fut_tail = v_fut_dates.select(["semana", "vol"]).with_columns([
+            pl.col("semana").cast(pl.Date), 
+            pl.col("vol").cast(pl.Float64)
+        ])
+        
+        # Agora a concatenação é segura entre tipos idênticos
+        conn = pl.concat([hist_tail, fut_tail])
+        
+        fig.add_trace(go.Scatter(
+            x=conn['semana'], y=conn['vol'], 
+            mode='lines', name='Forecast', 
+            line=dict(color=THEME_COLOR, dash='dot', width=3)
+        ))
+    
+    # Limites Estáticos (SPC)
+    fig.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL (Limite Sup.)")
+    fig.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL (Limite Inf.)")
+    
+    fig.update_layout(
+        height=350, 
+        margin=dict(t=10, b=10), 
+        paper_bgcolor='rgba(0,0,0,0)', 
+        plot_bgcolor='rgba(128,128,128,0.02)', 
+        showlegend=False,
+        xaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.1)')
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # 3. Alerta Preditivo (Base)
+    if not v_future.is_empty() and v_future.filter(pl.col("vol") > ucl).height > 0:
+        st.warning("🔮 **Alerta Preditivo:** O motor detectou possíveis picos de demanda nas próximas 4 semanas.")
+
+def render_scorecard(total, m_week, share_lider, confianca, forecast_val, trend):
+    """Exibe a grade de KPIs de nível executivo no topo do painel."""
+    k1, k2, k3, k4, k5 = st.columns(5)
+    k1.metric("Volume Acumulado", f"{total:,}", help="Total de pedidos faturados no período (Excluindo D-0).")
+    k2.metric("Líder de Canal", f"{share_lider[0][:12]}", delta=f"{share_lider[1]:.1%} Share")
+    k3.metric("Média Semanal", f"{m_week:.1f} un/sem")
+    k4.metric("Previsibilidade", f"{confianca:.1f}%", help="Logic Engine v4.0 (Calibração Enterprise)")
+    k5.metric("Forecast Próx. Ciclo", human_format(forecast_val * 125000), delta=trend)
+
+# --- UTILS & CORE ENGINE ---
+
+def set_all_state(label, options, value):
+    """Controlador de estado para botões de filtro em massa."""
+    for opt in options: 
+        st.session_state[f"chk_{label}_{opt}"] = value
+
+def human_format(num):
+    """Formata valores financeiros para escala executiva (K, M, B)."""
+    if num is None or num == 0: return "0"
+    for unit in ['', 'K', 'M', 'B']:
+        if abs(num) < 1000.0: return f"{num:.1f}{unit}"
+        num /= 1000.0
+    return f"{num:.1f}T"
+
+def run_dashboard():
+    # Maestro que orquestra todos os componentes do Dashboard
+    st.set_page_config(page_title=APP_TITLE, layout="wide")
+    apply_enterprise_styles()
+
+    df_raw = load_processed_data()
+    if df_raw.is_empty(): 
+        st.error("❌ Base de dados Fleet não carregada corretamente."); st.stop()
+
+    date_col = "purchase_date" if "purchase_date" in df_raw.columns else "data_faturamento"
+    f = render_sidebar(df_raw)
+    
+    # Processamento de Filtros e Blindagem D-1
+    df = apply_business_filters(df_raw, f['marcas'], f['paises'], f['dias'])
+    if f['setores']: 
+        df = df.filter(pl.col("industry_sector").is_in(f['setores']))
+    
+    # Blindagem D-1 (Remoção do dia atual incompleto)
+    df = df.filter(pl.col(date_col) < df_raw[date_col].max()) 
+
+    if not df.is_empty():
+        # --- CÁLCULOS E MOTORES DE IA ---
+        v_sem = df.with_columns(pl.col(date_col).dt.truncate("1w").alias("semana")).group_by("semana").len(name="vol").sort("semana")
+        m_w, s_w = v_sem["vol"].mean(), v_sem["vol"].std()
+        
+        dist = AnalyticsService.get_pareto_distribution(df).sort("vendas")
+        proj_vol, trend = PredictionService.get_market_trend(df)
+        v_fut = PredictionService.get_daily_forecast(df, horizon=4)
+        ins = PredictionService.get_strategic_insights(df)
+        
+        # Header Principal
+        st.markdown(f"<div class='header-title'>{APP_TITLE}</div>", unsafe_allow_html=True)
+        
+        # Top Metrics
+        lider_info = (dist.tail(1)['marca'][0], dist.tail(1)['vendas'][0]/len(df))
+        render_scorecard(len(df), m_w, lider_info, ins.get('confianca', 0), proj_vol, trend)
         st.divider()
 
-        # --- TRAJETÓRIA ---
-        st.subheader("📊 Diagnóstico de Trajetória")
-        st.plotly_chart(px.area(v_dia, x='dia_do_mes', y='vol', template="plotly_dark", color_discrete_sequence=[THEME_COLOR]).update_layout(height=250), use_container_width=True)
-        st.info(f"O mercado apresenta trajetória **{trend}**. Forecast de faturamento estimado: **{proj_vol} unidades**.")
-
-        st.divider()
-
-        # --- NIXTLA OPORTUNIDADES ---
-        st.subheader("🔮 Oportunidades de Compra Próxima Janela")
+        # Layout Principal (Grid)
+        c_l, c_r = st.columns([1.6, 1])
         
-        try:
-            df_forecast = PredictionService.get_client_predictions(df_filt)
-            if not df_forecast.is_empty():
+        with c_l:
+            st.subheader("📊 Diagnóstico de Trajetória Semanal")
+            # Histórico de Área
+            fig_area = px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR])
+            fig_area.update_layout(
+                height=280, margin=dict(t=0,b=0), 
+                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                xaxis_title=None, yaxis_title="Volume"
+            )
+            st.plotly_chart(fig_area, use_container_width=True)
+            
+            # Carta de Controle (SPC)
+            st.markdown("<div class='section-header'>📈 Controle Estatístico e Estabilidade</div>", unsafe_allow_html=True)
+            render_spc_chart(v_sem, v_fut, m_w, s_w)
+
+        with c_r:
+            # --- TABELA DE ANTECIPAÇÃO NOMINAL (NIXTLA) ---
+            st.subheader("🔮 Antecipação Nominal (Próx. Ciclo)")
+            df_p = PredictionService.get_client_predictions(df)
+            
+            if not df_p.is_empty():
+                # Aplicamos formatação financeira na tabela preditiva
+                df_view = df_p.with_columns(
+                    pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Potencial Est.")
+                )
                 st.dataframe(
-                    df_forecast, 
+                    df_view.select(["Cliente", "Qtd_Prevista", "Potencial Est.", "Probabilidade"]), 
                     use_container_width=True, 
                     hide_index=True,
                     column_config={
-                        "Cliente": st.column_config.TextColumn("🎯 Nome do Cliente"),
-                        "Qtd_Prevista": st.column_config.NumberColumn("Volume Est. (Un)", format="%d"),
-                        "Valor_Est": st.column_config.NumberColumn("Valor Previsto (USD)", format="$ %.2f"),
-                        "Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1)
+                        "Probabilidade": st.column_config.ProgressColumn(
+                            "Confiança", min_value=0, max_value=1, format="%.2f", color="green"
+                        ),
+                        "Qtd_Prevista": st.column_config.NumberColumn("Previsão (un)")
                     }
                 )
             else:
-                st.info("💡 Aceleração Analítica: O volume de transações para este filtro é insuficiente para gerar predições nominais.")
-        except Exception as e:
-            st.warning("⚠️ Serviço de Predição Nominal temporariamente indisponível. Verifique a conexão com a API Nixtla.")
-
-        st.divider()
-
-        # --- SPC & PARETO ---
-        c1, c2 = st.columns(2)
-        with c1:
-            st.subheader("🏆 Mix de Clientes (Pareto)")
-            st.plotly_chart(px.bar(dist_data, x='vendas', y='marca', orientation='h', template="plotly_dark"), use_container_width=True)
-
-        with c2:
-            st.subheader("📈 Estabilidade Estatística (SPC)")
-            ucl, lcl = m + 2*s, max(0, m - 2*s)
-            v_dia = v_dia.join(df_filt.select(["dia_do_mes", "marca"]).unique(subset=["dia_do_mes"]), on="dia_do_mes", how="left")
-            v_dia = v_dia.with_columns(status=pl.when(pl.col("vol") > ucl).then(pl.lit("Exp")).when(pl.col("vol") <= lcl).then(pl.lit("Ret")).otherwise(pl.lit("Est")))
+                st.warning("Volume de dados insuficiente para gerar antecipação por cliente nesta segmentação.")
             
-            exp, ret = v_dia.filter(pl.col("status") == "Exp"), v_dia.filter(pl.col("status") == "Ret")
-            if not exp.is_empty(): st.success(f"🚀 **Expansão:** {', '.join(exp['marca'].unique().to_list())}")
-            if not ret.is_empty(): st.error(f"⚠️ **Retração:** {', '.join(ret['marca'].unique().to_list())}")
+            # Pareto de Líderes
+            st.markdown("<div class='section-header'>🏆 Pareto de Líderes (Market Share)</div>", unsafe_allow_html=True)
+            fig_bar = px.bar(
+                dist.tail(10), x='vendas', y='marca', 
+                orientation='h', color_discrete_sequence=[THEME_COLOR]
+            )
+            fig_bar.update_layout(
+                height=350, margin=dict(t=0,b=0), 
+                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                xaxis_title="Volume", yaxis_title=None
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
 
-            fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', markers=True, template="plotly_dark")
-            fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL")
-            fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL")
-            st.plotly_chart(fig_spc, use_container_width=True)
-
+        # Strategic Insights Footer (Logic Engine)
         st.divider()
-
-        # --- BLOCO 5: LOGIC ENGINE ---
-        st.subheader("🧠 Drivers de Decisão (Logic Engine)")
-        hhi = (dist_data["vendas"] / total_vol).pow(2).sum()
-        vol_cv = (s / m) if m > 0 else 0
-        confianca = max(0, 100 - (vol_cv * 100))
-        
         st.markdown(f"""
         ```python
-        # Analytical Diagnosis - Logic Engine v2.2.0
-        - Saúde da Carteira: Perfil {'CONCENTRADO' if hhi > 0.25 else 'DIVERSIFICADO'} (Índice HHI: {hhi:.2f}).
-        - Previsibilidade: Nota de Confiança em {confianca:.1f}% (Base estatística Nixtla).
-        - Insight Comercial: {len(df_forecast) if 'df_forecast' in locals() else 0} oportunidades de faturamento nominal detectadas.
-        - Estabilidade: {'Atenção: Alta flutuação volumétrica.' if vol_cv > 0.4 else 'Fluxo operando em normalidade estatística.'}
+        # Strategic Insights v4.8.0 | Perfil {ins.get('perfil').upper()} | Índice HHI: {ins.get('hhi',0):.2f} | Coef. Variação: {ins.get('cv',0):.2f}
+        - Estabilidade: {ins.get('estabilidade').upper()}
+        - Nota de Confiança: {ins.get('confianca', 0):.1f}% (Nível Profissional Enterprise)
+        - Fonte: Black Crow Intelligence Unit
         ```
-        """, unsafe_allow_html=True)
-    else: st.sidebar.warning("⚠️ Ajuste os filtros para gerar análise operacional.")
+        """)
+    else:
+        st.sidebar.warning("⚠️ Ajuste os filtros para gerar análise operacional.")
