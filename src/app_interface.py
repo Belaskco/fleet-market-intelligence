@@ -113,6 +113,7 @@ def render_spc_chart(v_semanal, v_future, m, s):
         ])
         
         # BLINDAGEM DE SCHEMA: Garante que ambos os DataFrames tenham as mesmas colunas e tipos antes do concat
+        # O erro acontecia porque o histórico é Int e o Forecast é Float.
         hist_tail = v_semanal.select(["semana", "vol"]).tail(1).with_columns([
             pl.col("semana").cast(pl.Date), 
             pl.col("vol").cast(pl.Float64)
@@ -123,6 +124,7 @@ def render_spc_chart(v_semanal, v_future, m, s):
             pl.col("vol").cast(pl.Float64)
         ])
         
+        # Agora a concatenação é segura entre tipos idênticos
         conn = pl.concat([hist_tail, fut_tail])
         
         fig.add_trace(go.Scatter(
