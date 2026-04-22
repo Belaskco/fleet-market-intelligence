@@ -11,7 +11,6 @@ from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
 def human_format(num):
-    """Formatação K, M, B (Rapha Style)."""
     if num is None or num == 0: return "0"
     magnitude = 0
     while abs(num) >= 1000:
@@ -25,7 +24,7 @@ def set_all_state(label, options, value):
 def run_dashboard():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # CSS Adaptativo para Light/Dark Mode
+    # CSS Adaptativo (Rapha Mode)
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
@@ -38,7 +37,7 @@ def run_dashboard():
     def get_cached_data(): return load_processed_data()
 
     df_raw = get_cached_data()
-    if df_raw.is_empty(): st.error("❌ Base Fleet indisponível."); st.stop()
+    if df_raw.is_empty(): st.error("❌ Base Fleet não encontrada."); st.stop()
 
     # SIDEBAR
     with st.sidebar:
@@ -58,24 +57,22 @@ def run_dashboard():
         st.divider()
         sel_days = st.slider("Janela Mensal:", 1, 31, (1, 31))
 
-    # --- BLINDAGEM D-1 & RESOLUÇÃO DE COLUNA ---
+    # --- PROCESSAMENTO D-1 ---
     date_col = "data_faturamento"
     if date_col not in df_raw.columns:
-        st.error(f"⚠️ Erro Crítico: Coluna {date_col} não encontrada após processamento.")
+        st.error(f"⚠️ Erro de Schema: {date_col} ausente.")
         st.stop()
 
     max_date = df_raw[date_col].max()
     df_filt = apply_business_filters(df_raw, sel_marcas, sel_paises, sel_days)
-    if sel_setores:
-        df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
+    if sel_setores: df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
     
-    # Filtro D-1 (Rapha Logic)
+    # Blindagem Rapha: Remove último dia para evitar queda artificial
     df_filt = df_filt.filter(pl.col(date_col) < max_date)
 
     if not df_filt.is_empty():
         total_vol = len(df_filt)
         v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
-        # Pareto: Ordenado para Líder no Topo
         dist_data = AnalyticsService.get_pareto_distribution(df_filt).sort("vendas", descending=False)
         proj_vol, trend = PredictionService.get_market_trend(df_filt)
         v_future = PredictionService.get_daily_forecast(df_filt)
@@ -84,7 +81,7 @@ def run_dashboard():
         
         # KPIs
         k1, k2, k3, k4, k5 = st.columns(5)
-        k1.metric("Volume (D-1)", f"{total_vol:,}")
+        k1.metric("Vendas (D-1)", f"{total_vol:,}")
         if not dist_data.is_empty():
             lider = dist_data.tail(1)
             k2.metric("Líder Market", f"{lider['marca'][0][:12]}...", delta=f"{(lider['vendas'][0]/total_vol):.1%} Share")
@@ -94,13 +91,15 @@ def run_dashboard():
 
         st.divider()
 
-        # Visuals Híbridos
+        # Ciclos e Oportunidades
         c_left, c_right = st.columns([1.6, 1])
         with c_left:
-            st.subheader("📊 Ciclos de Faturamento")
+            st.subheader("📊 Diagnóstico de Trajetória")
             fig_area = px.area(v_dia, x='dia_do_mes', y='vol', color_discrete_sequence=[THEME_COLOR])
             fig_area.update_layout(height=280, margin=dict(t=10, b=10, l=10, r=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig_area, use_container_width=True)
+            st.info(f"O mercado apresenta trajetória **{trend}**. Forecast estimado: **{proj_vol} unidades**.")
+            
         with c_right:
             st.subheader("🔮 Antecipação Nixtla")
             df_forecast = PredictionService.get_client_predictions(df_filt)
@@ -111,7 +110,7 @@ def run_dashboard():
 
         st.divider()
 
-        # Pareto e SPC Forecast
+        # Pareto e SPC
         c1, c2 = st.columns(2)
         with c1:
             st.subheader("🏆 Pareto de Líderes")

@@ -9,46 +9,39 @@ logger = logging.getLogger("DataEngine")
 
 def load_processed_data() -> pl.DataFrame:
     """
-    Carrega o Parquet e reconstrói a coluna 'data_faturamento'.
-    Aqui é onde a mágica da data acontece.
+    Carrega o Parquet real (fct_sales_history.parquet) e normaliza 
+    as colunas detetadas na inspeção para o padrão do sistema.
     """
     if not os.path.exists(FCT_SALES_PATH):
-        logger.error(f"Arquivo não encontrado: {FCT_SALES_PATH}")
+        logger.error(f"Ficheiro não encontrado: {FCT_SALES_PATH}")
         return pl.DataFrame()
 
     try:
         df = pl.read_parquet(FCT_SALES_PATH)
         
-        # 1. Normalização de Schema (Mapeia nomes do Parquet para o sistema)
-        existing_map = {k: v for k, v in COLUMN_MAP.items() if k in df.columns}
-        df = df.rename(existing_map)
+        # 1. Normalização de Schema baseada na inspeção (image_564ce2.png)
+        # Mapeamos os nomes reais do Parquet para os nomes que o resto do app usa
+        schema_map = {
+            "company_name": "marca",
+            "hq_country": "uf",
+            "order_value": "faturamento",
+            "purchase_date": "data_faturamento"
+        }
         
-        # 2. COMO CRIAR A COLUNA 'data_faturamento':
-        # Se você tem colunas chamadas 'ano', 'mes', 'dia':
-        if all(col in df.columns for col in ["ano", "mes", "dia"]):
-            df = df.with_columns(
-                pl.date(pl.col("ano"), pl.col("mes"), pl.col("dia")).alias("data_faturamento")
-            )
-        # Se você tem uma coluna 'DATA' que é string ou timestamp:
-        elif "DATA" in df.columns:
-            df = df.with_columns(
-                pl.col("DATA").cast(pl.Date).alias("data_faturamento")
-            )
-        # Fallback: Se vier como 'data_transacao'
-        elif "data_transacao" in df.columns:
-            df = df.with_columns(
-                pl.col("data_transacao").cast(pl.Date).alias("data_faturamento")
-            )
-
-        # 3. Engenharia de Atributos para os filtros da Sidebar
+        # Aplicamos o mapeamento (respeitando o que já existe no COLUMN_MAP se necessário)
+        df = df.rename({k: v for k, v in schema_map.items() if k in df.columns})
+        
+        # 2. Tratamento Crítico de Datas
+        # O Nixtla precisa que 'data_faturamento' seja Date (sem horas)
         if "data_faturamento" in df.columns:
             df = df.with_columns([
+                pl.col("data_faturamento").cast(pl.Date),
                 pl.col("data_faturamento").dt.day().cast(pl.Int64).alias("dia_do_mes")
             ])
             
         return df
     except Exception as e:
-        logger.error(f"Falha na carga ou processamento de data: {e}")
+        logger.error(f"Falha na carga dos dados reais: {e}")
         return pl.DataFrame()
 
 def apply_business_filters(df: pl.DataFrame, marcas: List[str], ufs: List[str], dias: tuple) -> pl.DataFrame:
