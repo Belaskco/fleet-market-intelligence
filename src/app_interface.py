@@ -9,7 +9,7 @@ from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
-# Setup de path para consistência de módulos em deploy
+# Path setup para consistência de módulos
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
@@ -18,11 +18,11 @@ if project_root not in sys.path:
 def run_dashboard():
     """
     Orquestrador da UI. Focado em Sales Intelligence e visões preditivas 
-    para suporte à tomada de decisão estratégica (Market Level).
+    para suporte à tomada de decisão estratégica e operacional.
     """
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # Override de CSS para fixar identidade visual Dark/Enterprise
+    # Injeção de CSS para identidade visual Dark/GitHub
     st.markdown(f"""
         <style>
         .stMetric {{ background-color: #161b22; border: 1px solid #30363d; padding: 15px; border-radius: 10px; }}
@@ -38,7 +38,7 @@ def run_dashboard():
     df_raw = get_cached_data()
 
     if df_raw.is_empty():
-        st.error("❌ Framework Error: Fonte de dados (Parquet) inacessível.")
+        st.error("❌ Framework Error: Data source (Parquet) inacessível.")
         st.stop()
 
     # --- SIDEBAR: SEGMENTAÇÃO E FILTROS (FIXO) ---
@@ -48,7 +48,6 @@ def run_dashboard():
         st.divider()
         
         st.subheader("🎯 Filtros Estratégicos")
-        
         marcas_disp = sorted(df_raw["marca"].unique().to_list())
         sel_marcas = st.multiselect("Foco em Marcas:", marcas_disp, default=marcas_disp[:5])
         
@@ -62,13 +61,13 @@ def run_dashboard():
         sel_days = st.slider("Janela de Observação (Dias):", 1, 31, (1, 31))
         st.caption("Black Crow Intelligence | v1.3.0 Platinum")
 
-    # Ingestão e aplicação da lógica de filtros de negócio
+    # Pipeline de filtragem de dados
     df_filt = apply_business_filters(df_raw, sel_marcas, sel_ufs, sel_days)
     if not sel_setores == setores_disp:
         df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
 
     if not df_filt.is_empty():
-        # Cálculo prévio de métricas para consistência entre blocos visuais
+        # Cálculo de métricas globais para os gráficos
         v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
         
         st.title(f"{APP_TITLE}")
@@ -86,8 +85,6 @@ def run_dashboard():
 
         # --- BLOCO 2: DIAGNÓSTICO DE TRAJETÓRIA ---
         st.subheader("📊 Diagnóstico de Trajetória")
-        
-        # Gráfico de Área para percepção de volume acumulado/corpo de mercado
         fig_area = px.area(v_dia, x='dia_do_mes', y='vol', 
                         template="plotly_dark", 
                         color_discrete_sequence=[THEME_COLOR])
@@ -111,47 +108,68 @@ def run_dashboard():
         with c2:
             st.subheader("📈 Estabilidade (SPC - Carta I)")
             
-            # REGULAGEM: Sigma 2 para sensibilidade comercial e LCL=1 para detecção de inatividade
-            k_sigma = 2 
-            ucl = m + k_sigma * s
-            lcl = max(1, m - k_sigma * s)
-
-            # Feature engineering: Semântica de Alertas (Expansão vs Retração)
-            v_dia = v_dia.with_columns(
-                status=pl.when(pl.col("vol") > ucl).then(pl.lit("Expansão"))
-                        .when(pl.col("vol") <= lcl).then(pl.lit("Retração"))
-                        .otherwise(pl.lit("Estável"))
-            )
-
-            # Callouts dinâmicos integrados à Carta de Controle
-            exp = v_dia.filter(pl.col("status") == "Expansão")
-            ret = v_dia.filter(pl.col("status") == "Retração")
+            # Cálculo de métricas estatísticas via AnalyticsService
+            v_dia, m, s = AnalyticsService.calculate_spc_metrics(df_filt)
             
-            if not exp.is_empty():
-                st.success(f"🚀 Opportunity Check: {len(exp)} picos de expansão detectados (>UCL).")
-            if not ret.is_empty():
-                st.error(f"⚠️ Risk Alert: {len(ret)} quedas críticas detectadas (<=LCL).")
+            if not v_dia.is_empty():
+                # REGULAGEM TÉCNICA: Recuperação de metadados (marca) se ausentes no v_dia
+                # Garante que o hover e os alertas funcionem mesmo com agregações agressivas
+                if "marca" not in v_dia.columns:
+                    # Join simples para trazer a marca principal de cada dia
+                    v_dia = v_dia.join(
+                        df_filt.select(["dia_do_mes", "marca"]).unique(subset=["dia_do_mes"]),
+                        on="dia_do_mes",
+                        how="left"
+                    )
 
-            fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', markers=True, template="plotly_dark",
-                            range_y=[-0.5, max(ucl, v_dia["vol"].max()) * 1.2])
-            
-            # Plotagem dos limites técnicos (Sigma 2)
-            fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL (Expansão)")
-            fig_spc.add_hline(y=m, line_dash="solid", line_color="white", opacity=0.2)
-            fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL (Retração)")
+                # Parametrização Sigma 2 e LCL de segurança
+                k_sigma = 2 
+                ucl = m + k_sigma * s
+                lcl = max(1, m - k_sigma * s)
 
-            # Mapping de cores condicional para destacar anomalias de negócio
-            color_map = {'Expansão': '#238636', 'Retração': '#da3633', 'Estável': THEME_COLOR}
-            colors = [color_map[s] for s in v_dia["status"].to_list()]
-            
-            fig_spc.update_traces(
-                marker=dict(color=colors, size=10, line=dict(width=1, color='white'))
-            )
-            st.plotly_chart(fig_spc, use_container_width=True)
+                # Feature engineering: Semântica de Alertas (Expansão vs Retração)
+                v_dia = v_dia.with_columns(
+                    status=pl.when(pl.col("vol") > ucl).then(pl.lit("Expansão"))
+                            .when(pl.col("vol") <= lcl).then(pl.lit("Retração"))
+                            .otherwise(pl.lit("Estável"))
+                )
+
+                # Alertas Nominais: Foco total em conversão comercial
+                exp_pts = v_dia.filter(pl.col("status") == "Expansão")
+                ret_pts = v_dia.filter(pl.col("status") == "Retração")
+                
+                if not exp_pts.is_empty():
+                    nomes = ", ".join(exp_pts["marca"].unique().to_list())
+                    st.success(f"🚀 **Expansão Detectada:** Foco comercial em **{nomes}**.")
+                    
+                if not ret_pts.is_empty():
+                    nomes = ", ".join(ret_pts["marca"].unique().to_list())
+                    st.error(f"⚠️ **Risco de Retração:** Investigar churn em **{nomes}**.")
+
+                # Visualização com Hover Detalhado (Tooltips)
+                fig_spc = px.line(v_dia, x='dia_do_mes', y='vol', 
+                                markers=True, 
+                                hover_data=['dia_do_mes', 'vol', 'marca', 'status'],
+                                template="plotly_dark",
+                                range_y=[-0.5, max(ucl, v_dia["vol"].max()) * 1.2])
+                
+                # Plotagem dos limites estatísticos
+                fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636", annotation_text="UCL (Expansão)")
+                fig_spc.add_hline(y=m, line_dash="solid", line_color="white", opacity=0.2)
+                fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633", annotation_text="LCL (Retração)")
+
+                # Mapping de cores para anomalias estatísticas
+                color_map = {'Expansão': '#238636', 'Retração': '#da3633', 'Estável': THEME_COLOR}
+                colors = [color_map[st] for st in v_dia["status"].to_list()]
+                
+                fig_spc.update_traces(
+                    marker=dict(color=colors, size=10, line=dict(width=1, color='white'))
+                )
+                st.plotly_chart(fig_spc, use_container_width=True)
 
         st.divider()
         st.subheader("🧠 Drivers de Decisão (Logic Engine)")
         st.code(AnalyticsService.get_decision_rules(df_filt), language='python')
 
     else:
-        st.sidebar.warning("⚠️ Filtros restritivos demais. Sem dados no contexto atual.")
+        st.sidebar.warning("⚠️ Filtros restritivos demais. Sem dados no contexto.")
