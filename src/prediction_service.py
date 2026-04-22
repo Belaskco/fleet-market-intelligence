@@ -17,14 +17,14 @@ class PredictionService:
 
     @staticmethod
     def get_market_trend(df: pl.DataFrame):
-        """Calcula a trajetória macro (KPI de Forecast)."""
+        # Calcula a trajetória macro (KPI de Forecast).
         if df.is_empty() or "data_faturamento" not in df.columns:
             return 0, "Sem Dados"
         
         try:
+            # Agregação essencial
             v_dia = df.group_by("data_faturamento").len(name="y").sort("data_faturamento")
             
-            # Nixtla exige pelo menos 7-10 pontos para lags. Fallback se < 10.
             if v_dia["data_faturamento"].n_unique() < 10:
                 return PredictionService._linear_trend_fallback(v_dia)
 
@@ -47,14 +47,14 @@ class PredictionService:
 
     @staticmethod
     def get_daily_forecast(df: pl.DataFrame, horizon=7):
-        """Gera os dados para a linha pontilhada no gráfico SPC."""
+        # Gera os dados para a linha pontilhada no gráfico SPC.
         if df.is_empty() or "data_faturamento" not in df.columns: 
             return pl.DataFrame()
             
         try:
+            # Agrupamos e mantemos a data_faturamento para o fallback
             v_dia = df.group_by("data_faturamento").len(name="y").sort("data_faturamento")
             
-            # Se falhar Nixtla, faz projeção linear simples para não deixar o gráfico sem linha
             if v_dia["data_faturamento"].n_unique() < 10:
                 return PredictionService._linear_forecast_fallback(v_dia, horizon)
 
@@ -65,6 +65,7 @@ class PredictionService:
             fcst.fit(df_macro)
             preds = fcst.predict(horizon)
             
+            # Formata para o dia do mês que a interface usa no eixo X
             preds['dia_do_mes'] = pd.to_datetime(preds['ds']).dt.day
             return pl.from_pandas(preds).select([pl.col("dia_do_mes"), pl.col("LGBMRegressor").alias("vol")])
         except:
@@ -72,11 +73,10 @@ class PredictionService:
 
     @staticmethod
     def get_client_predictions(df: pl.DataFrame):
-        """Tabela nominal de compras (Antecipação Nixtla)."""
-        if df.is_empty(): return pl.DataFrame()
+        # Tabela nominal de compras (Antecipação Nixtla).
+        if df.is_empty() or "data_faturamento" not in df.columns: return pl.DataFrame()
         
         try:
-            # Preparação Nixtla Micro
             data_prep = df.select([
                 pl.col("marca").alias("unique_id"),
                 pl.col("data_faturamento").alias("ds"),
@@ -86,12 +86,10 @@ class PredictionService:
             data_prep['ds'] = pd.to_datetime(data_prep['ds'])
             ts_data = data_prep.groupby(['unique_id', 'ds']).agg({'y': 'sum', 'faturamento': 'mean'}).reset_index()
             
-            # Mínimo de 3 pontos para MLForecast nominal
             valid_ids = ts_data.groupby('unique_id').size()
             ts_filtered = ts_data[ts_data['unique_id'].isin(valid_ids[valid_ids > 2].index)]
 
             if ts_filtered.empty:
-                # Fallback: Se Nixtla não puder treinar, retorna ranking histórico (Heurística)
                 return df.group_by("marca").agg([
                     pl.len().alias("Qtd_Prevista"),
                     pl.col("faturamento").mean().alias("avg_price")
@@ -118,7 +116,17 @@ class PredictionService:
             return pl.DataFrame()
 
     @staticmethod
-    def _linear_trend_fallback(v_dia):
+    def identify_anomalies(df: pl.DataFrame):
+        # Diagnóstico estatístico via Z-Score.
+        if df.is_empty(): return pl.DataFrame()
+        # Garante o agrupamento por dia do mês para o SPC
+        v_dia = df.group_by(pl.col("data_faturamento").dt.day().alias("dia_do_mes")).len(name="vol")
+        m, s = v_dia["vol"].mean(), v_dia["vol"].std()
+        if s == 0 or s is None: return pl.DataFrame()
+        return v_dia.filter((pl.col("vol") > m + 2*s) | (pl.col("vol") < m - 2*s)).sort("dia_do_mes")
+
+    @staticmethod
+    def _linear_trend_fallback(v_dia: pl.DataFrame):
         y = v_dia["y"].to_numpy()
         if len(y) < 2: return int(y.sum() if len(y)>0 else 0), "Estável"
         X = np.arange(len(y)).reshape(-1, 1)
@@ -126,14 +134,29 @@ class PredictionService:
         return int(y.mean() * 30), ("Alta" if slope > 0.05 else "Baixa" if slope < -0.05 else "Estável")
 
     @staticmethod
-    def _linear_forecast_fallback(v_dia, horizon):
-        y = v_dia["y"].to_numpy()
-        if len(y) < 2: return pl.DataFrame()
-        X = np.arange(len(y)).reshape(-1, 1)
-        model = LinearRegression().fit(X, y)
-        
-        last_day = v_dia["dia_do_mes"].max()
-        future_days = np.arange(last_day + 1, last_day + 1 + horizon)
-        preds = model.predict(np.arange(len(y), len(y) + horizon).reshape(-1, 1))
-        
-        return pl.DataFrame({"dia_do_mes": future_days, "vol": preds})
+    def _linear_forecast_fallback(v_dia: pl.DataFrame, horizon: int):
+        # Correção: Usa data_faturamento para derivar o dia do mês no fallback linear.
+        try:
+            y = v_dia["y"].to_numpy()
+            if len(y) < 2: return pl.DataFrame()
+            
+            # Treina modelo linear simples
+            X = np.arange(len(y)).reshape(-1, 1)
+            model = LinearRegression().fit(X, y)
+            
+            # Projeta os próximos pontos
+            future_indices = np.arange(len(y), len(y) + horizon).reshape(-1, 1)
+            preds = model.predict(future_indices)
+            
+            # Calcula os dias do mês futuros
+            last_date = v_dia["data_faturamento"].max()
+            future_dates = [last_date + pd.Timedelta(days=i+1) for i in range(horizon)]
+            future_days = [d.day for d in future_dates]
+            
+            return pl.DataFrame({
+                "dia_do_mes": pl.Series(future_days, dtype=pl.Int64), 
+                "vol": pl.Series(preds, dtype=pl.Float64)
+            })
+        except Exception as e:
+            logger.error(f"Falha crítica no fallback linear: {e}")
+            return pl.DataFrame()
