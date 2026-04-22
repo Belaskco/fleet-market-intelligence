@@ -61,8 +61,8 @@ class PredictionService:
         Predição Nominal por Cliente (Nixtla MLForecast).
         Retorna: Cliente, Qtd_Prevista, Valor_Est, Probabilidade
         """
-        if df.is_empty():
-            return pl.DataFrame()
+        if df.is_empty() or df["dia_do_mes"].n_unique() < 5:
+            return 0, "Estável"
 
         try:
             # Preparação dos dados para MLForecast
