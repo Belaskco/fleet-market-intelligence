@@ -24,7 +24,7 @@ def set_all_state(label, options, value):
 def run_dashboard():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-    # CSS Adaptativo (Rapha Mode)
+    # CSS Adaptativo para suporte a Light/Dark Mode
     st.markdown(f"""
         <style>
         [data-testid="stMetricValue"] {{ font-size: 1.6rem !important; }}
@@ -55,19 +55,18 @@ def run_dashboard():
         sel_paises = create_smart_filter("Países", sorted(df_raw["uf"].unique().to_list()))
         sel_setores = create_smart_filter("Setores", sorted(df_raw["industry_sector"].unique().to_list()))
         st.divider()
-        sel_days = st.slider("Janela Mensal:", 1, 31, (1, 31))
+        sel_days = st.slider("Janela Mensal (Dias do Mês):", 1, 31, (1, 31))
 
     # --- PROCESSAMENTO D-1 ---
     date_col = "data_faturamento"
     if date_col not in df_raw.columns:
-        st.error(f"⚠️ Erro de Schema: {date_col} ausente.")
-        st.stop()
+        st.error(f"⚠️ Erro de Schema: {date_col} ausente."); st.stop()
 
     max_date = df_raw[date_col].max()
     df_filt = apply_business_filters(df_raw, sel_marcas, sel_paises, sel_days)
     if sel_setores: df_filt = df_filt.filter(pl.col("industry_sector").is_in(sel_setores))
     
-    # Blindagem Rapha: Remove último dia para evitar queda artificial
+    # Filtro D-1 (Rapha Logic)
     df_filt = df_filt.filter(pl.col(date_col) < max_date)
 
     if not df_filt.is_empty():
@@ -81,7 +80,7 @@ def run_dashboard():
         
         # KPIs
         k1, k2, k3, k4, k5 = st.columns(5)
-        k1.metric("Vendas (D-1)", f"{total_vol:,}")
+        k1.metric("Volume (D-1)", f"{total_vol:,}")
         if not dist_data.is_empty():
             lider = dist_data.tail(1)
             k2.metric("Líder Market", f"{lider['marca'][0][:12]}...", delta=f"{(lider['vendas'][0]/total_vol):.1%} Share")
@@ -94,7 +93,7 @@ def run_dashboard():
         # Ciclos e Oportunidades
         c_left, c_right = st.columns([1.6, 1])
         with c_left:
-            st.subheader("📊 Diagnóstico de Trajetória")
+            st.subheader("📊 Diagnóstico de Ciclos")
             fig_area = px.area(v_dia, x='dia_do_mes', y='vol', color_discrete_sequence=[THEME_COLOR])
             fig_area.update_layout(height=280, margin=dict(t=10, b=10, l=10, r=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig_area, use_container_width=True)
@@ -105,8 +104,11 @@ def run_dashboard():
             df_forecast = PredictionService.get_client_predictions(df_filt)
             if not df_forecast.is_empty():
                 df_view = df_forecast.with_columns(pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor Formatado"))
-                st.dataframe(df_view.select(["Cliente", "Qtd_Prevista", "Valor Formatado", "Probabilidade"]), use_container_width=True, hide_index=True,
+                st.dataframe(df_view.select(["Cliente", "Qtd_Prevista", "Valor Formatado", "Probabilidade"]), 
+                             use_container_width=True, hide_index=True,
                              column_config={"Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1)})
+            else:
+                st.info("💡 Volume de dados muito baixo para gerar predições nominais.")
 
         st.divider()
 
@@ -121,15 +123,17 @@ def run_dashboard():
             st.subheader("📈 Estabilidade + Forecast Pontilhado")
             ucl, lcl = m + 2*s, max(0, m - 2*s)
             fig_spc = go.Figure()
+            # Histórico Real
             fig_spc.add_trace(go.Scatter(x=v_dia['dia_do_mes'], y=v_dia['vol'], mode='lines+markers', name='Real', line=dict(color=THEME_COLOR)))
+            # Forecast (Nixtla ou Linear Fallback)
             if not v_future.is_empty():
                 conn = pl.concat([v_dia.tail(1), v_future])
                 fig_spc.add_trace(go.Scatter(x=conn['dia_do_mes'], y=conn['vol'], mode='lines', name='Forecast', line=dict(color=THEME_COLOR, dash='dot')))
+            
             fig_spc.add_hline(y=ucl, line_dash="dash", line_color="#238636")
             fig_spc.add_hline(y=lcl, line_dash="dash", line_color="#da3633")
             fig_spc.update_layout(height=350, margin=dict(t=10, b=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
             st.plotly_chart(fig_spc, use_container_width=True)
-
         st.divider()
 
         # --- LOGIC ENGINE ---
