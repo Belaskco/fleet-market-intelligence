@@ -121,6 +121,18 @@ def apply_enterprise_styles():
             color: #0F172A !important;
             font-weight: 700 !important;
         }}
+
+        /* ESTILIZAÇÃO DO RODAPÉ DE INSIGHTS */
+        .insights-footer {{
+            background-color: #FFFFFF !important;
+            border: 1px solid #CBD5E1;
+            padding: 25px;
+            border-radius: 12px;
+            color: #0F172A !important;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }}
         </style>
     """, unsafe_allow_html=True)
 
@@ -129,7 +141,7 @@ def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=95)
         st.markdown("<h1 style='font-size: 1.8rem; margin-top:10px; color:#0F172A;'>Black Crow</h1>", unsafe_allow_html=True)
-        st.caption("Intelligence Unit | v4.8.4")
+        st.caption("Intelligence Unit | v4.8.5")
         st.divider()
         
         def smart_filter(label, col):
@@ -230,7 +242,7 @@ def human_format(num):
     return f"{num:.1f}T"
 
 def run_dashboard():
-    """Ponto de entrada do Dashboard Black Crow v4.8.4."""
+    """Ponto de entrada do Dashboard Black Crow v4.8.5."""
     st.set_page_config(page_title=APP_TITLE, layout="wide")
     
     apply_enterprise_styles()
@@ -307,11 +319,14 @@ def run_dashboard():
             st.plotly_chart(fig_bar, use_container_width=True)
 
         st.divider()
+        
+        # AJUSTADO: Agora utiliza a classe 'insights-footer' para fundo claro e texto escuro
         st.markdown(f"""
-        <div style="background-color:#0F172A; padding:20px; border-radius:10px; color:white; font-family:monospace;">
-        # Strategic Insights v4.8.4 | Perfil {ins.get('perfil').upper()} | HHI: {ins.get('hhi',0):.2f} | CV: {ins.get('cv',0):.2f}<br>
-        - Estabilidade: {ins.get('estabilidade').upper()}<br>
-        - Nota de Confiança: {ins.get('confianca', 0):.1f}% (Nível Profissional Enterprise)
+        <div class="insights-footer">
+            <h3 style="margin-top:0; color:#0F172A;">Strategic Insights v4.8.5</h3>
+            <p style="margin-bottom:5px;"><strong>Perfil da Carteira:</strong> {ins.get('perfil').upper()} | <strong>HHI:</strong> {ins.get('hhi',0):.2f} | <strong>CV:</strong> {ins.get('cv',0):.2f}</p>
+            <p style="margin-bottom:5px;"><strong>Estabilidade Operacional:</strong> {ins.get('estabilidade').upper()}</p>
+            <p style="margin-bottom:0;"><strong>Nota de Confiança:</strong> {ins.get('confianca', 0):.1f}% (Nível Profissional Enterprise)</p>
         </div>
         """, unsafe_allow_html=True)
     else:
