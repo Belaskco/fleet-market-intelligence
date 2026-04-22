@@ -16,12 +16,10 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 def set_all_state(label, options, value):
-    """Callback de sincronia Master/Detail para checkboxes."""
     for opt in options:
         st.session_state[f"chk_{label}_{opt}"] = value
 
 def run_dashboard():
-    """Interface Black Crow Intel - Focada em Antecipação Nominal de Compras."""
     st.set_page_config(page_title=APP_TITLE, layout="wide")
 
     # Injeção de CSS para identidade visual Dark
@@ -73,7 +71,7 @@ def run_dashboard():
         
         st.title(f"{APP_TITLE}")
         
-        # --- BLOCO 1: KPIs ---
+        # --- KPIs ---
         k1, k2, k3, k4, k5 = st.columns(5)
         k1.metric("Volume Total", f"{total_vol:,}")
         if not dist_data.is_empty():
@@ -84,22 +82,19 @@ def run_dashboard():
 
         st.divider()
 
-        # --- BLOCO 2: TRAJETÓRIA ---
+        # --- TRAJETÓRIA ---
         st.subheader("📊 Diagnóstico de Trajetória")
         st.plotly_chart(px.area(v_dia, x='dia_do_mes', y='vol', template="plotly_dark", color_discrete_sequence=[THEME_COLOR]).update_layout(height=250), use_container_width=True)
         st.info(f"O mercado apresenta trajetória **{trend}**. Forecast de faturamento estimado: **{proj_vol} unidades**.")
 
         st.divider()
 
-        # --- BLOCO 3: ANTECIPAÇÃO NOMINAL (NIXTLA) ---
-        st.subheader("🔮 Oportunidades de Compra Próxima Janela (Nixtla)")
+        # --- NIXTLA OPORTUNIDADES ---
+        st.subheader("🔮 Oportunidades de Compra Próxima Janela")
         
         try:
-            # Chamada ao motor de predição nominal
             df_forecast = PredictionService.get_client_predictions(df_filt)
-            
             if not df_forecast.is_empty():
-                # Formatação da Tabela de Oportunidades
                 st.dataframe(
                     df_forecast, 
                     use_container_width=True, 
@@ -118,7 +113,7 @@ def run_dashboard():
 
         st.divider()
 
-        # --- BLOCO 4: ESTABILIDADE E MIX ---
+        # --- SPC & PARETO ---
         c1, c2 = st.columns(2)
         with c1:
             st.subheader("🏆 Mix de Clientes (Pareto)")
