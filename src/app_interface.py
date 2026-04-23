@@ -19,7 +19,7 @@ def apply_enterprise_styles():
         
         /* Configuração de Fundo e Sidebar */
         [data-testid="stAppViewContainer"] {{ background-color: #E9F3F7 !important; font-family: 'Inter', sans-serif; }}
-        [data-testid="stSidebar"] {{ background-color: #E0E0E0 !important; border-right: 2px solid #E2E8F0; }}
+        [data-testid="stSidebar"] {{ background-color: #A0A0A0 !important; border-right: 2px solid #E2E8F0; }}
 
         /* Layout Adaptativo Profissional */
         .block-container {{
