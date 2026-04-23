@@ -18,8 +18,12 @@ def apply_enterprise_styles():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         
         /* Configuração de Fundo e Sidebar */
-        [data-testid="stAppViewContainer"] {{ background-color: #E9F3F7 !important; font-family: 'Inter', sans-serif; }}
-        [data-testid="stSidebar"] {{ background-color: #A0A0A0 !important; border-right: 2px solid #E2E8F0; }}
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] summary p,
+        [data-testid="stSidebar"] .stMarkdown p {{color: #0F172A !important; font-weight: 600 !important;}}
+        [data-testid="stSidebar"] .stExpander {{background-color: #F1F5F9 !important; border: 1px solid #CBD5E1 !important; border-radius: 8px;}}
+        [data-testid="stSidebar"] [data-testid="stWidgetLabel"] {{color: #0F172A !important;}}
 
         /* Layout Adaptativo Profissional */
         .block-container {{
@@ -245,3 +249,8 @@ def run_dashboard():
         """, unsafe_allow_html=True)
     else:
         st.sidebar.warning("⚠️ Ajuste os filtros para gerar análise operacional.")
+
+        '''
+        [data-testid="stAppViewContainer"] {{ background-color: #E9F3F7 !important; font-family: 'Inter', sans-serif; }}
+        [data-testid="stSidebar"] {{ background-color: #A0A0A0 !important; border-right: 2px solid #E2E8F0; }}
+        '''
