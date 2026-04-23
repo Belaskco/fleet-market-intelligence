@@ -240,7 +240,7 @@ def run_dashboard():
             <h3 style="margin-top:0; color:#0F172A;">Strategic Insights v5.1.0</h3>
             <p style="margin-bottom:8px;"><strong>Perfil da Carteira:</strong> {ins.get('perfil').upper()} | <strong>HHI (Concentração):</strong> {ins.get('hhi',0):.2f} | <strong>CV (Variação):</strong> {ins.get('cv',0):.2f}</p>
             <p style="margin-bottom:8px;"><strong>Estabilidade Operacional:</strong> {ins.get('estabilidade').upper()} | <strong>Média Semanal:</strong> {m_w:.1f} unidades</p>
-            <p style="margin-bottom:0;"><strong>Confiança do Forecast:</strong> {ins.get('confianca', 0):.1f}% (Nível Profissional Enterprise)</p>
+            <p style="margin-bottom:0;"><strong>Confiança do Forecast:</strong> {ins.get('confianca', 0):.1f}%</p>
         </div>
         """, unsafe_allow_html=True)
     else:
