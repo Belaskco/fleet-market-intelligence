@@ -12,14 +12,14 @@ from src.config import APP_TITLE, THEME_COLOR
 # --- UI COMPONENTS (COMPONENTES MODULARES DE ALTA DENSIDADE) ---
 
 def apply_enterprise_styles():
-    """Aplica o DNA visual Black Crow v5.1 - Foco em legibilidade e contraste premium."""
+    # Aplica o DNA visual.
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         
         /* Configuração de Fundo e Sidebar */
-        [data-testid="stAppViewContainer"] {{ background-color: #F1F5F9 !important; font-family: 'Inter', sans-serif; }}
-        [data-testid="stSidebar"] {{ background-color: #FFFFFF !important; border-right: 2px solid #E2E8F0; }}
+        [data-testid="stAppViewContainer"] {{ background-color: #E9F3F7 !important; font-family: 'Inter', sans-serif; }}
+        [data-testid="stSidebar"] {{ background-color: #E0E0E0 !important; border-right: 2px solid #E2E8F0; }}
 
         /* Layout Adaptativo Profissional */
         .block-container {{
@@ -99,7 +99,7 @@ def render_sidebar(df):
         return filtros
 
 def render_scorecard(total, m_week, share_lider, confianca, forecast_val, trend):
-    """Grade de KPIs de alto impacto com tooltips executivas."""
+    # Grade de KPIs de alto impacto com tooltips executivas.
     k1, k2, k3, k4, k5 = st.columns(5)
     k1.metric("Volume Acumulado", f"{total:,}", help="Total de pedidos faturados no período (Excluindo D-0).")
     k2.metric("Líder de Canal", f"{share_lider[0][:14]}", delta=f"{share_lider[1]:.1%} Share", help="Empresa com maior fatia de volume no mercado selecionado.")
@@ -108,7 +108,7 @@ def render_scorecard(total, m_week, share_lider, confianca, forecast_val, trend)
     k5.metric("Forecast Próx. Mês", human_format(forecast_val * 125000), delta=trend, help="Projeção financeira baseada no volume Nixtla para as próximas 4 semanas.")
 
 def render_spc_chart(v_semanal, v_future, m, s):
-    """Gráfico SPC com 3 Sigma e projeção pontilhada Nixtla."""
+    # Gráfico SPC com 3 Sigma e projeção pontilhada Nixtla.
     ucl, lcl = m + 3*s, max(0, m - 3*s)
     
     # Alerta de Status Real (Topo do Gráfico)
