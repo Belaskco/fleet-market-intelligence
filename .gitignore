@@ -9,6 +9,7 @@ lib/
 share/
 inspect_parquet.py
 fix.parquet.py
+src/app_interface_copy.py
 
 # Python caches
 
