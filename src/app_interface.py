@@ -9,31 +9,27 @@ from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
 
-# --- CONSTANTES DE DESIGN SISTÊMICO (PERIWINKLE THEME) ---
-LEGEND_COLOR = "#0F172A"
-PANEL_BG = "#d1d7f0"    
-AXIS_COLOR = "#1E293B"  
+# --- CONSTANTES DE DESIGN SISTÊMICO ---
+LEGEND_COLOR = "#0F172A" 
+PANEL_BG = "#d1d7f0"     
+AXIS_COLOR = "#1E293B"   
 SUCCESS_COLOR = "#059669"
 DANGER_COLOR = "#DC2626"
+WARNING_COLOR = "#D97706"
 
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    """
-    Layout 'Panel Identity' v6.0.6.
-    Aplica fundo #d1d7f0 nos painéis e tipografia Marinho Profundo.
-    """
+    # Layout
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
         
-        /* 1. FUNDO GLOBAL (PÁGINA) */
         [data-testid="stAppViewContainer"] {{ 
             background-color: #F1F5F9 !important; 
             font-family: 'Inter', sans-serif;
         }}
         
-        /* 2. SIDEBAR */
         [data-testid="stSidebar"] {{ 
             background-color: #0F172A !important; 
         }}
@@ -43,7 +39,6 @@ def apply_enterprise_styles():
             font-weight: 800 !important;
         }}
 
-        /* 3. CABEÇALHOS */
         .header-title {{ 
             font-size: 3.5rem; font-weight: 900; color: {LEGEND_COLOR} !important; 
             letter-spacing: -2px;
@@ -59,7 +54,6 @@ def apply_enterprise_styles():
             margin-bottom: 20px !important;
         }}
 
-        /* 4. SCORECARDS (MÉTRICAS) - FUNDO #d1d7f0 --- */
         .stMetric {{ 
             border: 1px solid #B4BEDA; 
             padding: 25px; 
@@ -68,7 +62,6 @@ def apply_enterprise_styles():
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }}
         
-        /* Valor da Métrica (Marinho Profundo) */
         [data-testid="stMetricValue"], 
         [data-testid="stMetricValue"] > div,
         [data-testid="stMetricValue"] span {{ 
@@ -77,7 +70,6 @@ def apply_enterprise_styles():
             font-size: 2.6rem !important;
         }}
         
-        /* Rótulo da Métrica */
         [data-testid="stMetricLabel"] p,
         [data-testid="stMetricLabel"] span,
         .stMetric label {{ 
@@ -87,7 +79,6 @@ def apply_enterprise_styles():
             font-size: 0.9rem !important;
         }}
 
-        /* 5. PAINEL DE INSIGHTS - FUNDO #d1d7f0 */
         .insights-card {{
             background: {PANEL_BG};
             border: 2px solid #B4BEDA;
@@ -106,18 +97,30 @@ def apply_enterprise_styles():
             font-weight: 900 !important;
         }}
 
-        /* 6. DATAFRAME */
         .stDataFrame {{ 
             border: 2px solid #B4BEDA; 
             border-radius: 16px; 
         }}
+        
+        /* Badges de Risco */
+        .risk-badge {{
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }}
+        .risk-low {{ background-color: #D1FAE5; color: #065F46; }}
+        .risk-med {{ background-color: #FEF3C7; color: #92400E; }}
+        .risk-high {{ background-color: #FEE2E2; color: #991B1B; }}
         </style>
     """, unsafe_allow_html=True)
 
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
-        st.markdown(f"### Black Crow\n**Intelligence v6.0.6**")
+        st.markdown(f"### Black Crow\n**Intelligence v6.0.7**")
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -178,8 +181,8 @@ def render_spc_chart(v_semanal, v_future, m, s):
                   annotation_font=dict(color=DANGER_COLOR, size=14))
 
     fig.update_layout(
-        paper_bgcolor=PANEL_BG, # Fundo do painel solicitado
-        plot_bgcolor=PANEL_BG,  # Fundo do gráfico solicitado
+        paper_bgcolor=PANEL_BG,
+        plot_bgcolor=PANEL_BG,
         height=550, margin=dict(t=50, b=50, l=60, r=40),
         legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="right", x=1, font=dict(size=14, color=LEGEND_COLOR)),
         font=dict(color=LEGEND_COLOR, family="Inter", size=14)
@@ -214,9 +217,15 @@ def run_dashboard():
         v_fut = PredictionService.get_daily_forecast(df)
         ins = PredictionService.get_strategic_insights(df)
         
+        # Lógica de Risco baseada no CV
+        cv_val = ins.get('cv', 0)
+        risk_class = "risk-low" if cv_val < 0.20 else "risk-med" if cv_val < 0.40 else "risk-high"
+        risk_label = "Estável" if cv_val < 0.20 else "Moderado" if cv_val < 0.40 else "Crítico"
+        cv_color = SUCCESS_COLOR if cv_val < 0.20 else WARNING_COLOR if cv_val < 0.40 else DANGER_COLOR
+        
         # --- HEADER ---
         st.markdown(f"<div class='header-title'>{APP_TITLE}</div>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color:#475569; font-weight:900; text-transform:uppercase; letter-spacing:2px; font-size:1.1rem;'>Intelligence Engine • v6.0.6</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:#475569; font-weight:900; text-transform:uppercase; letter-spacing:2px; font-size:1.1rem;'>Risk Intelligence Engine • v6.0.7</p>", unsafe_allow_html=True)
         
         # --- ROW 1: METRICS ---
         m1, m2, m3, m4 = st.columns(4)
@@ -227,14 +236,24 @@ def run_dashboard():
             lider_text = dist.tail(1).to_series(0)[0] if 'marca' not in dist.columns else dist.tail(1)['marca'][0]
         
         m2.metric("LÍDER DE CANAL", lider_text)
-        m3.metric("VARIABILIDADE (CV)", f"{ins.get('cv', 0):.2f}")
+        
+        # Métrica de Variabilidade Dinâmica
+        st.write(f"""
+            <div class="stMetric">
+                <div data-testid="stMetricLabel"><p>VOLATILIDADE (CV)</p></div>
+                <div data-testid="stMetricValue">
+                    <span style="color:{cv_color} !important;">{cv_val:.1%}</span>
+                    <span class="risk-badge {risk_class}">{risk_label}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
         m4.metric("CONFIANÇA PREDITIVA", f"{ins.get('confianca', 0):.1f}%")
         
         st.divider()
 
         # --- ROW 2: SPC HERO ---
-        # Container Azulado para o SPC
-        st.markdown("<h3>📈 1. Análise de Estabilidade</h3>", unsafe_allow_html=True)
+        st.markdown("<h3>📈 1. Análise de Estabilidade Operacional</h3>", unsafe_allow_html=True)
         render_spc_chart(v_sem, v_fut, m_w, s_w)
 
         # --- ROW 3: DYNAMICS ---
@@ -242,7 +261,7 @@ def run_dashboard():
         c1, c2 = st.columns([1, 1])
         
         with c1:
-            st.markdown("<h3>🏆 2. Market Share</h3>", unsafe_allow_html=True)
+            st.markdown("<h3>🏆 2. Market Share e Concentração</h3>", unsafe_allow_html=True)
             if not dist.is_empty():
                 y_col = 'marca' if 'marca' in dist.columns else dist.columns[0]
                 fig_share = px.bar(dist.tail(10), x='vendas', y=y_col, orientation='h', color_discrete_sequence=[THEME_COLOR], text_auto=True)
@@ -270,11 +289,11 @@ def run_dashboard():
                 )
                 st.plotly_chart(fig_heat, use_container_width=True)
             except Exception:
-                st.info("Aguardando massa de dados...")
+                st.info("Processando sazonalidade...")
 
         # --- ROW 4: PIPELINE NOMINAL ---
         st.divider()
-        st.markdown("<h3>🔮 4. Antecipação de Faturamento Nominal</h3>", unsafe_allow_html=True)
+        st.markdown("<h3>🔮 4. Antecipação de Faturamento por Cliente</h3>", unsafe_allow_html=True)
         df_p = PredictionService.get_client_predictions(df)
         if not df_p.is_empty():
             st.dataframe(
@@ -295,12 +314,12 @@ def run_dashboard():
         # --- FOOTER: ESTRATÉGICO ---
         st.markdown(f"""
         <div class="insights-card">
-            <h4 style="margin-top:0; color:{LEGEND_COLOR}; font-weight:900; text-transform:uppercase; border-bottom:2px solid #B4BEDA; padding-bottom:15px;">Executive Strategy Summary</h4>
+            <h4 style="margin-top:0; color:{LEGEND_COLOR}; font-weight:900; text-transform:uppercase; border-bottom:2px solid #B4BEDA; padding-bottom:15px;">Senior Strategic Interpretation</h4>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top:25px;">
                 <div><span style="font-size:0.8rem;">ESTRUTURA</span><br><div class="val-text">{ins.get('perfil').upper()}</div></div>
                 <div><span style="font-size:0.8rem;">HHI INDEX</span><br><div class="val-text">{ins.get('hhi',0):.3f}</div></div>
-                <div><span style="font-size:0.8rem;">ESTADO OPERACIONAL</span><br><div class="val-text">{ins.get('estabilidade').upper()}</div></div>
-                <div><span style="font-size:0.8rem;">VOLATILIDADE (CV)</span><br><div class="val-text">{(ins.get('cv',0)*100):.1f}%</div></div>
+                <div><span style="font-size:0.8rem;">STATUS DE RISCO</span><br><div class="val-text" style="color:{cv_color} !important;">{risk_label.upper()}</div></div>
+                <div><span style="font-size:0.8rem;">RECOMENDAÇÃO</span><br><div style="font-weight:700; font-size:1rem; color:#334155;">{'MANTER ESTOQUE' if cv_val < 0.25 else 'REDUZIR EXPOSIÇÃO'}</div></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
