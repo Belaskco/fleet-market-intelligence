@@ -1,21 +1,19 @@
+import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
-import plotly.graph_objects as go
-from datetime import timedelta
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
+from datetime import timedelta
 
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    """
-    Layout 'Midnight Platinum' v5.5.
-    Foco em autoridade visual, contraste luxuoso e acabamento de alto nível.
-    """
+    # Layout 'Midnight Platinum'.
+    
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
@@ -136,7 +134,7 @@ def render_sidebar(df):
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
-            with st.expander(f"Filtro: {label}"):
+            with st.expander(f"Filtro de {label}"):
                 c1, c2 = st.columns(2)
                 c1.button("Todos", key=f"all_{label}", on_click=set_all_state, args=(label, opts, True))
                 c2.button("Nenhum", key=f"none_{label}", on_click=set_all_state, args=(label, opts, False))
@@ -151,7 +149,7 @@ def render_sidebar(df):
         return filtros
 
 def render_periodicity_heatmap(df):
-    """Heatmap com paleta 'IceFire' para um look agressivo e profissional."""
+    
     df_heat = df.with_columns([
         pl.col("data_faturamento").dt.weekday().alias("dow"),
         pl.col("data_faturamento").dt.day().map_elements(lambda d: (d-1)//7 + 1, return_dtype=pl.Int64).alias("semana_mes")
@@ -164,7 +162,7 @@ def render_periodicity_heatmap(df):
 
     fig = px.imshow(
         heat_matrix,
-        color_continuous_scale="Viridis", # Cores científicas e elegantes
+        color_continuous_scale="Jet",
         aspect="auto",
         text_auto=True
     )
@@ -201,8 +199,8 @@ def render_spc_chart(v_semanal, v_future, m, s):
         height=400, margin=dict(t=20, b=10), 
         paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
         showlegend=False,
-        xaxis=dict(showgrid=False, linecolor='#E2E8F0', tickfont=dict(color='#64748B', size=11)),
-        yaxis=dict(showgrid=True, gridcolor='#F1F5F9', zeroline=False, tickfont=dict(color='#64748B', size=11))
+        xaxis=dict(showgrid=False, linecolor='#E2E8F0', tickfont=dict(color='#162945', size=11)),
+        yaxis=dict(showgrid=True, gridcolor='#F1F5F9', zeroline=False, tickfont=dict(color="#162945", size=11))
     )
     st.plotly_chart(fig, use_container_width=True)
 
