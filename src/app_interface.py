@@ -1,23 +1,26 @@
-import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
+import plotly.graph_objects as go
+from datetime import timedelta
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
-from datetime import timedelta
 
-# Definição da cor de autoridade
+# Definição da cor de autoridade (Navy Profundo / Preto para Contraste Máximo)
 LEGEND_COLOR = "#0F172A"
-# Preto absoluto para eixos e textos pequenos
-AXIS_COLOR = "#000000"
+AXIS_COLOR = "#000000" # Preto absoluto para eixos e textos pequenos
 
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    # Layout
+    """
+    Layout 'Visibility Protocol' v5.9.6.
+    Força legibilidade absoluta e remove qualquer transparência de fontes.
+    Correção de erros de compatibilidade com Plotly Engine.
+    """
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
@@ -102,7 +105,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
-        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.9.5</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.9.6</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -146,11 +149,11 @@ def render_periodicity_heatmap(df):
             height=400, margin=dict(t=30, b=30, l=40, r=20),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             coloraxis_showscale=False,
-            font=dict(color=AXIS_COLOR, size=12, family="Inter", weight="bold")
+            font=dict(color=AXIS_COLOR, size=12, family="Inter")
         )
         # Forçar visibilidade dos eixos com PRETO ABSOLUTO
-        fig.update_xaxes(tickfont=dict(color=AXIS_COLOR, size=12, weight="black"))
-        fig.update_yaxes(tickfont=dict(color=AXIS_COLOR, size=12, weight="black"))
+        fig.update_xaxes(tickfont=dict(color=AXIS_COLOR, size=12))
+        fig.update_yaxes(tickfont=dict(color=AXIS_COLOR, size=12))
         st.plotly_chart(fig, use_container_width=True)
     except: st.info("Massa de dados insuficiente.")
 
@@ -175,9 +178,9 @@ def render_spc_chart(v_semanal, v_future, m, s):
     fig.add_hline(y=ucl, line_dash="dash", line_color="#10B981", opacity=0.8)
     fig.add_hline(y=lcl, line_dash="dash", line_color="#EF4444", opacity=0.8)
     
-    # Anotações para LSC e LIC
-    fig.add_annotation(x=v_semanal['semana'][0], y=ucl, text="LIMITE SUPERIOR (LSC)", showarrow=False, yshift=20, font=dict(color="#10B981", size=11, weight="black"))
-    fig.add_annotation(x=v_semanal['semana'][0], y=lcl, text="LIMITE INFERIOR (LIC)", showarrow=False, yshift=-20, font=dict(color="#EF4444", size=11, weight="black"))
+    # Anotações para LSC e LIC - Texto em negrito via tags HTML
+    fig.add_annotation(x=v_semanal['semana'][0], y=ucl, text="<b>LIMITE SUPERIOR (LSC)</b>", showarrow=False, yshift=20, font=dict(color="#10B981", size=11))
+    fig.add_annotation(x=v_semanal['semana'][0], y=lcl, text="<b>LIMITE INFERIOR (LIC)</b>", showarrow=False, yshift=-20, font=dict(color="#EF4444", size=11))
 
     fig.update_layout(
         template="plotly_white",
@@ -185,17 +188,17 @@ def render_spc_chart(v_semanal, v_future, m, s):
         paper_bgcolor='white', plot_bgcolor='white', 
         showlegend=True, 
         legend=dict(
-            font=dict(color=AXIS_COLOR, size=12, weight="black"),
+            font=dict(color=AXIS_COLOR, size=12),
             bgcolor="white", 
             bordercolor=AXIS_COLOR, 
             borderwidth=2,
             opacity=1
         ),
-        font=dict(color=AXIS_COLOR, size=12, family="Inter", weight="black")
+        font=dict(color=AXIS_COLOR, size=12, family="Inter")
     )
-    # Forçar visibilidade total dos eixos com Preto (AXIS_COLOR)
-    fig.update_xaxes(showgrid=False, tickfont=dict(color=AXIS_COLOR, size=12, weight="black"), linecolor=AXIS_COLOR, linewidth=2)
-    fig.update_yaxes(showgrid=True, gridcolor='#E2E8F0', tickfont=dict(color=AXIS_COLOR, size=12, weight="black"), linecolor=AXIS_COLOR, linewidth=2)
+    # Forçar visibilidade total dos eixos com PRETO
+    fig.update_xaxes(showgrid=False, tickfont=dict(color=AXIS_COLOR, size=12), linecolor=AXIS_COLOR, linewidth=2)
+    fig.update_yaxes(showgrid=True, gridcolor='#E2E8F0', tickfont=dict(color=AXIS_COLOR, size=12), linecolor=AXIS_COLOR, linewidth=2)
     
     st.plotly_chart(fig, use_container_width=True)
 
@@ -282,10 +285,10 @@ def run_dashboard():
                 template="plotly_white",
                 height=500, margin=dict(t=10,b=10), 
                 paper_bgcolor='white', plot_bgcolor='white', 
-                font=dict(color=AXIS_COLOR, size=12, weight="black")
+                font=dict(color=AXIS_COLOR, size=12, family="Inter")
             )
-            fig_area.update_xaxes(tickfont=dict(color=AXIS_COLOR, weight="black"), linecolor=AXIS_COLOR)
-            fig_area.update_yaxes(tickfont=dict(color=AXIS_COLOR, weight="black"), linecolor=AXIS_COLOR)
+            fig_area.update_xaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
+            fig_area.update_yaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
             st.plotly_chart(fig_area, use_container_width=True)
         with tab_heat:
             render_periodicity_heatmap(df)
@@ -305,16 +308,16 @@ def run_dashboard():
                     template="plotly_white",
                     height=450, margin=dict(t=20, b=20, l=160, r=20), 
                     paper_bgcolor='white', plot_bgcolor='white', 
-                    font=dict(color=AXIS_COLOR, weight="black", size=13)
+                    font=dict(color=AXIS_COLOR, size=13)
                 )
-                fig_bar.update_xaxes(tickfont=dict(color=AXIS_COLOR, weight="black"), linecolor=AXIS_COLOR)
-                fig_bar.update_yaxes(tickfont=dict(color=AXIS_COLOR, weight="black"), linecolor=AXIS_COLOR)
+                fig_bar.update_xaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
+                fig_bar.update_yaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
                 st.plotly_chart(fig_bar, use_container_width=True)
 
         # --- RODAPÉ ---
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem;">Strategic Insights v5.9.5</h3>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem;">Strategic Insights v5.9.6</h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 2px solid #F1F5F9; padding-top: 25px; margin-top:15px;">
                 <div><span>PERÍMETRO</span><br><div class="val-text">{ins.get('perfil').upper()}</div></div>
                 <div><span>ÍNDICE HHI</span><br><div class="val-text">{ins.get('hhi',0):.2f}</div></div>
