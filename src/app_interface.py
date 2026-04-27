@@ -138,7 +138,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
-        st.markdown(f"<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.5.7</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.5.8</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -232,7 +232,10 @@ def run_dashboard():
     
     f = render_sidebar(df_raw)
     df = apply_business_filters(df_raw, f['marcas'], f['paises'], f['dias'])
-    df = df.filter(pl.col("data_faturamento") < df_raw["data_faturamento"].max())
+    
+    # Blindagem e Referência D-1
+    max_d = df_raw["data_faturamento"].max()
+    df = df.filter(pl.col("data_faturamento") < max_d)
 
     if not df.is_empty():
         # Motores
@@ -277,30 +280,32 @@ def run_dashboard():
             st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-bottom:1rem;'>Antecipação Nominal (Próx. Ciclo)</h3>", unsafe_allow_html=True)
             df_p = PredictionService.get_client_predictions(df)
             if not df_p.is_empty():
-                # AJUSTE DE REALISMO: Inserindo variabilidade na probabilidade baseada no volume previsto
-                # Isso evita o "efeito 60% chapado" que um sênior detectaria
-                df_view = df_p.with_columns([
-                    pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor"),
-                    # Fórmula determinística para simular variabilidade real baseada na previsão
-                    ((pl.col("Probabilidade") * 0.9) + (pl.col("Qtd_Prevista") % 10 / 100)).alias("Confiança_Modelo")
-                ]).select(["Cliente", "Qtd_Prevista", "Valor", "Confiança_Modelo"])
+                # CÁLCULO DE DADOS REAIS: Recência (Dias desde a última compra)
+                recency_df = df.group_by("marca").agg(pl.col("data_faturamento").max().alias("last_buy"))
+                
+                df_view = df_p.join(recency_df, left_on="Cliente", right_on="marca", how="left")
+                df_view = df_view.with_columns([
+                    pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor Estimado"),
+                    (pl.col("Valor_Est") / pl.col("Qtd_Prevista")).map_elements(human_format, return_dtype=pl.String).alias("Ticket Médio"),
+                    ((max_d - pl.col("last_buy")).dt.total_days()).alias("Recência (Dias)")
+                ]).select(["Cliente", "Qtd_Prevista", "Ticket Médio", "Valor Estimado", "Recência (Dias)"])
                 
                 st.dataframe(
-                    df_view, 
+                    df_view.sort("Valor Estimado", descending=True), 
                     use_container_width=True, 
                     hide_index=True, 
-                    height=450, # Aumentado para ocupar mais espaço vertical
+                    height=450, 
                     column_config={
-                        "Confiança_Modelo": st.column_config.ProgressColumn("Confiança do Modelo", min_value=0, max_value=1, format="%.2f", color="blue"),
-                        "Qtd_Prevista": st.column_config.NumberColumn("Previsão (un)")
+                        "Qtd_Prevista": st.column_config.NumberColumn("Volume Prev.", format="%d un"),
+                        "Recência (Dias)": st.column_config.NumberColumn("Últ. Compra", format="%d dias atrás")
                     }
                 )
             else:
-                st.warning("⚠️ Densidade de dados insuficiente.")
+                st.warning("⚠️ Densidade de dados insuficiente para mapeamento nominal.")
 
         st.divider()
 
-        # --- LINHA 2: Estabilidade e Share de Mercado (Lado a Lado) ---
+        # --- LINHA 2: Estabilidade e Share de Mercado (Simetria Visual) ---
         cl2, cr2 = st.columns([1.5, 1.2])
         with cl2:
             st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-top:0; margin-bottom:1rem;'>Controle de Estabilidade</h3>", unsafe_allow_html=True)
@@ -314,10 +319,10 @@ def run_dashboard():
                 yaxis=dict(showgrid=False, tickfont=dict(color=LEGEND_COLOR, size=11))
             ), use_container_width=True)
 
-        # Insights (Fiel aos dados reais para o Executivo)
+        # Insights
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.5.7</h3>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.5.8</h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 1px solid #F1F5F9; padding-top: 25px; margin-top: 15px;">
                 <div>
                     <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Perímetro</span><br>
