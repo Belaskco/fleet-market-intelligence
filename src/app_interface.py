@@ -92,7 +92,7 @@ def apply_enterprise_styles():
 
         /* 5. ESTRUTURAS ADICIONAIS */
         .insights-card {{
-            background: #FFFFFF;
+            background: #E2E8F0;
             border: 3px solid {LEGEND_COLOR};
             border-radius: 24px;
             padding: 45px;
@@ -120,7 +120,7 @@ def render_sidebar(df):
 
         filtros = {
             "marcas": smart_filter("Empresas", "marca"),
-            "paises": smart_filter("UFs", "uf"),
+            "paises": smart_filter("Países", "uf"),
             "setores": smart_filter("Segmentos", "industry_sector"),
             "dias": st.slider("Janela Mensal (Dias):", 1, 31, (1, 31))
         }
