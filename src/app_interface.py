@@ -17,9 +17,9 @@ AXIS_COLOR = "#000000" # Preto absoluto para eixos e textos pequenos
 
 def apply_enterprise_styles():
     """
-    Layout 'Visibility Protocol' v5.9.6.
+    Layout 'Visibility Protocol' v5.9.7.
     Força legibilidade absoluta e remove qualquer transparência de fontes.
-    Correção de erros de compatibilidade com Plotly Engine.
+    Estabilização total contra erros de esquema do Plotly.
     """
     st.markdown(f"""
         <style>
@@ -80,6 +80,17 @@ def apply_enterprise_styles():
             opacity: 1 !important;
             letter-spacing: 1.2px !important;
         }}
+        
+        /* Ícone de Ajuda Cinza Sólido */
+        [data-testid="stMetricLabel"] button {{
+            opacity: 1 !important;
+        }}
+        [data-testid="stMetricLabel"] svg {{
+            fill: #475569 !important;
+            stroke: #1E293B !important;
+            opacity: 1 !important; 
+            transform: scale(1.4) !important;
+        }}
 
         /* 5. TABS E DATAFRAME */
         .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
@@ -105,7 +116,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
-        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.9.6</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.9.7</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -191,8 +202,7 @@ def render_spc_chart(v_semanal, v_future, m, s):
             font=dict(color=AXIS_COLOR, size=12),
             bgcolor="white", 
             bordercolor=AXIS_COLOR, 
-            borderwidth=2,
-            opacity=1
+            borderwidth=2
         ),
         font=dict(color=AXIS_COLOR, size=12, family="Inter")
     )
@@ -317,7 +327,7 @@ def run_dashboard():
         # --- RODAPÉ ---
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem;">Strategic Insights v5.9.6</h3>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem;">Strategic Insights v5.9.7</h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 2px solid #F1F5F9; padding-top: 25px; margin-top:15px;">
                 <div><span>PERÍMETRO</span><br><div class="val-text">{ins.get('perfil').upper()}</div></div>
                 <div><span>ÍNDICE HHI</span><br><div class="val-text">{ins.get('hhi',0):.2f}</div></div>
