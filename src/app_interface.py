@@ -139,7 +139,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
-        st.markdown(f"<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.6.1</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.6.2</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -155,6 +155,11 @@ def render_sidebar(df):
             "setores": smart_filter("Segmentos", "industry_sector"),
             "dias": st.slider("Janela de Observação:", 1, 31, (1, 31))
         }
+        
+        if st.button("Limpar Cache do Sistema"):
+            st.cache_data.clear()
+            st.rerun()
+            
         return filtros
 
 def render_periodicity_heatmap(df):
@@ -279,27 +284,26 @@ def run_dashboard():
             st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-bottom:1rem;'>Antecipação Nominal (Próx. Ciclo)</h3>", unsafe_allow_html=True)
             df_p = PredictionService.get_client_predictions(df)
             if not df_p.is_empty():
-                # DADOS REAIS DE APOIO: Cálculo de Recência e Ticket Médio Factual
-                # Filtramos o df para garantir que usamos apenas o histórico filtrado para o cálculo
-                last_buy_df = df.group_by("marca").agg(pl.col("data_faturamento").max().alias("last_buy"))
+                # --- CÁLCULOS FACTUAIS UNITÁRIOS ---
+                # 1. Calculamos a data da última compra real por marca a partir do histórico filtrado
+                last_buy_stats = df.group_by("marca").agg(pl.col("data_faturamento").max().alias("ultima_compra"))
                 
-                df_view = df_p.join(last_buy_df, left_on="Cliente", right_on="marca", how="left")
+                # 2. Fazemos o JOIN com as predições do Nixtla
+                df_view = df_p.join(last_buy_stats, left_on="Cliente", right_on="marca", how="left")
                 
-                # Realizando os cálculos finais para a tabela
-                df_view = df_view.with_columns([
-                    (pl.col("Valor_Est") / pl.col("Qtd_Prevista")).alias("ticket_val"),
-                    ((max_d - pl.col("last_buy")).dt.total_days()).alias("recencia_val")
-                ])
-                
-                # Seleção e ordenação por valor estimado para prioridade comercial
-                df_final = df_view.select([
+                # 3. Calculamos Recência e Ticket Médio ignorando qualquer coluna 'Probabilidade'
+                df_final = df_view.with_columns([
+                    ((max_d - pl.col("ultima_compra")).dt.total_days()).alias("Recência (Dias)"),
+                    (pl.col("Valor_Est") / pl.col("Qtd_Prevista")).alias("Ticket Médio")
+                ]).select([
                     pl.col("Cliente"),
                     pl.col("Qtd_Prevista").alias("Volume Previsto"),
-                    pl.col("ticket_val").alias("Ticket Médio"),
+                    pl.col("Ticket Médio"),
                     pl.col("Valor_Est").alias("Venda Estimada"),
-                    pl.col("recencia_val").alias("Recência (Dias)")
+                    pl.col("Recência (Dias)")
                 ]).sort("Venda Estimada", descending=True)
                 
+                # 4. Renderização Final da Tabela sem a coluna 'Confiança'
                 st.dataframe(
                     df_final, 
                     use_container_width=True, 
@@ -309,7 +313,7 @@ def run_dashboard():
                         "Volume Previsto": st.column_config.NumberColumn(format="%d un"),
                         "Ticket Médio": st.column_config.NumberColumn(format="R$ %.2f"),
                         "Venda Estimada": st.column_config.NumberColumn(format="R$ %.2f"),
-                        "Recência (Dias)": st.column_config.NumberColumn(format="%d")
+                        "Recência (Dias)": st.column_config.NumberColumn(format="%d dias atrás")
                     }
                 )
             else:
@@ -334,7 +338,7 @@ def run_dashboard():
         # Insights
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.6.1</h3>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.6.2</h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 1px solid #F1F5F9; padding-top: 25px; margin-top: 15px;">
                 <div>
                     <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Perímetro</span><br>
