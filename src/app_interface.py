@@ -19,8 +19,8 @@ DANGER_COLOR = "#EF4444"
 
 def apply_enterprise_styles():
     """
-    Layout 'Fix & Polish' v6.0.1.
-    Estabilização de chamadas de classe e reforço de contraste visual.
+    Layout 'Strict Schema' v6.0.2.
+    Estabilização de tipos de dados para evitar erros de concatenação no Polars.
     """
     st.markdown(f"""
         <style>
@@ -89,7 +89,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
-        st.markdown(f"### Black Crow\n**Intelligence v6.0.1**")
+        st.markdown(f"### Black Crow\n**Intelligence v6.0.2**")
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -130,7 +130,18 @@ def render_spc_chart(v_semanal, v_future, m, s):
     # Forecast
     if not v_future.is_empty():
         last_val = v_semanal.tail(1)
-        conn = pl.concat([last_val.select(["semana", "vol"]), v_future.select(["semana", "vol"])])
+        # CORREÇÃO CRÍTICA: Garantindo que os schemas batam (Date e Float64) para o concat do Polars
+        hist_part = last_val.select([
+            pl.col("semana").cast(pl.Date), 
+            pl.col("vol").cast(pl.Float64)
+        ])
+        pred_part = v_future.select([
+            pl.col("semana").cast(pl.Date), 
+            pl.col("vol").cast(pl.Float64)
+        ])
+        
+        conn = pl.concat([hist_part, pred_part])
+        
         fig.add_trace(go.Scatter(
             x=conn['semana'], y=conn['vol'], 
             mode='lines', name='IA Forecast',
@@ -171,12 +182,12 @@ def run_dashboard():
         dist = AnalyticsService.get_pareto_distribution(df).sort("vendas")
         v_fut = PredictionService.get_daily_forecast(df)
         
-        # CORREÇÃO DA CHAMADA: Retornando para PredictionService
+        # Chamada correta conforme o schema do PredictionService
         ins = PredictionService.get_strategic_insights(df)
         
         # --- HEADER ---
         st.markdown(f"<div class='header-title'>{APP_TITLE}</div>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color:#64748b; font-weight:700; text-transform:uppercase;'>Business Monitoring & Intelligence v6.0.1</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:#64748b; font-weight:700; text-transform:uppercase;'>Business Monitoring & Intelligence v6.0.2</p>", unsafe_allow_html=True)
         
         # --- ROW 1: METRICS ---
         m1, m2, m3, m4 = st.columns(4)
