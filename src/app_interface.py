@@ -22,10 +22,7 @@ WARNING_COLOR = "#F59E0B"
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    """
-    Layout 'Aesthetic Platinum' v6.0.8.
-    Foco em elegância, profundidade visual e legibilidade executiva.
-    """
+    # Layout
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -159,7 +156,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
-        st.markdown(f"### Black Crow\n<span style='opacity:0.6; font-size:0.8rem;'>Aesthetic Intelligence v6.0.8</span>", unsafe_allow_html=True)
+        st.markdown(f"### Black Crow\n<span style='opacity:0.6; font-size:0.8rem;'>Segmentação de Dados</span>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -171,7 +168,7 @@ def render_sidebar(df):
 
         filtros = {
             "marcas": smart_filter("Empresas", "marca"),
-            "paises": smart_filter("UFs", "uf"),
+            "paises": smart_filter("Países", "uf"),
             "setores": smart_filter("Segmentos", "industry_sector"),
             "dias": st.slider("Janela Mensal (Dias):", 1, 31, (1, 31))
         }
@@ -228,8 +225,8 @@ def render_spc_chart(v_semanal, v_future, m, s):
         font=dict(color=NAVY_DEEP, family="Inter")
     )
     
-    fig.update_xaxes(showgrid=False, tickfont=dict(size=12), linecolor="#5491F4")
-    fig.update_yaxes(gridcolor='#5491F4', tickfont=dict(size=12), linecolor='#5491F4')
+    fig.update_xaxes(showgrid=False, tickfont=dict(size=12), linecolor='#3B82F6')
+    fig.update_yaxes(gridcolor="#11161B", tickfont=dict(size=12), linecolor='#3B82F6')
     
     st.plotly_chart(fig, use_container_width=True)
 
@@ -265,7 +262,7 @@ def run_dashboard():
         
         # --- HEADER ---
         st.markdown(f"<div class='header-title'>{APP_TITLE}</div>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color:#64748B; font-weight:600; text-transform:uppercase; letter-spacing:2px; font-size:0.85rem;'>Aesthetic Executive Intelligence Engine • v6.0.8</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:#64748B; font-weight:600; text-transform:uppercase; letter-spacing:2px; font-size:0.85rem;'> • Executive Intelligence Engine • </p>", unsafe_allow_html=True)
         
         # --- ROW 1: CORE METRICS ---
         m1, m2, m3, m4 = st.columns(4)
