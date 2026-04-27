@@ -313,8 +313,15 @@ def run_dashboard():
         with c_right:
             st.markdown(f"<h3>🏆 Share de Mercado (Principais Líderes)</h3>", unsafe_allow_html=True)
             if not dist.is_empty():
-                fig_bar = px.bar(dist.tail(12), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR], text_auto=True)
-                fig_bar.update_layout(height=450, margin=dict(t=20, b=20, l=160, r=20), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', font=dict(color=LEGEND_COLOR, weight="bold", size=13))
+                fig_bar = px.bar(dist.tail(12), x='vendas', y='marca', orientation='h', 
+                                 color_discrete_sequence=[THEME_COLOR], text_auto=True)
+                fig_bar.update_layout(
+                    height=450, margin=dict(t=20, b=20, l=160, r=20), 
+                    paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
+                    font=dict(color=LEGEND_COLOR, weight="bold", size=13),
+                    xaxis=dict(tickfont=dict(color=LEGEND_COLOR, weight="bold"), title="Vendas"),
+                    yaxis=dict(title=None, tickfont=dict(color=LEGEND_COLOR, size=13, weight="bold"))
+                )
                 st.plotly_chart(fig_bar, use_container_width=True)
 
         # --- RODAPÉ DE INSIGHTS ---
