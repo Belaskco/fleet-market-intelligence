@@ -49,7 +49,7 @@ def apply_enterprise_styles():
         .header-title {{ 
             font-size: 3.2rem; 
             font-weight: 900; 
-            color: {NAVY_DEEP} !important; 
+            color: {SECTION_BG} !important; 
             letter-spacing: -2.5px;
             line-height: 1;
             margin-bottom: 0.5rem;
