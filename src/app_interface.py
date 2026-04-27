@@ -176,7 +176,7 @@ def render_periodicity_heatmap(df):
 
     fig = px.imshow(
         heat_matrix,
-        color_continuous_scale="Viridis",
+        color_continuous_scale="Jet",
         aspect="auto",
         text_auto=True
     )
