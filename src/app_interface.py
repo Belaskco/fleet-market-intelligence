@@ -127,7 +127,7 @@ def apply_enterprise_styles():
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         }}
 
-        /* 8. DATAFRAME CUSTOM HEIGHT */
+        /* 8. DATAFRAME FIXES */
         .stDataFrame {{
             border: 1px solid #E2E8F0;
             border-radius: 12px;
@@ -138,7 +138,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
-        st.markdown(f"<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.5.8</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.6.0</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -157,7 +157,7 @@ def render_sidebar(df):
         return filtros
 
 def render_periodicity_heatmap(df):
-    """Heatmap com tipografia padronizada."""
+    """Heatmap com tipografia padronizada em #162945."""
     df_heat = df.with_columns([
         pl.col("data_faturamento").dt.weekday().alias("dow"),
         pl.col("data_faturamento").dt.day().map_elements(lambda d: (d-1)//7 + 1, return_dtype=pl.Int64).alias("semana_mes")
@@ -233,7 +233,7 @@ def run_dashboard():
     f = render_sidebar(df_raw)
     df = apply_business_filters(df_raw, f['marcas'], f['paises'], f['dias'])
     
-    # Blindagem e Referência D-1
+    # Blindagem de dados D-1
     max_d = df_raw["data_faturamento"].max()
     df = df.filter(pl.col("data_faturamento") < max_d)
 
@@ -254,15 +254,13 @@ def run_dashboard():
         k1, k2, k3, k4, k5 = st.columns(5)
         k1.metric("Volume Total", f"{len(df):,}")
         k2.metric("Dominância", f"{dist.tail(1)['marca'][0][:14]}", delta=f"{(dist.tail(1)['vendas'][0]/len(df)):.1%} Share")
-        k3.metric("Média Semanal", f"{m_w:.1f}")
+        k3.metric("Média Semanal", f"{m_w:.1f} un/sem")
         k4.metric("Previsibilidade", f"{ins.get('confianca', 0):.1f}%")
-        
-        forecast_display = human_format(proj_vol * 125000) if proj_vol > 0 else "Dados Insufic."
-        k5.metric("Target Forecast", forecast_display, delta=trend)
+        k5.metric("Target Forecast", human_format(proj_vol * 125000), delta=trend)
         
         st.divider()
 
-        # --- LINHA 1: Diagnóstico e Antecipação Nominal ---
+        # LINHA 1: DIAGNÓSTICO E ANTECIPAÇÃO NOMINAL (EXPANDIDA)
         cl1, cr1 = st.columns([1.5, 1.2])
         with cl1:
             st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-bottom:1rem;'>Diagnóstico Dinâmico</h3>", unsafe_allow_html=True)
@@ -280,32 +278,32 @@ def run_dashboard():
             st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-bottom:1rem;'>Antecipação Nominal (Próx. Ciclo)</h3>", unsafe_allow_html=True)
             df_p = PredictionService.get_client_predictions(df)
             if not df_p.is_empty():
-                # CÁLCULO DE DADOS REAIS: Recência (Dias desde a última compra)
-                recency_df = df.group_by("marca").agg(pl.col("data_faturamento").max().alias("last_buy"))
+                # DADOS REAIS DE APOIO: Recência e Ticket Médio
+                last_buy_df = df.group_by("marca").agg(pl.col("data_faturamento").max().alias("last_buy"))
+                df_view = df_p.join(last_buy_df, left_on="Cliente", right_on="marca", how="left")
                 
-                df_view = df_p.join(recency_df, left_on="Cliente", right_on="marca", how="left")
                 df_view = df_view.with_columns([
-                    pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor Estimado"),
+                    pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor Est."),
                     (pl.col("Valor_Est") / pl.col("Qtd_Prevista")).map_elements(human_format, return_dtype=pl.String).alias("Ticket Médio"),
                     ((max_d - pl.col("last_buy")).dt.total_days()).alias("Recência (Dias)")
-                ]).select(["Cliente", "Qtd_Prevista", "Ticket Médio", "Valor Estimado", "Recência (Dias)"])
+                ]).select(["Cliente", "Qtd_Prevista", "Ticket Médio", "Valor Est.", "Recência (Dias)"])
                 
                 st.dataframe(
-                    df_view.sort("Valor Estimado", descending=True), 
+                    df_view.sort("Valor Est.", descending=True), 
                     use_container_width=True, 
                     hide_index=True, 
                     height=450, 
                     column_config={
-                        "Qtd_Prevista": st.column_config.NumberColumn("Volume Prev.", format="%d un"),
-                        "Recência (Dias)": st.column_config.NumberColumn("Últ. Compra", format="%d dias atrás")
+                        "Recência (Dias)": st.column_config.NumberColumn("Últ. Compra (Dias)", format="%d"),
+                        "Qtd_Prevista": st.column_config.NumberColumn("Volume Previsto", format="%d")
                     }
                 )
             else:
-                st.warning("⚠️ Densidade de dados insuficiente para mapeamento nominal.")
+                st.warning("⚠️ Dados insuficientes para antecipação nominal.")
 
         st.divider()
 
-        # --- LINHA 2: Estabilidade e Share de Mercado (Simetria Visual) ---
+        # LINHA 2: ESTABILIDADE E SHARE (ORGANIZADO LADO A LADO)
         cl2, cr2 = st.columns([1.5, 1.2])
         with cl2:
             st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-top:0; margin-bottom:1rem;'>Controle de Estabilidade</h3>", unsafe_allow_html=True)
@@ -322,7 +320,7 @@ def run_dashboard():
         # Insights
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.5.8</h3>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.6.0</h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 1px solid #F1F5F9; padding-top: 25px; margin-top: 15px;">
                 <div>
                     <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Perímetro</span><br>
