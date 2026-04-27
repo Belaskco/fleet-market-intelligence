@@ -18,10 +18,7 @@ DANGER_COLOR = "#DC2626"
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    """
-    Layout 'Contrast Lockdown' v6.0.5.
-    Correção definitiva para textos brancos invisíveis nos cards de métrica.
-    """
+    # Layout 'Contrast Lockdown
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
@@ -60,10 +57,10 @@ def apply_enterprise_styles():
         /* 4. SCORECARDS (MÉTRICAS) - BLINDAGEM DE COR --- */
         /* Forçamos a cor em múltiplos níveis para evitar o 'texto branco' */
         .stMetric {{ 
-            border: 2px solid #E2E8F0; 
+            border: 2px solid #FFFFFF; 
             padding: 25px; 
             border-radius: 20px; 
-            background-color: #FFFFFF !important;
+            background-color: #E2E8F0 !important;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }}
         
