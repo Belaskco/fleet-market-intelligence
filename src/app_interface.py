@@ -156,7 +156,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
-        st.markdown(f"### Black Crow\n<span style='opacity:0.6; font-size:0.8rem;'>Segmentação de Dados</span>", unsafe_allow_html=True)
+        st.markdown(f"### Black Crow\n<span style='opacity:0.6; font-size:0.8rem;'>Segmentação de Dados</span>", unsafe_allow_html=True, THEME_COLOR=SECTION_BG)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
