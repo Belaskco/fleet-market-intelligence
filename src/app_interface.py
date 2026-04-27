@@ -225,8 +225,21 @@ def render_spc_chart(v_semanal, v_future, m, s):
         font=dict(color=NAVY_DEEP, family="Inter")
     )
     
-    fig.update_xaxes(showgrid=True, gridcolor="#F1F5F9", tickfont=dict(size=12, color=NAVY_DEEP), linecolor='#3B82F6')
-    fig.update_yaxes(gridcolor="#6A6A6A", tickfont=dict(size=12, color=NAVY_DEEP), linecolor='#3B82F6')
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor="#B1B3B5",
+        griddash='dash',
+        tickfont=dict(size=12,
+            color=NAVY_DEEP),
+        linecolor='#3B82F6'
+    )
+    fig.update_yaxes(
+        gridcolor="#6A6A6A",
+        griddash='dot',
+        tickfont=dict(size=12,
+            color=NAVY_DEEP),
+        linecolor='#3B82F6'
+    )
     
     st.plotly_chart(fig, use_container_width=True)
 
