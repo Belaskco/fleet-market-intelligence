@@ -17,9 +17,8 @@ AXIS_COLOR = "#000000" # Preto absoluto para eixos e textos pequenos
 
 def apply_enterprise_styles():
     """
-    Layout 'Visibility Protocol' v5.9.7.
-    Força legibilidade absoluta e remove qualquer transparência de fontes.
-    Estabilização total contra erros de esquema do Plotly.
+    Layout 'The Everything Edition' v5.9.9.
+    Organiza todos os componentes em um fluxo de storytelling sem ocultar dados.
     """
     st.markdown(f"""
         <style>
@@ -55,6 +54,8 @@ def apply_enterprise_styles():
             color: {LEGEND_COLOR} !important;
             font-weight: 900 !important;
             opacity: 1 !important;
+            margin-top: 2rem !important;
+            margin-bottom: 1.5rem !important;
         }}
 
         /* 4. SCORECARD (MÉTRICAS) */
@@ -64,7 +65,7 @@ def apply_enterprise_styles():
             border-radius: 20px; 
             background-color: #FFFFFF !important;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-            min-height: 180px;
+            min-height: 150px;
         }}
         
         [data-testid="stMetricValue"] {{ 
@@ -80,35 +81,31 @@ def apply_enterprise_styles():
             opacity: 1 !important;
             letter-spacing: 1.2px !important;
         }}
-        
-        /* Ícone de Ajuda Cinza Sólido */
-        [data-testid="stMetricLabel"] button {{
-            opacity: 1 !important;
-        }}
-        [data-testid="stMetricLabel"] svg {{
-            fill: #475569 !important;
-            stroke: #1E293B !important;
-            opacity: 1 !important; 
-            transform: scale(1.4) !important;
-        }}
 
-        /* 5. TABS E DATAFRAME */
-        .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
-        .stTabs [data-baseweb="tab"] {{ color: #1E293B !important; font-weight: 900 !important; opacity: 1 !important; }}
-        .stTabs [aria-selected="true"] {{ color: {THEME_COLOR} !important; border-bottom: 4px solid {THEME_COLOR} !important; }}
+        /* 5. DATAFRAME */
         .stDataFrame {{ border: 2px solid #E2E8F0; border-radius: 12px; background: white; }}
         
         /* 6. INSIGHTS CARD */
         .insights-card {{
-            background: white;
-            border: 2px solid #E2E8F0;
+            background: #FFFFFF;
+            border: 2px solid #0F172A;
             border-radius: 20px;
-            padding: 35px;
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
         }}
         .insights-card span {{
+            color: #475569 !important;
+            font-weight: 900 !important;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+        }}
+        .insights-card .val-text {{
             color: #0F172A !important;
             font-weight: 900 !important;
-            opacity: 1 !important;
+            font-size: 1.6rem;
+            margin-top: 5px;
         }}
         </style>
     """, unsafe_allow_html=True)
@@ -116,7 +113,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
-        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.9.7</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.9.9</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -134,7 +131,7 @@ def render_sidebar(df):
         }
         
         st.divider()
-        if st.button("🔄 LIMPAR TUDO E REINICIAR"):
+        if st.button("🔄 RECARREGAR INTELIGÊNCIA"):
             st.cache_data.clear()
             st.cache_resource.clear()
             st.rerun()
@@ -157,12 +154,11 @@ def render_periodicity_heatmap(df):
         fig = px.imshow(heat_matrix, color_continuous_scale="Viridis", aspect="auto", text_auto=True)
         fig.update_layout(
             template="plotly_white",
-            height=400, margin=dict(t=30, b=30, l=40, r=20),
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
+            height=350, margin=dict(t=10, b=10, l=40, r=20),
+            paper_bgcolor='white', plot_bgcolor='white', 
             coloraxis_showscale=False,
             font=dict(color=AXIS_COLOR, size=12, family="Inter")
         )
-        # Forçar visibilidade dos eixos com PRETO ABSOLUTO
         fig.update_xaxes(tickfont=dict(color=AXIS_COLOR, size=12))
         fig.update_yaxes(tickfont=dict(color=AXIS_COLOR, size=12))
         st.plotly_chart(fig, use_container_width=True)
@@ -174,9 +170,9 @@ def render_spc_chart(v_semanal, v_future, m, s):
     fig = go.Figure()
     
     # Linha Real
-    fig.add_trace(go.Scatter(x=v_semanal['semana'], y=v_semanal['vol'], mode='lines+markers', name='Volume Real', line=dict(color=THEME_COLOR, width=4), marker=dict(size=10, color='white', line=dict(width=3, color=THEME_COLOR))))
+    fig.add_trace(go.Scatter(x=v_semanal['semana'], y=v_semanal['vol'], mode='lines+markers', name='Volume Real', line=dict(color=THEME_COLOR, width=5), marker=dict(size=12, color='white', line=dict(width=3, color=THEME_COLOR))))
     
-    # Projeção Nixtla
+    # Projeção IA
     if not v_future.is_empty():
         last_d = v_semanal.tail(1)["semana"][0]
         v_f = v_future.with_columns([pl.Series([last_d + timedelta(weeks=i+1) for i in range(len(v_future))]).alias("semana")])
@@ -185,30 +181,23 @@ def render_spc_chart(v_semanal, v_future, m, s):
         conn = pl.concat([h_t, f_t])
         fig.add_trace(go.Scatter(x=conn['semana'], y=conn['vol'], mode='lines', name='Forecast (IA)', line=dict(color=THEME_COLOR, dash='dot', width=4)))
     
-    # Limites Estatísticos
+    # Limites
     fig.add_hline(y=ucl, line_dash="dash", line_color="#10B981", opacity=0.8)
     fig.add_hline(y=lcl, line_dash="dash", line_color="#EF4444", opacity=0.8)
     
-    # Anotações para LSC e LIC - Texto em negrito via tags HTML
-    fig.add_annotation(x=v_semanal['semana'][0], y=ucl, text="<b>LIMITE SUPERIOR (LSC)</b>", showarrow=False, yshift=20, font=dict(color="#10B981", size=11))
-    fig.add_annotation(x=v_semanal['semana'][0], y=lcl, text="<b>LIMITE INFERIOR (LIC)</b>", showarrow=False, yshift=-20, font=dict(color="#EF4444", size=11))
+    fig.add_annotation(x=v_semanal['semana'][0], y=ucl, text="<b>LSC (LIMITE SUPERIOR)</b>", showarrow=False, yshift=25, font=dict(color="#10B981", size=12))
+    fig.add_annotation(x=v_semanal['semana'][0], y=lcl, text="<b>LIC (LIMITE INFERIOR)</b>", showarrow=False, yshift=-25, font=dict(color="#EF4444", size=12))
 
     fig.update_layout(
         template="plotly_white",
-        height=450, margin=dict(t=40, b=40, l=40, r=20), 
+        height=550, margin=dict(t=60, b=40, l=60, r=40), 
         paper_bgcolor='white', plot_bgcolor='white', 
         showlegend=True, 
-        legend=dict(
-            font=dict(color=AXIS_COLOR, size=12),
-            bgcolor="white", 
-            bordercolor=AXIS_COLOR, 
-            borderwidth=2
-        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12)),
         font=dict(color=AXIS_COLOR, size=12, family="Inter")
     )
-    # Forçar visibilidade total dos eixos com PRETO
     fig.update_xaxes(showgrid=False, tickfont=dict(color=AXIS_COLOR, size=12), linecolor=AXIS_COLOR, linewidth=2)
-    fig.update_yaxes(showgrid=True, gridcolor='#E2E8F0', tickfont=dict(color=AXIS_COLOR, size=12), linecolor=AXIS_COLOR, linewidth=2)
+    fig.update_yaxes(showgrid=True, gridcolor='#F1F5F9', tickfont=dict(color=AXIS_COLOR, size=12), linecolor=AXIS_COLOR, linewidth=2)
     
     st.plotly_chart(fig, use_container_width=True)
 
@@ -234,6 +223,7 @@ def run_dashboard():
     df = df.filter(pl.col("data_faturamento") < max_d)
 
     if not df.is_empty():
+        # Motores
         v_sem = df.with_columns(pl.col("data_faturamento").dt.truncate("1w").alias("semana")).group_by("semana").len(name="vol").sort("semana")
         m_w, s_w = v_sem["vol"].mean(), v_sem["vol"].std()
         dist = AnalyticsService.get_pareto_distribution(df).sort("vendas")
@@ -244,28 +234,59 @@ def run_dashboard():
         st.markdown(f"<div class='header-title'>{APP_TITLE}</div>", unsafe_allow_html=True)
         st.markdown(f"<div style='color: #475569; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; margin-bottom: 2.5rem;'>Executive Market Intelligence Engine</div>", unsafe_allow_html=True)
         
-        # --- SCORECARD ---
+        # --- ROW 1: SCORECARD ---
         k1, k2, k3, k4, k5 = st.columns(5)
         k1.metric("Volume Total", f"{len(df):,}")
-        
         if not dist.is_empty():
             lider_nome = dist.tail(1)['marca'][0]
             lider_share = (dist.tail(1)['vendas'][0]/len(df))
-            k2.metric(
-                label="Líder de Share",
-                value=lider_nome,
-                delta=f"{lider_share:.1%} Share",
-                help=f"**IDENTIFICAÇÃO COMPLETA:**\n\n{lider_nome}" 
-            )
-        
+            k2.metric(label="Líder de Share", value=lider_nome, delta=f"{lider_share:.1%} Share")
         k3.metric("Média Semanal", f"{m_w:.1f}")
         k4.metric("Previsibilidade", f"{ins.get('confianca', 0):.1f}%")
         k5.metric("Target Forecast", human_format(proj_vol * 125000), delta=trend)
         
         st.divider()
 
-        # --- SEÇÃO 1: ANTECIPAÇÃO NOMINAL ---
-        st.markdown(f"<h3>🔮 Antecipação Nominal de Faturamento</h3>", unsafe_allow_html=True)
+        # --- ROW 2: ESTABILIDADE (CORE) ---
+        st.markdown(f"<h3>📈 1. Controle de Estabilidade Operacional (SPC)</h3>", unsafe_allow_html=True)
+        render_spc_chart(v_sem, v_fut, m_w, s_w)
+
+        st.divider()
+
+        # --- ROW 3: DINÂMICA DE MERCADO ---
+        st.markdown(f"<h3>📊 2. Dinâmica e Concentração de Mercado</h3>", unsafe_allow_html=True)
+        c_left, c_right = st.columns([1, 1.2])
+        
+        with c_left:
+            st.markdown(f"<p style='font-weight:800; font-size:0.9rem; text-transform:uppercase;'>Principais Líderes de Share</p>", unsafe_allow_html=True)
+            if not dist.is_empty():
+                fig_bar = px.bar(dist.tail(10), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR], text_auto=True)
+                fig_bar.update_layout(
+                    template="plotly_white", height=400, margin=dict(t=10, b=10, l=120, r=20),
+                    paper_bgcolor='white', plot_bgcolor='white', font=dict(color=AXIS_COLOR, size=11)
+                )
+                fig_bar.update_xaxes(showticklabels=False, title=None)
+                st.plotly_chart(fig_bar, use_container_width=True)
+
+        with c_right:
+            st.markdown(f"<p style='font-weight:800; font-size:0.9rem; text-transform:uppercase;'>Trajetória de Volume Acumulado</p>", unsafe_allow_html=True)
+            fig_area = px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR])
+            fig_area.update_layout(
+                template="plotly_white", height=400, margin=dict(t=10, b=10, l=40, r=20),
+                paper_bgcolor='white', plot_bgcolor='white', font=dict(color=AXIS_COLOR, size=11)
+            )
+            st.plotly_chart(fig_area, use_container_width=True)
+
+        st.divider()
+
+        # --- ROW 4: CALENDÁRIO OPERACIONAL ---
+        st.markdown(f"<h3>📅 3. Periodicidade e Janelas de Faturamento</h3>", unsafe_allow_html=True)
+        render_periodicity_heatmap(df)
+
+        st.divider()
+
+        # --- ROW 5: EXECUÇÃO (NOMINAL) ---
+        st.markdown(f"<h3>🔮 4. Antecipação Nominal de Faturamento (Próximo Ciclo)</h3>", unsafe_allow_html=True)
         df_p = PredictionService.get_client_predictions(df)
         if not df_p.is_empty():
             last_buy_stats = df.group_by("marca").agg(pl.col("data_faturamento").max().alias("ultima_compra"))
@@ -277,64 +298,33 @@ def run_dashboard():
                 pl.col("Cliente"),
                 pl.col("Qtd_Prevista").alias("Volume Previsto"),
                 pl.col("Ticket Médio"),
-                pl.col("Valor_Est").alias("Venda Estimada"),
+                pl.col("Valor_Est").alias("Faturamento Est."),
                 pl.col("Recência (Dias)")
-            ]).sort("Venda Estimada", descending=True)
-            st.dataframe(df_final, use_container_width=True, hide_index=True, height=450)
-        else:
-            st.info("Aguardando massa crítica para projeção.")
-
-        st.divider()
-
-        # --- SEÇÃO 2: DIAGNÓSTICO ---
-        st.markdown(f"<h3>📊 Diagnóstico Dinâmico de Performance</h3>", unsafe_allow_html=True)
-        tab_area, tab_heat = st.tabs(["Trajetória Histórica", "Periodicidade"])
-        with tab_area:
-            fig_area = px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR])
-            fig_area.update_layout(
-                template="plotly_white",
-                height=500, margin=dict(t=10,b=10), 
-                paper_bgcolor='white', plot_bgcolor='white', 
-                font=dict(color=AXIS_COLOR, size=12, family="Inter")
+            ]).sort("Faturamento Est.", descending=True).head(15)
+            
+            st.dataframe(
+                df_final, use_container_width=True, hide_index=True, height=450,
+                column_config={
+                    "Ticket Médio": st.column_config.NumberColumn(format="R$ %.2f"),
+                    "Faturamento Est.": st.column_config.NumberColumn(format="R$ %.2f"),
+                    "Recência (Dias)": st.column_config.NumberColumn(format="%d d")
+                }
             )
-            fig_area.update_xaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
-            fig_area.update_yaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
-            st.plotly_chart(fig_area, use_container_width=True)
-        with tab_heat:
-            render_periodicity_heatmap(df)
+        else:
+            st.info("Aguardando massa crítica para projeção nominal.")
 
-        st.divider()
-
-        # --- SEÇÃO 3: ESTABILIDADE E SHARE ---
-        c_left, c_right = st.columns([1.5, 1])
-        with c_left:
-            st.markdown(f"<h3>📈 Controle de Estabilidade (SPC)</h3>", unsafe_allow_html=True)
-            render_spc_chart(v_sem, v_fut, m_w, s_w)
-        with c_right:
-            st.markdown(f"<h3>🏆 Share de Mercado (Líderes)</h3>", unsafe_allow_html=True)
-            if not dist.is_empty():
-                fig_bar = px.bar(dist.tail(12), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR], text_auto=True)
-                fig_bar.update_layout(
-                    template="plotly_white",
-                    height=450, margin=dict(t=20, b=20, l=160, r=20), 
-                    paper_bgcolor='white', plot_bgcolor='white', 
-                    font=dict(color=AXIS_COLOR, size=13)
-                )
-                fig_bar.update_xaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
-                fig_bar.update_yaxes(tickfont=dict(color=AXIS_COLOR), linecolor=AXIS_COLOR)
-                st.plotly_chart(fig_bar, use_container_width=True)
-
-        # --- RODAPÉ ---
+        # --- ROW 6: FECHAMENTO (STRATEGIC INSIGHTS) ---
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem;">Strategic Insights v5.9.7</h3>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 2px solid #F1F5F9; padding-top: 25px; margin-top:15px;">
-                <div><span>PERÍMETRO</span><br><div class="val-text">{ins.get('perfil').upper()}</div></div>
-                <div><span>ÍNDICE HHI</span><br><div class="val-text">{ins.get('hhi',0):.2f}</div></div>
-                <div><span>REGIME</span><br><div class="val-text">{ins.get('estabilidade').upper()}</div></div>
-                <div><span>CONFIANÇA IA</span><br><div class="val-text">{ins.get('confianca', 0):.1f}%</div></div>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem; border-bottom: 2px solid #F1F5F9; padding-bottom:15px;">Strategic Intelligence Summary</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top:20px;">
+                <div><span>ESTRUTURA</span><br><div class="val-text">{ins.get('perfil').upper()}</div></div>
+                <div><span>CONCENTRAÇÃO HHI</span><br><div class="val-text">{ins.get('hhi',0):.2f}</div></div>
+                <div><span>REGIME OPERACIONAL</span><br><div class="val-text">{ins.get('estabilidade').upper()}</div></div>
+                <div><span>CONFIANÇA PREDITIVA</span><br><div class="val-text">{ins.get('confianca', 0):.1f}%</div></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
+        
     else:
         st.sidebar.warning("⚠️ Ajuste os filtros para processar a inteligência.")
