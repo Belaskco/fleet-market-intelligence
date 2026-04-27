@@ -251,7 +251,7 @@ def run_dashboard():
             st.markdown("<h3 style='color: #1E293B; margin-bottom:1rem;'>Diagnóstico Dinâmico</h3>", unsafe_allow_html=True)
             t1, t2 = st.tabs(["Performance Semanal", "Periodicidade"])
             with t1:
-                st.plotly_chart(px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR]).update_layout(height=340, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor='#F1F5F9', tickfont=dict(color="#162945", size=11, title=None)), use_container_width=True)
+                st.plotly_chart(px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR]).update_layout(height=340, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor='#F1F5F9', tickfont=dict(color="#162945", size=11, title=None))), use_container_width=True)
             with t2:
                 render_periodicity_heatmap(df)
             
