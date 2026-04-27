@@ -1,19 +1,24 @@
-import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
+import plotly.graph_objects as go
+from datetime import timedelta
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
-from datetime import timedelta
+
+# Definição da cor padrão de legenda solicitada
+LEGEND_COLOR = "#162945"
 
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    # Layout 'Midnight Platinum'.
-    
+    """
+    Layout 'Midnight Platinum' v5.5.2.
+    Padronização cromática total para legibilidade máxima.
+    """
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
@@ -54,7 +59,7 @@ def apply_enterprise_styles():
         .header-title {{ 
             font-size: 2.8rem; 
             font-weight: 800; 
-            color: #1E293B; 
+            color: {LEGEND_COLOR}; 
             letter-spacing: -2px;
             margin-bottom: 0.2rem;
         }}
@@ -79,7 +84,7 @@ def apply_enterprise_styles():
         [data-testid="stMetricValue"] {{ 
             font-size: 2.4rem !important; 
             font-weight: 800; 
-            color: #0F172A !important; 
+            color: {LEGEND_COLOR} !important; 
             letter-spacing: -1px;
         }}
         [data-testid="stMetricLabel"] {{ 
@@ -130,11 +135,11 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
-        st.markdown("<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.5</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.5.2</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
-            with st.expander(f"Filtro de {label}"):
+            with st.expander(f"Filtro: {label}"):
                 c1, c2 = st.columns(2)
                 c1.button("Todos", key=f"all_{label}", on_click=set_all_state, args=(label, opts, True))
                 c2.button("Nenhum", key=f"none_{label}", on_click=set_all_state, args=(label, opts, False))
@@ -149,7 +154,7 @@ def render_sidebar(df):
         return filtros
 
 def render_periodicity_heatmap(df):
-    
+    """Heatmap com tipografia padronizada em #162945."""
     df_heat = df.with_columns([
         pl.col("data_faturamento").dt.weekday().alias("dow"),
         pl.col("data_faturamento").dt.day().map_elements(lambda d: (d-1)//7 + 1, return_dtype=pl.Int64).alias("semana_mes")
@@ -162,14 +167,16 @@ def render_periodicity_heatmap(df):
 
     fig = px.imshow(
         heat_matrix,
-        color_continuous_scale="Jet",
+        color_continuous_scale="Viridis",
         aspect="auto",
         text_auto=True
     )
     fig.update_layout(
         height=320, margin=dict(t=10, b=10, l=10, r=10), 
         paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-        coloraxis_showscale=False
+        coloraxis_showscale=False,
+        xaxis=dict(tickfont=dict(color=LEGEND_COLOR, size=11)),
+        yaxis=dict(tickfont=dict(color=LEGEND_COLOR, size=11))
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -182,7 +189,6 @@ def render_spc_chart(v_semanal, v_future, m, s):
     else: st.info(f"✅ **Fluxo Nominal:** Estabilidade estatística confirmada.")
 
     fig = go.Figure()
-    # Histórico
     fig.add_trace(go.Scatter(x=v_semanal['semana'], y=v_semanal['vol'], mode='lines+markers', name='Real', line=dict(color=THEME_COLOR, width=4), marker=dict(size=10, color='white', line=dict(width=3, color=THEME_COLOR))))
     
     if not v_future.is_empty():
@@ -198,9 +204,10 @@ def render_spc_chart(v_semanal, v_future, m, s):
     fig.update_layout(
         height=400, margin=dict(t=20, b=10), 
         paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
-        showlegend=False,
-        xaxis=dict(showgrid=False, linecolor='#E2E8F0', tickfont=dict(color='#162945', size=11)),
-        yaxis=dict(showgrid=True, gridcolor='#F1F5F9', zeroline=False, tickfont=dict(color="#162945", size=11))
+        showlegend=True,
+        legend=dict(font=dict(color=LEGEND_COLOR)),
+        xaxis=dict(showgrid=False, linecolor='#E2E8F0', tickfont=dict(color=LEGEND_COLOR, size=11)),
+        yaxis=dict(showgrid=True, gridcolor='#F1F5F9', zeroline=False, tickfont=dict(color=LEGEND_COLOR, size=11))
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -248,45 +255,53 @@ def run_dashboard():
 
         cl, cr = st.columns([1.7, 1])
         with cl:
-            st.markdown("<h3 style='color: #1E293B; margin-bottom:1rem;'>Diagnóstico Dinâmico</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-bottom:1rem;'>Diagnóstico Dinâmico</h3>", unsafe_allow_html=True)
             t1, t2 = st.tabs(["Performance Semanal", "Periodicidade"])
             with t1:
-                st.plotly_chart(px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR]).update_layout(height=340, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor='#F1F5F9', tickfont=dict(color="#162945", size=11, title=None))), use_container_width=True)
+                st.plotly_chart(px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR]).update_layout(
+                    height=340, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
+                    xaxis=dict(showgrid=False, tickfont=dict(color=LEGEND_COLOR)), 
+                    yaxis=dict(showgrid=True, gridcolor='#F1F5F9', title=None, tickfont=dict(color=LEGEND_COLOR))
+                ), use_container_width=True)
             with t2:
                 render_periodicity_heatmap(df)
             
-            st.markdown("<h3 style='color: #1E293B; margin-top:3rem; margin-bottom:1rem;'>Controle de Estabilidade</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-top:3rem; margin-bottom:1rem;'>Controle de Estabilidade</h3>", unsafe_allow_html=True)
             render_spc_chart(v_sem, v_fut, m_w, s_w)
 
         with cr:
-            st.markdown("<h3 style='color: #1E293B; margin-bottom:1rem;'>Antecipação Nominal</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-bottom:1rem;'>Antecipação Nominal</h3>", unsafe_allow_html=True)
             df_p = PredictionService.get_client_predictions(df)
             if not df_p.is_empty():
                 st.dataframe(df_p.with_columns(pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor")).select(["Cliente", "Qtd_Prevista", "Valor", "Probabilidade"]), use_container_width=True, hide_index=True, column_config={"Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1, color="blue")})
             
-            st.markdown("<h3 style='color: #1E293B; margin-top:3rem; margin-bottom:1rem;'>Share de Mercado</h3>", unsafe_allow_html=True)
-            st.plotly_chart(px.bar(dist.tail(10), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR]).update_layout(height=400, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', xaxis=dict(showgrid=True, gridcolor='#F1F5F9', title=None), yaxis=dict(showgrid=False)), use_container_width=True)
+            st.markdown(f"<h3 style='color: {LEGEND_COLOR}; margin-top:3rem; margin-bottom:1rem;'>Share de Mercado</h3>", unsafe_allow_html=True)
+            st.plotly_chart(px.bar(dist.tail(10), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR]).update_layout(
+                height=400, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
+                xaxis=dict(showgrid=True, gridcolor='#F1F5F9', title=None, tickfont=dict(color=LEGEND_COLOR)), 
+                yaxis=dict(showgrid=False, tickfont=dict(color=LEGEND_COLOR, size=12))
+            ), use_container_width=True)
 
         # Insights
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:#0F172A; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.5</h3>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.5.2</h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 1px solid #F1F5F9; padding-top: 25px; margin-top: 15px;">
                 <div>
                     <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Perímetro</span><br>
-                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('perfil').upper()}</span>
+                    <span style="font-size:1.1rem; color:{LEGEND_COLOR}; font-weight:800;">{ins.get('perfil').upper()}</span>
                 </div>
                 <div>
                     <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Índice HHI</span><br>
-                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('hhi',0):.2f}</span>
+                    <span style="font-size:1.1rem; color:{LEGEND_COLOR}; font-weight:800;">{ins.get('hhi',0):.2f}</span>
                 </div>
                 <div>
                     <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Regime</span><br>
-                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('estabilidade').upper()}</span>
+                    <span style="font-size:1.1rem; color:{LEGEND_COLOR}; font-weight:800;">{ins.get('estabilidade').upper()}</span>
                 </div>
                 <div>
                     <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Motor IA</span><br>
-                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('confianca', 0):.1f}%</span>
+                    <span style="font-size:1.1rem; color:{LEGEND_COLOR}; font-weight:800;">{ins.get('confianca', 0):.1f}%</span>
                 </div>
             </div>
         </div>
