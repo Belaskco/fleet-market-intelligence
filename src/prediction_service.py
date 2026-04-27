@@ -2,21 +2,23 @@ import polars as pl
 import pandas as pd
 import numpy as np
 import logging
-
-from sklearn.linear_model import LinearRegression
 from mlforecast import MLForecast
 from lightgbm import LGBMRegressor
+from sklearn.linear_model import LinearRegression
 
-# Configuração de Logs
+# Configuração de Logs para depuração sênior
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("PredictionService")
 
 class PredictionService:
-    # Motor de Inteligência
+    """
+    Motor de Inteligência Black Crow v5.6.2.
+    Responsável por Forecasts (Nixtla), Tendências e Insights Estratégicos.
+    """
 
     @staticmethod
     def get_market_trend(df: pl.DataFrame):
-        # Calcula a tendência volumétrica para os próximos 4 ciclos semanais.
+        """Calcula a tendência volumétrica para os próximos 4 ciclos semanais."""
         if df.is_empty(): return 0, "Sem Dados"
         try:
             v_sem = df.with_columns(pl.col("data_faturamento").dt.truncate("1w").alias("ds")).group_by("ds").len(name="y").sort("ds").to_pandas()
@@ -40,7 +42,7 @@ class PredictionService:
 
     @staticmethod
     def get_daily_forecast(df: pl.DataFrame, horizon=4):
-        # Gera a série temporal de previsão para o gráfico SPC.
+        """Gera a série temporal de previsão para o gráfico SPC."""
         if df.is_empty(): return pl.DataFrame()
         try:
             v_sem = df.with_columns(pl.col("data_faturamento").dt.truncate("1w").alias("ds")).group_by("ds").len(name="y").sort("ds").to_pandas()
@@ -63,7 +65,10 @@ class PredictionService:
 
     @staticmethod
     def get_client_predictions(df: pl.DataFrame):
-        # Gera a Antecipação Nominal por cliente.
+        """
+        Gera a Antecipação Nominal por cliente.
+        IMPORTANTE: Retorna apenas dados brutos; a interface processa Recência e Ticket.
+        """
         if df.is_empty(): return pl.DataFrame()
         try:
             # Preparação de Dados para o Nixtla (Multi-Séries)
@@ -108,7 +113,7 @@ class PredictionService:
 
     @staticmethod
     def get_strategic_insights(df: pl.DataFrame):
-        # Analisa a saúde estatística da carteira (HHI, CV, Confiança).
+        """Analisa a saúde estatística da carteira (HHI, CV, Confiança)."""
         if df.is_empty(): return {}
         try:
             v_sem = df.with_columns(pl.col("data_faturamento").dt.truncate("1w").alias("semana")).group_by("semana").len(name="vol")
@@ -133,7 +138,7 @@ class PredictionService:
 
     @staticmethod
     def _linear_trend_fallback(v_sem_pd):
-        # Fallback estatístico quando o Nixtla não tem massa crítica.
+        """Fallback estatístico quando o Nixtla não tem massa crítica."""
         y = v_sem_pd["y"].values
         X = np.arange(len(y)).reshape(-1, 1)
         slope = LinearRegression().fit(X, y).coef_[0]
@@ -141,7 +146,7 @@ class PredictionService:
 
     @staticmethod
     def _heuristic_client_fallback(df):
-        # Fallback para predição nominal baseado em média histórica simples.
+        """Fallback para predição nominal baseado em média histórica simples."""
         return df.group_by("marca").agg([
             pl.len().alias("Qtd_Prevista"), 
             pl.col("faturamento").mean().alias("avg_price")
