@@ -1,13 +1,13 @@
-import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
+import plotly.graph_objects as go
+from datetime import timedelta
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
-from datetime import timedelta
 
 # Definição da cor de autoridade (Navy Profundo - Contraste Máximo)
 LEGEND_COLOR = "#0F172A"
@@ -15,7 +15,10 @@ LEGEND_COLOR = "#0F172A"
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    # Layout
+    """
+    Layout 'Force Sync' v5.9.3.
+    Escala de cinza para ícones e blindagem contra cache do Streamlit Cloud.
+    """
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
@@ -33,17 +36,14 @@ def apply_enterprise_styles():
         }}
         
         [data-testid="stSidebar"] label, 
-        [data-testid="stSidebar"] .stMarkdown p,
-        [data-testid="stSidebar"] span,
-        [data-testid="stSidebar"] p,
-        [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {{
+        [data-testid="stSidebar"] span, 
+        [data-testid="stSidebar"] p {{
             color: #FFFFFF !important;
             font-weight: 800 !important;
             opacity: 1 !important;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }}
 
-        /* 3. CABEÇALHOS E TÍTULOS - CONTRASTE 100% */
+        /* 3. CABEÇALHOS */
         .header-title {{ 
             font-size: 3rem; font-weight: 900; color: {LEGEND_COLOR} !important; 
             letter-spacing: -2px; margin-bottom: 0.2rem;
@@ -55,7 +55,7 @@ def apply_enterprise_styles():
             opacity: 1 !important;
         }}
 
-        /* 4. SCORECARD (MÉTRICAS) - ESTILIZAÇÃO DE ALTO CONTRASTE */
+        /* 4. SCORECARD (MÉTRICAS) */
         .stMetric {{ 
             border: 2px solid #CBD5E1; 
             padding: 25px; 
@@ -68,29 +68,9 @@ def apply_enterprise_styles():
             justify-content: center;
         }}
         
-        [data-testid="stMetricLabel"] button {{
-            opacity: 1 !important;
-            background: transparent !important;
-        }}
-        
-        [data-testid="stMetricLabel"] svg {{
-            fill: #FFFFFF !important;
-            stroke: #000000 !important;
-            opacity: 0.5 !important;
-            transform: scale(1.4) !important;
-            filter: drop-shadow(0 0 2px rgba(225, 29, 72, 0.2));
-            transition: transform 0.2s ease-in-out;
-        }}
-        
-        [data-testid="stMetricLabel"] button:hover svg {{
-            transform: scale(1.6) !important;
-            fill: #AAAAAA !important;
-        }}
-
         [data-testid="stMetricValue"] {{ 
             font-weight: 900 !important; 
             color: {LEGEND_COLOR} !important; 
-            line-height: 1.1 !important;
             font-size: clamp(1.2rem, 2.2vw, 2.4rem) !important;
         }}
         
@@ -98,25 +78,48 @@ def apply_enterprise_styles():
             color: #0F172A !important; 
             font-weight: 800 !important;
             text-transform: uppercase !important;
-            letter-spacing: 1.2px !important;
             opacity: 1 !important;
+            letter-spacing: 1.2px !important;
             font-size: 0.85rem !important;
             margin-bottom: 8px !important;
         }}
 
-        /* 5. TABS - VISIBILIDADE TOTAL */
-        .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
-        .stTabs [data-baseweb="tab"] {{ 
-            color: #1E293B !important; 
-            font-weight: 800 !important; 
+        /* --- ÍCONE DE AJUDA EM ESCALA DE CINZA (ALTO CONTRASTE) --- */
+        [data-testid="stMetricLabel"] button {{
             opacity: 1 !important;
+            background: transparent !important;
         }}
-        .stTabs [aria-selected="true"] {{ 
-            color: {THEME_COLOR} !important; 
-            border-bottom: 4px solid {THEME_COLOR} !important; 
+        
+        [data-testid="stMetricLabel"] svg {{
+            fill: #475569 !important; /* Slate 600 - Cinza Sólido */
+            stroke: #1E293B !important;
+            opacity: 1 !important; 
+            transform: scale(1.4) !important;
+            transition: all 0.2s ease-in-out;
+        }}
+        
+        [data-testid="stMetricLabel"] button:hover svg {{
+            transform: scale(1.6) !important;
+            fill: #0F172A !important;
         }}
 
-        /* 6. DATAFRAME */
+        /* 5. TOOLTIP POPUP (BLINDAGEM) */
+        div[data-testid="stTooltipContent"] {{
+            background-color: #0F172A !important;
+            border: 1px solid #334155 !important;
+            padding: 15px !important;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5) !important;
+        }}
+        
+        div[data-testid="stTooltipContent"] p {{
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+        }}
+
+        /* 6. TABS E DATAFRAME */
+        .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
+        .stTabs [data-baseweb="tab"] {{ color: #1E293B !important; font-weight: 800 !important; opacity: 1 !important; }}
+        .stTabs [aria-selected="true"] {{ color: {THEME_COLOR} !important; border-bottom: 4px solid {THEME_COLOR} !important; }}
         .stDataFrame {{ border: 2px solid #E2E8F0; border-radius: 12px; background: white; }}
         
         /* 7. INSIGHTS CARD */
@@ -130,13 +133,6 @@ def apply_enterprise_styles():
             color: #0F172A !important;
             font-weight: 800 !important;
             opacity: 1 !important;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }}
-        .insights-card .val-text {{
-            color: {LEGEND_COLOR} !important;
-            font-weight: 900 !important;
-            font-size: 1.3rem;
         }}
         </style>
     """, unsafe_allow_html=True)
@@ -144,7 +140,7 @@ def apply_enterprise_styles():
 def render_sidebar(df):
     with st.sidebar:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=70)
-        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.8.4</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-bottom: 30px;'><span style='font-size: 1.8rem; font-weight: 900; color: #FFFFFF; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #94A3B8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;'>Intelligence v5.9.3</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -161,8 +157,10 @@ def render_sidebar(df):
             "dias": st.slider("Recorte de Dias:", 1, 31, (1, 31))
         }
         
-        if st.button("🔄 Sincronizar Tudo"):
+        st.divider()
+        if st.button("🔄 LIMPAR TUDO E REINICIAR"):
             st.cache_data.clear()
+            st.cache_resource.clear()
             st.rerun()
             
         return filtros
@@ -187,10 +185,8 @@ def render_periodicity_heatmap(df):
             coloraxis_showscale=False,
             font=dict(color=LEGEND_COLOR, size=12, family="Inter", weight="bold")
         )
-        fig.update_xaxes(tickfont=dict(color=LEGEND_COLOR, size=12, weight="bold"))
-        fig.update_yaxes(tickfont=dict(color=LEGEND_COLOR, size=12, weight="bold"))
         st.plotly_chart(fig, use_container_width=True)
-    except: st.info("Dados insuficientes.")
+    except: st.info("Massa de dados insuficiente.")
 
 def render_spc_chart(v_semanal, v_future, m, s):
     if v_semanal.is_empty(): return
@@ -213,8 +209,6 @@ def render_spc_chart(v_semanal, v_future, m, s):
         showlegend=True, 
         font=dict(color=LEGEND_COLOR, size=12, family="Inter", weight="bold")
     )
-    fig.update_xaxes(showgrid=False, tickfont=dict(color=LEGEND_COLOR, size=11, weight="bold"), linecolor="#CBD5E1")
-    fig.update_yaxes(showgrid=True, gridcolor='#F1F5F9', tickfont=dict(color=LEGEND_COLOR, size=11, weight="bold"), linecolor="#CBD5E1")
     st.plotly_chart(fig, use_container_width=True)
 
 def human_format(num):
@@ -254,15 +248,17 @@ def run_dashboard():
         # --- SCORECARD ---
         k1, k2, k3, k4, k5 = st.columns(5)
         k1.metric("Volume Total", f"{len(df):,}")
+        
         if not dist.is_empty():
             lider_nome = dist.tail(1)['marca'][0]
-            
+            lider_share = (dist.tail(1)['vendas'][0]/len(df))
             k2.metric(
-                label="Líder de Share", 
-                value=f"{lider_nome}", 
-                delta=f"{(dist.tail(1)['vendas'][0]/len(df)):.1%} Share",
-                help=f"Nome Completo: {lider_nome}"
+                label="Líder de Share",
+                value=lider_nome,
+                delta=f"{lider_share:.1%} Share",
+                help=f"**IDENTIFICAÇÃO COMPLETA:**\n\n{lider_nome}" 
             )
+        
         k3.metric("Média Semanal", f"{m_w:.1f}")
         k4.metric("Previsibilidade", f"{ins.get('confianca', 0):.1f}%")
         k5.metric("Target Forecast", human_format(proj_vol * 125000), delta=trend)
@@ -287,17 +283,9 @@ def run_dashboard():
                 pl.col("Recência (Dias)")
             ]).sort("Venda Estimada", descending=True)
             
-            st.dataframe(
-                df_final, use_container_width=True, hide_index=True, height=450,
-                column_config={
-                    "Volume Previsto": st.column_config.NumberColumn(format="%d un"),
-                    "Ticket Médio": st.column_config.NumberColumn(format="R$ %.2f"),
-                    "Venda Estimada": st.column_config.NumberColumn(format="R$ %.2f"),
-                    "Recência (Dias)": st.column_config.NumberColumn(format="%d dias atrás")
-                }
-            )
+            st.dataframe(df_final, use_container_width=True, hide_index=True, height=450)
         else:
-            st.info("Aguardando massa crítica para projeção.")
+            st.info("Aguardando massa crítica para projeção operacional.")
 
         st.divider()
 
@@ -306,13 +294,7 @@ def run_dashboard():
         tab_area, tab_heat = st.tabs(["Trajetória Histórica", "Periodicidade e Sazonalidade"])
         with tab_area:
             fig_area = px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR])
-            fig_area.update_layout(
-                height=500, margin=dict(t=10,b=10), 
-                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
-                font=dict(color=LEGEND_COLOR, size=12, weight="bold"),
-                yaxis=dict(title=None, tickfont=dict(color=LEGEND_COLOR, weight="bold"))
-            )
-            fig_area.update_xaxes(tickfont=dict(color=LEGEND_COLOR, weight="bold"))
+            fig_area.update_layout(height=500, margin=dict(t=10,b=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', font=dict(color=LEGEND_COLOR, size=12, weight="bold"))
             st.plotly_chart(fig_area, use_container_width=True)
         with tab_heat:
             render_periodicity_heatmap(df)
@@ -327,21 +309,14 @@ def run_dashboard():
         with c_right:
             st.markdown(f"<h3>🏆 Share de Mercado (Principais Líderes)</h3>", unsafe_allow_html=True)
             if not dist.is_empty():
-                fig_bar = px.bar(dist.tail(12), x='vendas', y='marca', orientation='h', 
-                                 color_discrete_sequence=[THEME_COLOR], text_auto=True)
-                fig_bar.update_layout(
-                    height=450, margin=dict(t=20, b=20, l=160, r=20), 
-                    paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
-                    font=dict(color=LEGEND_COLOR, weight="bold", size=13),
-                    xaxis=dict(tickfont=dict(color=LEGEND_COLOR, weight="bold"), title="Vendas"),
-                    yaxis=dict(title=None, tickfont=dict(color=LEGEND_COLOR, size=13, weight="bold"))
-                )
+                fig_bar = px.bar(dist.tail(12), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR], text_auto=True)
+                fig_bar.update_layout(height=450, margin=dict(t=20, b=20, l=160, r=20), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', font=dict(color=LEGEND_COLOR, weight="bold", size=13))
                 st.plotly_chart(fig_bar, use_container_width=True)
 
         # --- RODAPÉ DE INSIGHTS ---
         st.markdown(f"""
         <div class="insights-card">
-            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem;">Strategic Insights v5.8.4</h3>
+            <h3 style="margin-top:0; color:{LEGEND_COLOR}; font-size:1.4rem;">Strategic Insights v5.9.3</h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 2px solid #F1F5F9; padding-top: 25px; margin-top:15px;">
                 <div><span>PERÍMETRO</span><br><div class="val-text">{ins.get('perfil').upper()}</div></div>
                 <div><span>ÍNDICE HHI</span><br><div class="val-text">{ins.get('hhi',0):.2f}</div></div>
@@ -351,4 +326,4 @@ def run_dashboard():
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.sidebar.warning("⚠️ Selecione os filtros para processar.")
+        st.sidebar.warning("⚠️ Ajuste os filtros para processar a inteligência.")
