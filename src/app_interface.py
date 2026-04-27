@@ -1,71 +1,138 @@
-import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
+import plotly.graph_objects as go
+from datetime import timedelta
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
-from datetime import timedelta
 
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    # Layout
-    
+    """
+    Layout 'Midnight Platinum' v5.5.
+    Foco em autoridade visual, contraste luxuoso e acabamento de alto nível.
+    """
     st.markdown(f"""
         <style>
-        /* 1. FUNDO E LAYOUT */
-        [data-testid="stAppViewContainer"] {{ background-color: #F1F5F9 !important; }}
-        .block-container {{ max-width: 96% !important; padding-top: 3rem !important; }}
-
-        /* 2. SIDEBAR - CORREÇÃO DE CONTRASTE TOTAL */
-        [data-testid="stSidebar"] {{ 
-            background-color: #FFFFFF !important; 
-            border-right: 2px solid #E2E8F0; 
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+        
+        /* 1. ESTRUTURA GLOBAL */
+        [data-testid="stAppViewContainer"] {{ 
+            background-color: #F8FAFC !important; 
+            font-family: 'Inter', sans-serif;
         }}
-        /* Força textos, labels e expanders da Sidebar a serem escuros */
+        
+        /* 2. SIDEBAR DARK LUXURY */
+        [data-testid="stSidebar"] {{ 
+            background-color: #0F172A !important; 
+            border-right: none;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+        }}
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
         [data-testid="stSidebar"] label,
-        [data-testid="stSidebar"] summary p,
-        [data-testid="stSidebar"] .stMarkdown p,
         [data-testid="stSidebar"] span {{
-            color: #0F172A !important;
-            font-weight: 600 !important;
+            color: #E2E8F0 !important;
+            font-weight: 500 !important;
         }}
-        [data-testid="stSidebar"] .stExpander {{
-            background-color: #F8FAFC !important;
-            border: 1px solid #CBD5E1 !important;
-            border-radius: 8px;
+        
+        /* Sidebar Expanders */
+        .stExpander {{
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            border-radius: 12px !important;
+            background-color: rgba(255,255,255,0.03) !important;
+            margin-bottom: 0.8rem !important;
         }}
 
-        /* 3. CARDS DE MÉTRICAS */
-        .stMetric {{ 
-            border: 1px solid #CBD5E1; 
-            padding: 22px; 
-            border-radius: 12px; 
-            background-color: #FFFFFF !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        /* 3. CONTEÚDO PRINCIPAL */
+        .block-container {{ 
+            max-width: 94% !important; 
+            padding-top: 3rem !important; 
         }}
-        [data-testid="stMetricValue"] {{ font-size: 2rem !important; font-weight: 800; color: #0F172A !important; }}
-        [data-testid="stMetricLabel"] {{ color: #475569 !important; font-weight: 700; }}
         
-        /* HEADER */
         .header-title {{ 
-            font-size: 2.3rem; font-weight: 900; color: #0F172A; 
-            border-bottom: 5px solid {THEME_COLOR}; padding-bottom: 12px; margin-bottom: 30px; 
+            font-size: 2.8rem; 
+            font-weight: 800; 
+            color: #1E293B; 
+            letter-spacing: -2px;
+            margin-bottom: 0.2rem;
+        }}
+        
+        .header-subtitle {{
+            font-size: 0.9rem;
+            color: #64748B;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }}
+
+        /* 4. CARDS DE MÉTRICAS (ELEVADOS) */
+        .stMetric {{ 
+            border: 1px solid #FFFFFF; 
+            padding: 28px; 
+            border-radius: 20px; 
+            background-color: #FFFFFF !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+        }}
+        [data-testid="stMetricValue"] {{ 
+            font-size: 2.4rem !important; 
+            font-weight: 800; 
+            color: #0F172A !important; 
+            letter-spacing: -1px;
+        }}
+        [data-testid="stMetricLabel"] {{ 
+            color: #94A3B8 !important; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            font-size: 0.75rem !important; 
+        }}
+        
+        /* 5. TABS CUSTOMIZADAS */
+        .stTabs [data-baseweb="tab-list"] {{ gap: 30px; }}
+        .stTabs [data-baseweb="tab"] {{
+            color: #94A3B8;
+            font-weight: 700;
+            padding-bottom: 12px;
+        }}
+        .stTabs [aria-selected="true"] {{
+            color: {THEME_COLOR} !important;
+            border-bottom: 3px solid {THEME_COLOR} !important;
+        }}
+
+        /* 6. BOTÕES DA SIDEBAR */
+        .stButton button {{ 
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            color: #F8FAFC !important;
+            border-radius: 8px;
+            font-size: 0.7rem !important;
+        }}
+        .stButton button:hover {{ 
+            background: {THEME_COLOR} !important; 
+            border-color: {THEME_COLOR} !important;
+        }}
+
+        /* 7. INSIGHTS BOX */
+        .insights-card {{
+            background: #FFFFFF;
+            padding: 35px;
+            border-radius: 24px;
+            border: 1px solid #E2E8F0;
+            margin-top: 3rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         }}
         </style>
     """, unsafe_allow_html=True)
 
 def render_sidebar(df):
-    # Sidebar com filtros.
     with st.sidebar:
-        st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=85)
-        st.markdown("<h2 style='color:#0F172A; font-weight:900;'>Black Crow</h2>", unsafe_allow_html=True)
-        st.caption("Intelligence Unit | v5.3.0")
-        st.divider()
+        st.image("https://static.vecteezy.com/system/resources/thumbnails/026/847/626/small/flying-black-crow-isolated-png.png", width=60)
+        st.markdown("<div style='margin-top: 15px; margin-bottom: 30px;'><span style='font-size: 1.6rem; font-weight: 800; color: #F8FAFC; letter-spacing: -1px;'>Black Crow</span><br><span style='color: #64748B; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;'>Intelligence Unit v5.5</span></div>", unsafe_allow_html=True)
         
         def smart_filter(label, col):
             opts = sorted(df[col].unique().to_list())
@@ -75,49 +142,50 @@ def render_sidebar(df):
                 c2.button("Nenhum", key=f"none_{label}", on_click=set_all_state, args=(label, opts, False))
                 return [o for o in opts if st.checkbox(o, key=f"chk_{label}_{o}", value=st.session_state.get(f"chk_{label}_{o}", True))]
 
-        return {
-            "marcas": smart_filter("Marcas", "marca"),
-            "paises": smart_filter("Geografia", "uf"),
-            "setores": smart_filter("Setores", "industry_sector"),
-            "dias": st.slider("Recorte Mensal (Dias):", 1, 31, (1, 31))
+        filtros = {
+            "marcas": smart_filter("Empresas", "marca"),
+            "paises": smart_filter("Mercados", "uf"),
+            "setores": smart_filter("Segmentos", "industry_sector"),
+            "dias": st.slider("Janela de Observação:", 1, 31, (1, 31))
         }
+        return filtros
 
 def render_periodicity_heatmap(df):
-    
-    # Preparação dos dados para o Heatmap
+    """Heatmap com paleta 'IceFire' para um look agressivo e profissional."""
     df_heat = df.with_columns([
         pl.col("data_faturamento").dt.weekday().alias("dow"),
         pl.col("data_faturamento").dt.day().map_elements(lambda d: (d-1)//7 + 1, return_dtype=pl.Int64).alias("semana_mes")
     ]).group_by(["semana_mes", "dow"]).len().sort(["semana_mes", "dow"])
 
-    # Pivot para o formato de matriz do Plotly
     heat_matrix = df_heat.to_pandas().pivot(index="semana_mes", columns="dow", values="len").fillna(0)
-    
-    # Nomes dos dias para o eixo X
     dias_map = {1: "Seg", 2: "Ter", 3: "Qua", 4: "Qui", 5: "Sex", 6: "Sab", 7: "Dom"}
     heat_matrix.columns = [dias_map.get(c, c) for c in heat_matrix.columns]
     heat_matrix.index = [f"Semana {i}" for i in heat_matrix.index]
 
     fig = px.imshow(
         heat_matrix,
-        labels=dict(x="Dia da Semana", y="Semana do Mês", color="Volume"),
-        color_continuous_scale="RdBu_r", # coolwarm invertido (Vermelho=Quente/Alto)
+        color_continuous_scale="Viridis", # Cores científicas e elegantes
         aspect="auto",
         text_auto=True
     )
-    fig.update_layout(height=300, margin=dict(t=10, b=10, l=10, r=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(
+        height=320, margin=dict(t=10, b=10, l=10, r=10), 
+        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+        coloraxis_showscale=False
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 def render_spc_chart(v_semanal, v_future, m, s):
     ucl, lcl = m + 3*s, max(0, m - 3*s)
     last_vol = v_semanal.tail(1)["vol"][0]
     
-    if last_vol > ucl: st.success(f"🚀 **Alerta:** Volume ({last_vol}) acima do limite superior.")
-    elif last_vol < lcl: st.error(f"⚠️ **Alerta:** Volume ({last_vol}) abaixo do limite inferior.")
-    else: st.info(f"✅ **Estabilidade:** Fluxo operacional nominal.")
+    if last_vol > ucl: st.success(f"🚀 **Expansão Detectada:** Volume ({last_vol}) rompeu UCL.")
+    elif last_vol < lcl: st.error(f"⚠️ **Retração Crítica:** Volume ({last_vol}) abaixo de LCL.")
+    else: st.info(f"✅ **Fluxo Nominal:** Estabilidade estatística confirmada.")
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=v_semanal['semana'], y=v_semanal['vol'], mode='lines+markers', name='Real', line=dict(color=THEME_COLOR, width=3)))
+    # Histórico
+    fig.add_trace(go.Scatter(x=v_semanal['semana'], y=v_semanal['vol'], mode='lines+markers', name='Real', line=dict(color=THEME_COLOR, width=4), marker=dict(size=10, color='white', line=dict(width=3, color=THEME_COLOR))))
     
     if not v_future.is_empty():
         last_d = v_semanal.tail(1)["semana"][0]
@@ -125,11 +193,17 @@ def render_spc_chart(v_semanal, v_future, m, s):
         h_t = v_semanal.select(["semana", "vol"]).tail(1).with_columns([pl.col("semana").cast(pl.Date), pl.col("vol").cast(pl.Float64)])
         f_t = v_f.select(["semana", "vol"]).with_columns([pl.col("semana").cast(pl.Date), pl.col("vol").cast(pl.Float64)])
         conn = pl.concat([h_t, f_t])
-        fig.add_trace(go.Scatter(x=conn['semana'], y=conn['vol'], mode='lines', name='Forecast', line=dict(color=THEME_COLOR, dash='dot', width=3)))
+        fig.add_trace(go.Scatter(x=conn['semana'], y=conn['vol'], mode='lines', name='Forecast', line=dict(color=THEME_COLOR, dash='dot', width=4)))
     
-    fig.add_hline(y=ucl, line_dash="dash", line_color="#10B981", annotation_text="UCL")
-    fig.add_hline(y=lcl, line_dash="dash", line_color="#EF4444", annotation_text="LCL")
-    fig.update_layout(height=380, margin=dict(t=30, b=10), plot_bgcolor='white', showlegend=False)
+    fig.add_hline(y=ucl, line_dash="dash", line_color="#10B981", opacity=0.3)
+    fig.add_hline(y=lcl, line_dash="dash", line_color="#EF4444", opacity=0.3)
+    fig.update_layout(
+        height=400, margin=dict(t=20, b=10), 
+        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', 
+        showlegend=False,
+        xaxis=dict(showgrid=False, linecolor='#E2E8F0', tickfont=dict(color='#64748B', size=11)),
+        yaxis=dict(showgrid=True, gridcolor='#F1F5F9', zeroline=False, tickfont=dict(color='#64748B', size=11))
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 def human_format(num):
@@ -153,7 +227,6 @@ def run_dashboard():
     df = df.filter(pl.col("data_faturamento") < df_raw["data_faturamento"].max())
 
     if not df.is_empty():
-        # Motores
         v_sem = df.with_columns(pl.col("data_faturamento").dt.truncate("1w").alias("semana")).group_by("semana").len(name="vol").sort("semana")
         m_w, s_w = v_sem["vol"].mean(), v_sem["vol"].std()
         dist = AnalyticsService.get_pareto_distribution(df).sort("vendas")
@@ -161,45 +234,64 @@ def run_dashboard():
         v_fut = PredictionService.get_daily_forecast(df, horizon=4)
         ins = PredictionService.get_strategic_insights(df)
         
+        # Header
         st.markdown(f"<div class='header-title'>{APP_TITLE}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='header-subtitle'>Market Intelligence & Predictive Analytics Engine</div>", unsafe_allow_html=True)
         
-        # KPI Scorecard
+        # Scorecard
         k1, k2, k3, k4, k5 = st.columns(5)
-        k1.metric("Volume Acumulado", f"{len(df):,}")
-        k2.metric("Líder de Canal", f"{dist.tail(1)['marca'][0][:14]}", delta=f"{(dist.tail(1)['vendas'][0]/len(df)):.1%} Share")
-        k3.metric("Média Semanal", f"{m_w:.1f} un/sem")
-        k4.metric("Previsibilidade", f"{ins.get('confianca', 0):.1f}%", help="Logic Engine v5.0")
-        k5.metric("Forecast Próx. Ciclo", human_format(proj_vol * 125000), delta=trend)
+        k1.metric("Volume Total", f"{len(df):,}")
+        k2.metric("Dominância", f"{dist.tail(1)['marca'][0][:14]}", delta=f"{(dist.tail(1)['vendas'][0]/len(df)):.1%} Share")
+        k3.metric("Média Semanal", f"{m_w:.1f}")
+        k4.metric("Previsibilidade", f"{ins.get('confianca', 0):.1f}%")
+        k5.metric("Target Forecast", human_format(proj_vol * 125000), delta=trend)
         
         st.divider()
 
-        cl, cr = st.columns([1.6, 1])
+        cl, cr = st.columns([1.7, 1])
         with cl:
-            st.subheader("📊 Trajetória e Periodicidade")
-            tab1, tab2 = st.tabs(["Fluxo Semanal", "Mapa de Calor Sazonal"])
-            with tab1:
-                st.plotly_chart(px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR]).update_layout(height=280, margin=dict(t=0,b=0), plot_bgcolor='white'), use_container_width=True)
-            with tab2:
+            st.markdown("<h3 style='color: #1E293B; margin-bottom:1rem;'>Diagnóstico Dinâmico</h3>", unsafe_allow_html=True)
+            t1, t2 = st.tabs(["Performance Semanal", "Periodicidade"])
+            with t1:
+                st.plotly_chart(px.area(v_sem, x='semana', y='vol', color_discrete_sequence=[THEME_COLOR]).update_layout(height=340, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor='#F1F5F9', title=None)), use_container_width=True)
+            with t2:
                 render_periodicity_heatmap(df)
             
-            st.markdown("<h3 style='margin-top:20px;'>📈 Estabilidade e Controle Estatístico</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #1E293B; margin-top:3rem; margin-bottom:1rem;'>Controle de Estabilidade</h3>", unsafe_allow_html=True)
             render_spc_chart(v_sem, v_fut, m_w, s_w)
 
         with cr:
-            st.subheader("🔮 Antecipação Nominal (Nixtla)")
+            st.markdown("<h3 style='color: #1E293B; margin-bottom:1rem;'>Antecipação Nominal</h3>", unsafe_allow_html=True)
             df_p = PredictionService.get_client_predictions(df)
             if not df_p.is_empty():
-                st.dataframe(df_p.with_columns(pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Potencial")).select(["Cliente", "Qtd_Prevista", "Potencial", "Probabilidade"]), use_container_width=True, hide_index=True, column_config={"Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1, color="green")})
+                st.dataframe(df_p.with_columns(pl.col("Valor_Est").map_elements(human_format, return_dtype=pl.String).alias("Valor")).select(["Cliente", "Qtd_Prevista", "Valor", "Probabilidade"]), use_container_width=True, hide_index=True, column_config={"Probabilidade": st.column_config.ProgressColumn("Confiança", min_value=0, max_value=1, color="blue")})
             
-            st.markdown("<h3 style='margin-top:25px;'>🏆 Mix de Liderança</h3>", unsafe_allow_html=True)
-            st.plotly_chart(px.bar(dist.tail(10), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR]).update_layout(height=380, margin=dict(t=0,b=0), plot_bgcolor='white'), use_container_width=True)
+            st.markdown("<h3 style='color: #1E293B; margin-top:3rem; margin-bottom:1rem;'>Share de Mercado</h3>", unsafe_allow_html=True)
+            st.plotly_chart(px.bar(dist.tail(10), x='vendas', y='marca', orientation='h', color_discrete_sequence=[THEME_COLOR]).update_layout(height=400, margin=dict(t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white', xaxis=dict(showgrid=True, gridcolor='#F1F5F9', title=None), yaxis=dict(showgrid=False)), use_container_width=True)
 
-        st.divider()
+        # Insights
         st.markdown(f"""
-        <div style="background-color:white; padding:25px; border:1px solid #E2E8F0; border-radius:12px; color:#0F172A;">
-            <strong>Strategic Insights v5.3.0</strong> | Perfil: {ins.get('perfil').upper()} | HHI: {ins.get('hhi',0):.2f} | CV: {ins.get('cv',0):.2f}<br>
-            Estabilidade: {ins.get('estabilidade').upper()} | Confiança do Forecast: {ins.get('confianca', 0):.1f}%
+        <div class="insights-card">
+            <h3 style="margin-top:0; color:#0F172A; font-size:1.3rem; letter-spacing:-0.5px;">Strategic Insights v5.5</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border-top: 1px solid #F1F5F9; padding-top: 25px; margin-top: 15px;">
+                <div>
+                    <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Perímetro</span><br>
+                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('perfil').upper()}</span>
+                </div>
+                <div>
+                    <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Índice HHI</span><br>
+                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('hhi',0):.2f}</span>
+                </div>
+                <div>
+                    <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Regime</span><br>
+                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('estabilidade').upper()}</span>
+                </div>
+                <div>
+                    <span style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Motor IA</span><br>
+                    <span style="font-size:1.1rem; color:#1E293B; font-weight:800;">{ins.get('confianca', 0):.1f}%</span>
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.sidebar.warning("⚠️ Ajuste os filtros.")
+        st.sidebar.warning("⚠️ Filtros vazios.")
