@@ -1,24 +1,21 @@
+import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import polars as pl
-import plotly.graph_objects as go
-from datetime import timedelta
 
 from src.data_engine import load_processed_data, apply_business_filters
 from src.prediction_service import PredictionService
 from src.analytics_service import AnalyticsService
 from src.config import APP_TITLE, THEME_COLOR
+from datetime import timedelta
 
-# Definição da cor de autoridade (Navy Profundo - Contraste Máximo)
+# Definição da cor de autoridade
 LEGEND_COLOR = "#0F172A"
 
 # --- UI COMPONENTS ---
 
 def apply_enterprise_styles():
-    """
-    Layout 'Force Sync' v5.9.3.
-    Escala de cinza para ícones e blindagem contra cache do Streamlit Cloud.
-    """
+    # Layout
     st.markdown(f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
@@ -36,14 +33,17 @@ def apply_enterprise_styles():
         }}
         
         [data-testid="stSidebar"] label, 
-        [data-testid="stSidebar"] span, 
-        [data-testid="stSidebar"] p {{
+        [data-testid="stSidebar"] .stMarkdown p,
+        [data-testid="stSidebar"] span,
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {{
             color: #FFFFFF !important;
             font-weight: 800 !important;
             opacity: 1 !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }}
 
-        /* 3. CABEÇALHOS */
+        /* 3. CABEÇALHOS E TÍTULOS - CONTRASTE 100% */
         .header-title {{ 
             font-size: 3rem; font-weight: 900; color: {LEGEND_COLOR} !important; 
             letter-spacing: -2px; margin-bottom: 0.2rem;
@@ -55,7 +55,7 @@ def apply_enterprise_styles():
             opacity: 1 !important;
         }}
 
-        /* 4. SCORECARD (MÉTRICAS) */
+        /* 4. SCORECARD (MÉTRICAS) - ESTILIZAÇÃO DE ALTO CONTRASTE */
         .stMetric {{ 
             border: 2px solid #CBD5E1; 
             padding: 25px; 
@@ -68,9 +68,29 @@ def apply_enterprise_styles():
             justify-content: center;
         }}
         
+        [data-testid="stMetricLabel"] button {{
+            opacity: 1 !important;
+            background: transparent !important;
+        }}
+        
+        [data-testid="stMetricLabel"] svg {{
+            fill: #FFFFFF !important;
+            stroke: #000000 !important;
+            opacity: 0.5 !important;
+            transform: scale(1.4) !important;
+            filter: drop-shadow(0 0 2px rgba(225, 29, 72, 0.2));
+            transition: transform 0.2s ease-in-out;
+        }}
+        
+        [data-testid="stMetricLabel"] button:hover svg {{
+            transform: scale(1.6) !important;
+            fill: #AAAAAA !important;
+        }}
+
         [data-testid="stMetricValue"] {{ 
             font-weight: 900 !important; 
             color: {LEGEND_COLOR} !important; 
+            line-height: 1.1 !important;
             font-size: clamp(1.2rem, 2.2vw, 2.4rem) !important;
         }}
         
@@ -78,48 +98,25 @@ def apply_enterprise_styles():
             color: #0F172A !important; 
             font-weight: 800 !important;
             text-transform: uppercase !important;
-            opacity: 1 !important;
             letter-spacing: 1.2px !important;
+            opacity: 1 !important;
             font-size: 0.85rem !important;
             margin-bottom: 8px !important;
         }}
 
-        /* --- ÍCONE DE AJUDA EM ESCALA DE CINZA (ALTO CONTRASTE) --- */
-        [data-testid="stMetricLabel"] button {{
-            opacity: 1 !important;
-            background: transparent !important;
-        }}
-        
-        [data-testid="stMetricLabel"] svg {{
-            fill: #475569 !important; /* Slate 600 - Cinza Sólido */
-            stroke: #1E293B !important;
-            opacity: 1 !important; 
-            transform: scale(1.4) !important;
-            transition: all 0.2s ease-in-out;
-        }}
-        
-        [data-testid="stMetricLabel"] button:hover svg {{
-            transform: scale(1.6) !important;
-            fill: #0F172A !important;
-        }}
-
-        /* 5. TOOLTIP POPUP (BLINDAGEM) */
-        div[data-testid="stTooltipContent"] {{
-            background-color: #0F172A !important;
-            border: 1px solid #334155 !important;
-            padding: 15px !important;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5) !important;
-        }}
-        
-        div[data-testid="stTooltipContent"] p {{
-            color: #FFFFFF !important;
-            font-weight: 700 !important;
-        }}
-
-        /* 6. TABS E DATAFRAME */
+        /* 5. TABS - VISIBILIDADE TOTAL */
         .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
-        .stTabs [data-baseweb="tab"] {{ color: #1E293B !important; font-weight: 800 !important; opacity: 1 !important; }}
-        .stTabs [aria-selected="true"] {{ color: {THEME_COLOR} !important; border-bottom: 4px solid {THEME_COLOR} !important; }}
+        .stTabs [data-baseweb="tab"] {{ 
+            color: #1E293B !important; 
+            font-weight: 800 !important; 
+            opacity: 1 !important;
+        }}
+        .stTabs [aria-selected="true"] {{ 
+            color: {THEME_COLOR} !important; 
+            border-bottom: 4px solid {THEME_COLOR} !important; 
+        }}
+
+        /* 6. DATAFRAME */
         .stDataFrame {{ border: 2px solid #E2E8F0; border-radius: 12px; background: white; }}
         
         /* 7. INSIGHTS CARD */
@@ -133,6 +130,13 @@ def apply_enterprise_styles():
             color: #0F172A !important;
             font-weight: 800 !important;
             opacity: 1 !important;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }}
+        .insights-card .val-text {{
+            color: {LEGEND_COLOR} !important;
+            font-weight: 900 !important;
+            font-size: 1.3rem;
         }}
         </style>
     """, unsafe_allow_html=True)
