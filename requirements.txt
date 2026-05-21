@@ -1,10 +1,17 @@
-python-dotenv
-scikit-learn
-streamlit
-mlforecast
-lightgbm
+# Core Data Processing & Performance
 pyarrow
 polars
-plotly
 pandas
 numpy
+
+# Machine Learning & Time Series Forecasting
+scikit-learn
+mlforecast
+lightgbm
+
+# Front-end & Data Visualization
+streamlit
+plotly
+
+# Environment & Security
+python-dotenv
