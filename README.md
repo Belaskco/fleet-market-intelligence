@@ -6,7 +6,7 @@
 
 > "Ceaseless watcher of anomalies. Tireless weaver of patterns." 
 
-**Black Crow Intelligence** não é apenas mais um dashboard bonitinho feito em Power BI por alguém que não sabe o que é um desvio padrão. É um ecossistema preditivo de alta performance para o mercado de frotas (B2B), construído para quem prefere fatos estatísticos a palpites de corredor.
+**Fleet Market Intelligence** não é apenas mais um dashboard bonitinho feito em Power BI por alguém que não sabe o que é um desvio padrão. É um ecossistema preditivo de alta performance para o mercado de frotas (B2B), construído para quem prefere fatos estatísticos a palpites de corredor.
 
 ## 🚀 Por que Polars e não o "velho" Pandas?
 
